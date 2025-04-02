@@ -21,20 +21,24 @@ public class Main {
         System.out.println(user);
         if(user == null)
             return;
+        else{
+            System.out.println(user);
+        }
         System.out.println("Enter New Password: ");
         String NewPassword = sc.nextLine();
         UserController.changePassword(user,NewPassword);
         UserController.displayUsers();
 
+        // Test applicant Class and applicant repo, to de done: Applicant controller
 //        ApplicantRepository repo = new ApplicantRepository("./src/data/ApplicantList.csv");
-////        repo.display();
-////        repo.CreateApplicant("a","b",12,"yegd","yegw");
-////        System.out.println("updated\n");
-////        repo.display();
-////        repo.deleteApplicantByNRIC("b");
-////        System.out.println("deleted\
+//        repo.display();
+//        repo.CreateApplicant("a","b",12,"single","yegw");
+//        System.out.println("updated\n");
+//        repo.display();
+//        repo.deleteApplicantByNRIC("b");
+//        System.out.println("deleted");
 //        Applicant john = repo.getByID("S1234567A");
-//        john.setPassword("PENIS9999999");
+//        john.setPassword("UPDATEDPASSWORD");
 //        repo.update(john);
 //        repo.display();
 

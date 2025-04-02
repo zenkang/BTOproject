@@ -1,6 +1,8 @@
 package Applicant;
 
 import Abstract.Repository;
+import Enumerations.MaritalStatus;
+import Utils.CsvUtils;
 
 public class ApplicantRepository extends Repository<Applicant> {
     public ApplicantRepository(String filePath) {
@@ -11,7 +13,8 @@ public class ApplicantRepository extends Repository<Applicant> {
     public Applicant fromCSVRow(String row) {
         String[] values = row.split(",");
         Integer age = Integer.parseInt(values[2]);
-        return new Applicant(values[0],values[1],age,values[3],values[4]);
+        MaritalStatus status = MaritalStatus.valueOf(values[3].toUpperCase());
+        return new Applicant(values[0],values[1],age,status,values[4]);
     }
 
     @Override
@@ -19,7 +22,12 @@ public class ApplicantRepository extends Repository<Applicant> {
         return "Name,NRIC,Age,Marital Status,Password";
     }
 
-    public boolean CreateApplicant(String name, String nric, int age, String maritalStatus, String password) {
+    public boolean CreateApplicant(String name, String nric, int age, String Status, String password) {
+        if(!CsvUtils.isValidMaritalStatus(Status)) {
+            System.out.println("Invalid Marital Status");
+            return false;
+        }
+        MaritalStatus maritalStatus = MaritalStatus.valueOf(Status.toUpperCase());
         Applicant app = new Applicant(name,nric,age,maritalStatus,password);
         return this.create(app);
     }

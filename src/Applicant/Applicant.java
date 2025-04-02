@@ -2,14 +2,16 @@ package Applicant;
 
 import Abstract.IEntity;
 import User.User;
+import Enumerations.MaritalStatus;
+import Utils.CsvUtils;
 
 public class Applicant implements IEntity {
     private User userProfile;
     private String name;
     private int age;
-    private String maritalStatus;
+    private MaritalStatus maritalStatus; // Changed from String to MaritalStatus
 
-    public Applicant(String name, String nric, int age, String maritalStatus, String password) {
+    public Applicant(String name, String nric, int age, MaritalStatus maritalStatus, String password) {
         this.name = name;
         this.userProfile = new User(nric, password, "Applicant");
         this.age = age;
@@ -21,14 +23,17 @@ public class Applicant implements IEntity {
 
     @Override
     public String toCSVRow() {
-        return name + "," + userProfile.getNric() + "," + age + "," + maritalStatus + "," + userProfile.getPassword();
+        String normalisedStatus = CsvUtils.capitalizeFirstLetter(this.maritalStatus.toString());
+        return name + "," + userProfile.getNric() + "," + age + "," + normalisedStatus + "," + userProfile.getPassword();
     }
 
     @Override
     public Applicant fromCSVRow(String row) {
         String[] values = row.split(",");
         Integer age = Integer.parseInt(values[2]);
-        return new Applicant(values[0],values[1],age,values[3],values[4]);
+        // Convert string back to enum; adjust case if needed
+        MaritalStatus status = MaritalStatus.valueOf(values[3].toUpperCase());
+        return new Applicant(values[0],values[1],age,status,values[4]);
     }
 
     @Override
@@ -60,11 +65,11 @@ public class Applicant implements IEntity {
         this.age = age;
     }
 
-    public String getMaritalStatus() {
+    public MaritalStatus getMaritalStatus() {
         return maritalStatus;
     }
 
-    public void setMaritalStatus(String maritalStatus) {
+    public void setMaritalStatus(MaritalStatus maritalStatus) {
         this.maritalStatus = maritalStatus;
     }
 
@@ -77,6 +82,6 @@ public class Applicant implements IEntity {
     }
 
     public String toString() {
-        return "Applicant [name=" + name + ", NRIC=" + this.userProfile.getNric() + ", Age=" + age + ", MaritalStatus=" + maritalStatus + ", Password=" + this.userProfile.getPassword() + "]";
+        return "Applicant [name=" + name + ", NRIC=" + this.userProfile.getNric() + ", Age=" + age + ", MaritalStatus=" + maritalStatus.toString() + ", Password=" + this.userProfile.getPassword() + "]";
     }
 }

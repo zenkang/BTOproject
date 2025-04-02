@@ -68,7 +68,7 @@ public abstract class Repository <T extends IEntity>{
 
     public T getByID(String id){
         for (T t : entities) {
-            if (t.getID().equals(id)) {
+            if (t.getID().equalsIgnoreCase(id)) {
                 return t;
             }
         }
