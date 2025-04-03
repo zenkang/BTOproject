@@ -1,7 +1,10 @@
 package Applicant;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import Utils.SafeScanner;
+import User.UserBoundary;
 
 public class ApplicantBoundary {
     private Applicant applicant;
@@ -12,34 +15,102 @@ public class ApplicantBoundary {
 
     public void displayMenu() {
         int choice;
-        Scanner scanner = new Scanner(System.in);
-
+        Scanner sc = new Scanner(System.in);
         do {
-            System.out.println("\n=== Doctor Menu ===");
-            System.out.println("1. View Patient Medical Records");
-            System.out.println("2. Update Patient Medical Records");
-            System.out.println("3. View Personal Schedule");
-            System.out.println("4. Set Availability for Appointments");
-            System.out.println("5. Accept or Decline Appointment Requests");
-            System.out.println("6. View Upcoming Appointments");
-            System.out.println("7. Record Appointment Outcome");
+            System.out.println("\n=== Applicant Menu ===");
+            System.out.println("1. View/update my profile");
+            System.out.println("2. View Projects");
+            System.out.println("3. Apply Projects");
+            System.out.println("4. ");
+            System.out.println("5. ");
+            System.out.println("6. ");
+            System.out.println("7. Change Password");
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(scanner, "Enter your choice: ", 0, 7);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
 
             switch (choice) {
-                case 1 -> //viewPatientMedicalRecords();
-                case 2 -> //updatePatientMedicalRecords();
-                case 3 -> //viewPersonalSchedule();
-                case 4 -> //setAppointmentAvailability();
-                case 5 -> //handleAppointmentRequests();
-                case 6 -> //viewUpcomingAppointments();
-                case 7 -> //recordAppointmentOutcome();
-                case 0 -> System.out.println("Exiting the Doctor Menu.");
+                case 1 -> updateApplicantProfile();
+                case 2 -> System.out.println("TBC");
+                case 3 -> System.out.println("TBC");
+                case 4 -> System.out.println("TBC");
+                case 5 -> System.out.println("TBC");
+                case 6 -> System.out.println("TBC");
+                case 7 -> changePassword();
+                case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        } while (choice != 0);
+        }
+        while (choice != 0) ;
+        sc.close();
+    }
 
+    public void updateApplicantProfile() {
+        int choice;
+        Scanner sc = new Scanner(System.in);
+        System.out.println(applicant.toString());
+        List<String> validOptions = Arrays.asList("y", "n");
+        String selection = SafeScanner.getValidatedStringInput(sc,"Would you like to update your profile?\nEnter: y/n\n",validOptions);
+        if (selection.equalsIgnoreCase("n")) {
+            return;
+        }
+        else{
+            do{
+                System.out.println("1. Update Name");
+                System.out.println("2. Update Age");
+                System.out.println("3. Update Marital Status");
+                System.out.println("0. Back");
 
+                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
+
+                switch (choice) {
+                    case 1 -> updateName();
+                    case 2 -> updateAge();
+                    case 3 -> updateMaritalStatus();
+                    case 0 -> System.out.println("Exiting...");
+                    default -> System.out.println("Invalid choice. Please select a valid option.");
+                }
+            }
+            while (choice != 0);
+        }
+    }
+
+    private void changePassword() {
+        UserBoundary.changePassword(applicant.getUserProfile());
+    }
+
+    private void updateAge(){
+        Scanner sc = new Scanner(System.in);
+        int age;
+        age = SafeScanner.getValidatedIntInput(sc, "Enter your new age: ", 0, 200);
+        if(ApplicantController.updateAge(applicant, age)){
+            System.out.println("Your age has been updated!\n");
+        }
+        else{
+            System.out.println("Update failed, try again later\n");
+        }
+    }
+
+    private void updateName(){
+        Scanner sc = new Scanner(System.in);
+        String newName = SafeScanner.getValidatedStringInput(sc,"Enter your new Name: ",50);
+        if(ApplicantController.updateName(applicant, newName)){
+            System.out.println("Your name has been updated!\n");
+        }
+        else{
+            System.out.println("Update failed, try again later\n");
+        }
+    }
+
+    private void updateMaritalStatus(){
+        Scanner sc = new Scanner(System.in);
+        List<String> validOptions = Arrays.asList("m", "s");
+        String maritalStatus = SafeScanner.getValidatedStringInput(sc,"Enter your marital status: ( m: Married , s: Single)\n", validOptions);
+        if(ApplicantController.updateMaritalStatus(applicant, maritalStatus)){
+            System.out.println("Your marital status has been updated!\n");
+        }
+        else{
+            System.out.println("Update failed, try again later\n");
+        }
     }
 }

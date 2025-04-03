@@ -15,16 +15,18 @@ public class UserBoundary {
                 // create the applicant and show the menu
                 Applicant app = UserController.createApplicant(user);
                 ApplicantBoundary view = new ApplicantBoundary(app);
+                System.out.println("\nWelcome " + app.getName());
                 view.displayMenu();
             }
             case OFFICER ->{
-                // create the applicant and show the menu
+                // create the officer and show the menu
             }
             case MANAGER ->{
-                // create the applicant and show the menu
+                // create the manager and show the menu
             }
             default -> {
                 // do shit
+                return;
             }
 
         }
@@ -43,20 +45,18 @@ public class UserBoundary {
                 System.out.println("Invalid NRIC or Password!\nTry again!\n");
             }
         } while (user == null);
-        sc.close();
         return user;
     }
 
     public static User changePassword(User user){
         Scanner sc = new Scanner(System.in);
-        String NewPassword = SafeScanner.getStrongPassword(sc,"Enter new Password");
+        String NewPassword = SafeScanner.getStrongPassword(sc,"Enter new Password:\n");
         if(UserController.changePassword(user,NewPassword)){
             System.out.println("Password changed!");
         }
         else{
             System.out.println("Password change failed!");
         }
-        sc.close();
         return user;
     }
 

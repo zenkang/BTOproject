@@ -89,6 +89,13 @@ public class Applicant implements IEntity {
         this.userProfile.setPassword(password);
     }
 
+    public User getUserProfile() {
+        return userProfile;
+    }
+    public void setUserProfile(User userProfile) {
+        this.userProfile = userProfile;
+    }
+
     public String toString() {
         return "Applicant [name=" + name + ", NRIC=" + this.userProfile.getNric() + ", Age=" + age + ", MaritalStatus=" + maritalStatus.toString() + ", Password=" + this.userProfile.getPassword() + "]";
     }
