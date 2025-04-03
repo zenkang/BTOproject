@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import User.UsersRepository;
 import java.util.Scanner;
 import User.UserController;
+import Utils.SafeScanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -24,8 +25,7 @@ public class Main {
         else{
             System.out.println(user);
         }
-        System.out.println("Enter New Password: ");
-        String NewPassword = sc.nextLine();
+        String NewPassword = SafeScanner.getStrongPassword(sc,"Enter Password");
         UserController.changePassword(user,NewPassword);
         UserController.displayUsers();
 
