@@ -19,6 +19,13 @@ public class Applicant implements IEntity {
         this.maritalStatus = maritalStatus;
     }
 
+    public Applicant(String name, int age, MaritalStatus maritalStatus, User userProfile) {
+        this.name = name;
+        this.userProfile = userProfile;
+        this.age = age;
+        this.maritalStatus = maritalStatus;
+    }
+
 
 
 

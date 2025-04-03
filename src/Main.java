@@ -10,24 +10,20 @@ import User.UsersRepository;
 import java.util.Scanner;
 import User.UserController;
 import Utils.SafeScanner;
+import User.UserBoundary;
 
 public class Main {
     public static void main(String[] args) {
-        UserController.displayUsers();
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter NRIC: ");
-        String nric = sc.nextLine();
-        System.out.println("Enter Password: ");
-        String password = sc.nextLine();
-        User user = UserController.login(nric, password);
-        if(user == null)
+        UserBoundary.displayUsers();
+        User user = UserBoundary.login();
+        if (user == null) {
             return;
-        else{
-            System.out.println(user);
         }
-        String NewPassword = SafeScanner.getStrongPassword(sc,"Enter Password");
-        UserController.changePassword(user,NewPassword);
-        UserController.displayUsers();
+        System.out.println(user);
+        UserBoundary.route(user);
+
+
+
 
         // Test applicant Class and applicant repo, to de done: Applicant controller
 //        ApplicantRepository repo = new ApplicantRepository("./src/data/ApplicantList.csv");

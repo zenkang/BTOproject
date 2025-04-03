@@ -2,6 +2,8 @@ package User;
 import Abstract.Repository;
 import Enumerations.Role;
 
+import java.util.ArrayList;
+
 public class UsersRepository extends Repository<User> {
 
     public UsersRepository(String filePath) {
@@ -20,6 +22,9 @@ public class UsersRepository extends Repository<User> {
         return "NRIC,PASSWORD,ROLE";
     }
 
+    public ArrayList<User> getAllUsers() {
+        return this.entities;
+    }
 
 
     public void display(){

@@ -1,6 +1,12 @@
 package User;
 import User.UsersRepository;
 import User.User;
+import Applicant.Applicant;
+
+
+import java.util.ArrayList;
+
+import static Applicant.ApplicantController.getApplicantRepository;
 
 public class UserController {
 
@@ -23,11 +29,16 @@ public class UserController {
         return null;
     }
 
-    public static void displayUsers() {
-        UsersRepository usersRepository = getUsersRepository();
-        usersRepository.display();
+    public static ArrayList<User> getAllUsers() {
+        return getUsersRepository().getAllUsers();
     }
 
-
-
+    public static Applicant createApplicant(User user){
+        // get the applicants detaails from repo
+        Applicant applicant = getApplicantRepository().getByID(user.getID());
+        if (applicant != null){
+            return applicant;
+        }
+        return null;
+    }
 }
