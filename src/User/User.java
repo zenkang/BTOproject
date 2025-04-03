@@ -1,13 +1,15 @@
 package User;
 
 import Abstract.IEntity;
+import Enumerations.Role;
+import Utils.CsvUtils;
 
 public class User implements IEntity {
     private String nric;
     private String password;
-    private String role;
+    private Role role;
 
-    public User(String nric, String password, String role) {
+    public User(String nric, String password, Role role) {
         this.nric = nric;
         this.password = password;
         this.role = role;
@@ -19,7 +21,7 @@ public class User implements IEntity {
     public String getPassword() {
         return password;
     }
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
     public void setPassword(String password) {
@@ -29,17 +31,19 @@ public class User implements IEntity {
 
     @Override
     public String toString() {
-        return "User [nric=" + nric + ", password=" + password + ", role=" + role + "]";
+        return "User [nric=" + nric + ", password=" + password + ", role=" + role.toString() + "]";
     }
 
     @Override
     public String toCSVRow() {
-        return nric+","+password+","+role;
+        String normalisedRole = CsvUtils.capitalizeFirstLetter(this.role.toString());
+        return nric+","+password+","+normalisedRole;
     }
 
     public User fromCSVRow(String row) {
         String[] values = row.split(",");
-        return new User(values[0], values[1], values[2]);
+        Role role = Role.valueOf(values[2].toUpperCase());
+        return new User(values[0], values[1], role);
     }
 
     @Override

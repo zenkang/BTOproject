@@ -13,13 +13,13 @@ import Utils.SafeScanner;
 
 public class Main {
     public static void main(String[] args) {
+        UserController.displayUsers();
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter NRIC: ");
         String nric = sc.nextLine();
         System.out.println("Enter Password: ");
         String password = sc.nextLine();
         User user = UserController.login(nric, password);
-        System.out.println(user);
         if(user == null)
             return;
         else{

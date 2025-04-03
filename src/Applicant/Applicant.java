@@ -1,6 +1,7 @@
 package Applicant;
 
 import Abstract.IEntity;
+import Enumerations.Role;
 import User.User;
 import Enumerations.MaritalStatus;
 import Utils.CsvUtils;
@@ -13,7 +14,7 @@ public class Applicant implements IEntity {
 
     public Applicant(String name, String nric, int age, MaritalStatus maritalStatus, String password) {
         this.name = name;
-        this.userProfile = new User(nric, password, "Applicant");
+        this.userProfile = new User(nric, password, Role.APPLICANT);
         this.age = age;
         this.maritalStatus = maritalStatus;
     }

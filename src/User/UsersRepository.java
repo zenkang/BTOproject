@@ -1,5 +1,6 @@
 package User;
 import Abstract.Repository;
+import Enumerations.Role;
 
 public class UsersRepository extends Repository<User> {
 
@@ -10,7 +11,8 @@ public class UsersRepository extends Repository<User> {
     @Override
     public User fromCSVRow(String row) {
         String[] values = row.split(",");
-        return new User(values[0], values[1], values[2]);
+        Role role = Role.valueOf(values[2].toUpperCase());
+        return new User(values[0], values[1], role);
     }
 
     @Override
