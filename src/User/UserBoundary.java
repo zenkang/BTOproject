@@ -15,6 +15,7 @@ public class UserBoundary {
                 // create the applicant and show the menu
                 Applicant app = UserController.createApplicant(user);
                 ApplicantBoundary view = new ApplicantBoundary(app);
+                assert app != null;
                 System.out.println("\nWelcome " + app.getName());
                 view.displayMenu();
             }
@@ -48,7 +49,7 @@ public class UserBoundary {
         return user;
     }
 
-    public static User changePassword(User user){
+    public static void changePassword(User user){
         Scanner sc = new Scanner(System.in);
         String NewPassword = SafeScanner.getStrongPassword(sc,"Enter new Password:\n");
         if(UserController.changePassword(user,NewPassword)){
@@ -57,7 +58,6 @@ public class UserBoundary {
         else{
             System.out.println("Password change failed!");
         }
-        return user;
     }
 
     public static void displayUsers(){

@@ -30,7 +30,7 @@ public class ApplicantBoundary {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
 
             switch (choice) {
-                case 1 -> updateApplicantProfile();
+                case 1 -> viewApplicantProfile();
                 case 2 -> System.out.println("TBC");
                 case 3 -> System.out.println("TBC");
                 case 4 -> System.out.println("TBC");
@@ -45,34 +45,46 @@ public class ApplicantBoundary {
         sc.close();
     }
 
+    public void viewApplicantProfile() {
+        Scanner sc = new Scanner(System.in);
+        String selection;
+        do {
+            System.out.println("\n=== Applicant Profile ===");
+            System.out.println("Name: " + applicant.getName());
+            System.out.println("NRIC: " + applicant.getNric());
+            System.out.println("Age: " + applicant.getAge());
+            System.out.println("MaritalStatus: " + applicant.getMaritalStatus().toString());
+            System.out.println("Password: " + applicant.getPassword());
+
+            List<String> validOptions = Arrays.asList("y", "n");
+            selection = SafeScanner.getValidatedStringInput(sc,"Would you like to update your profile?\nEnter: y/n\n",validOptions);
+            if (selection.equals("y")) {
+                updateApplicantProfile();
+            }
+        }while(!selection.equals("n"));
+
+    }
+
     public void updateApplicantProfile() {
         int choice;
         Scanner sc = new Scanner(System.in);
-        System.out.println(applicant.toString());
-        List<String> validOptions = Arrays.asList("y", "n");
-        String selection = SafeScanner.getValidatedStringInput(sc,"Would you like to update your profile?\nEnter: y/n\n",validOptions);
-        if (selection.equalsIgnoreCase("n")) {
-            return;
-        }
-        else{
-            do{
-                System.out.println("1. Update Name");
-                System.out.println("2. Update Age");
-                System.out.println("3. Update Marital Status");
-                System.out.println("0. Back");
+        do{
+            System.out.println("1. Update Name: " + applicant.getName());
+            System.out.println("2. Update Age: " + applicant.getAge());
+            System.out.println("3. Update Marital Status: " + applicant.getMaritalStatus().toString());
+            System.out.println("0. Back");
 
-                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
 
-                switch (choice) {
-                    case 1 -> updateName();
-                    case 2 -> updateAge();
-                    case 3 -> updateMaritalStatus();
-                    case 0 -> System.out.println("Exiting...");
-                    default -> System.out.println("Invalid choice. Please select a valid option.");
-                }
+            switch (choice) {
+                case 1 -> updateName();
+                case 2 -> updateAge();
+                case 3 -> updateMaritalStatus();
+                case 0 -> System.out.println("Exiting...");
+                default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-            while (choice != 0);
-        }
+        } while (choice != 0);
+
     }
 
     private void changePassword() {
