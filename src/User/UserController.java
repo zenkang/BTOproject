@@ -1,4 +1,5 @@
 package User;
+import Enumerations.MaritalStatus;
 import User.UsersRepository;
 import User.User;
 import Applicant.Applicant;

@@ -2,7 +2,9 @@ package Applicant;
 
 import Abstract.Repository;
 import Enumerations.MaritalStatus;
+import Enumerations.Role;
 import Utils.CsvUtils;
+import User.User;
 
 public class ApplicantRepository extends Repository<Applicant> {
     public ApplicantRepository(String filePath) {
@@ -12,14 +14,16 @@ public class ApplicantRepository extends Repository<Applicant> {
     @Override
     public Applicant fromCSVRow(String row) {
         String[] values = row.split(",");
-        Integer age = Integer.parseInt(values[2]);
+        int age = Integer.parseInt(values[2]);
         MaritalStatus status = MaritalStatus.valueOf(values[3].toUpperCase());
-        return new Applicant(values[0],values[1],age,status,values[4]);
+        // Create a User with an empty password; actual password is managed in User.csv
+        User user = new User(values[1], "", Role.APPLICANT);
+        return new Applicant(values[0], age, status, user);
     }
 
     @Override
     public String CSVHeader() {
-        return "Name,NRIC,Age,Marital Status,Password";
+        return "Name,NRIC,Age,Marital Status";
     }
 
     public boolean CreateApplicant(String name, String nric, int age, String Status, String password) {
