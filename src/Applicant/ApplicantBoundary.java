@@ -1,8 +1,12 @@
 package Applicant;
 
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+import Project.ProjectController;
+import Project.ProjectBoundary;
 import Utils.SafeScanner;
 import User.UserBoundary;
 
@@ -31,7 +35,7 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> System.out.println("TBC");
+                case 2 -> ProjectController.showProjects();
                 case 3 -> System.out.println("TBC");
                 case 4 -> System.out.println("TBC");
                 case 5 -> System.out.println("TBC");
@@ -125,4 +129,5 @@ public class ApplicantBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
+
 }
