@@ -25,6 +25,7 @@ public class Applicant implements IEntity {
         this.age = age;
         this.maritalStatus = maritalStatus;
     }
+    
 
 
 
