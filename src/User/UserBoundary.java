@@ -9,7 +9,11 @@ import Applicant.ApplicantBoundary;
 
 public class UserBoundary {
 
+    public static void route(User user) {
 
+        System.out.println("Loading " + user.getRole().toString() + " menu...");
+        UserController.route(user);
+    }
 
     public static User login(){
         User user = null;
