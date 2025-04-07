@@ -2,7 +2,7 @@ package User;
 import User.UsersRepository;
 import User.User;
 import Applicant.Applicant;
-
+import Applicant.ApplicantBoundary;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,29 @@ public class UserController {
     private static UsersRepository getUsersRepository() {
         return new UsersRepository("./src/data/User.csv");
     }
+    public static void route(User user) {
+        switch(user.getRole()){
+            case APPLICANT ->{
+                // create the applicant and show the menu
+                Applicant app = UserController.createApplicant(user);
+                ApplicantBoundary view = new ApplicantBoundary(app);
+                assert app != null;
+                System.out.println("\nWelcome " + app.getName());
+                view.displayMenu();
+            }
+            case OFFICER ->{
+                // create the officer and show the menu
+            }
+            case MANAGER ->{
+                // create the manager and show the menu
+            }
+            default -> {
+                // do shit
+                return;
+            }
 
+        }
+    }
     public static boolean changePassword(User user, String newPassword) {
         UsersRepository usersRepository = getUsersRepository();
         user.setPassword(newPassword);
