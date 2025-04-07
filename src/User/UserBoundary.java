@@ -5,13 +5,32 @@ import java.util.Scanner;
 
 import Applicant.Applicant;
 import Utils.SafeScanner;
-
+import Applicant.ApplicantBoundary;
 
 public class UserBoundary {
 
     public static void route(User user) {
-        System.out.println("Loading " + user.getRole().toString() + " menu...");
-        UserController.route(user);
+        switch(user.getRole()){
+            case APPLICANT ->{
+                // create the applicant and show the menu
+                Applicant app = UserController.createApplicant(user);
+                ApplicantBoundary view = new ApplicantBoundary(app);
+                assert app != null;
+                System.out.println("\nWelcome " + app.getName());
+                view.displayMenu();
+            }
+            case OFFICER ->{
+                // create the officer and show the menu
+            }
+            case MANAGER ->{
+                // create the manager and show the menu
+            }
+            default -> {
+                // do shit
+                return;
+            }
+
+        }
     }
 
     public static User login(){
