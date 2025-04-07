@@ -34,7 +34,7 @@ public class UserController {
     }
 
     public static Applicant createApplicant(User user){
-        // get the applicants details from repo
+        // get the applicants detaails from repo
         Applicant applicant = getApplicantRepository().getByID(user.getID());
         if (applicant != null){
             return applicant;
