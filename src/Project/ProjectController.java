@@ -18,6 +18,7 @@ public class ProjectController {
     public static void showProjects(){
         ProjectBoundary.displayProjects();
     }
+<<<<<<< HEAD
     public static Project getProjectByName(String projectName) {
     	ArrayList<Project> projects = getAllProjects();
     	for (Project p : projects) {
@@ -28,6 +29,8 @@ public class ProjectController {
         return null;
     }
 
+=======
+>>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
 }
 
 
