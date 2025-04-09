@@ -42,10 +42,7 @@ public class ApplicantBoundary {
                 }
                 case 4 ->{
                 }
-
-
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
-
                 case 6 -> System.out.println("TBC");
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");

@@ -38,6 +38,9 @@ public class Project implements IEntity {
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
     }
+
+    @Override
+    public String getID() {return projectID;}
     public String getProjectName() {
         return projectName;
     }
@@ -62,6 +65,11 @@ public class Project implements IEntity {
     public int getSellPriceType2() {
         return sellPriceType2;
     }
+    public String getAppDateOpen(){
+        return appDateOpen;
+    }
+    public String getAppDateClose(){
+        return appDateClose;}
     public String getManager() {
         return manager;
     }
@@ -106,15 +114,12 @@ public class Project implements IEntity {
                             officer);
     }
 
-    @Override
-    public String getID() {
-        return projectID;
-    }
+
 
     @Override
     public String toString() {
-        return "Project ID:" + projectID+'\''+
-                "Project Name: " + projectName + '\'' +
+        return " Project ID: '" + projectID+'\''+
+                ", Project Name: " + projectName + '\'' +
                 ", Neighbourhood: '" + neighbourhood + '\'' +
                 ", Type 1: " + type1 + '\'' +
                 ", Number Of Units of Type 1: " + noOfUnitsType1 +
@@ -129,10 +134,12 @@ public class Project implements IEntity {
                 ", Officer/s: " + String.join(",", officer)
                 ;
     }
+    public void setProjectID(String projectID){
+        this.projectID = projectID;
+    }
     public void setProjectName(String name){
         this.projectName = name;
     }
-
     public void setProjectNeighbourhood(String newProjectNeighbourhood) {
         this.neighbourhood = newProjectNeighbourhood;
     }
@@ -142,11 +149,17 @@ public class Project implements IEntity {
     public void setProjectNumOfType1(int numOfType1){
         this.noOfUnitsType1 = numOfType1;
     }
+    public void setSellPriceType1(int sellPriceType1){
+        this.sellPriceType1=sellPriceType1;
+    }
     public void setProjectRoomType2(String roomType2){
         this.type2= roomType2;
     }
     public void setProjectNumOfType2(int numOfType2){
-        this.noOfUnitsType2=numOfType2;
+        this.noOfUnitsType2 = numOfType2;
+    }
+    public void setSellPriceType2(int sellPriceType2){
+        this.sellPriceType2=sellPriceType2;
     }
     public void setProjectApplicationOpenData(String openDate){
         this.appDateOpen=openDate;
@@ -160,8 +173,6 @@ public class Project implements IEntity {
     public void setProjectNumOfOfficers(int numOfOfficers){
         this.noOfficersSlots = numOfOfficers;
     }
-    public void setProjectID(String projectID){
-        this.projectID = projectID;
-    }
+
 }
 

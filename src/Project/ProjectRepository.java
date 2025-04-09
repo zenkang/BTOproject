@@ -63,8 +63,8 @@ public class ProjectRepository extends Repository<Project>{
         return null;
     }
 
-    public boolean deleteApplicantByNRIC(String projectName) {
-        Project project = this.getByProjectName(projectName);
+    public boolean deleteProjectByID(String projectID) {
+        Project project = this.getByID(projectID);
         if(project == null) {
             return false;
         }
