@@ -236,7 +236,12 @@ public class ProjectController {
         ProjectRepository projectRepository = getprojectRepository();
         return projectRepository.deleteProjectByID(projectID);
     }
+    public static boolean createProject(Project newProject){
+        ProjectRepository repository = getprojectRepository();
+        return repository.create(newProject);
     }
+    }
+
 
 
 

@@ -7,8 +7,10 @@ import Project.Project;
 
 import java.util.ArrayList;
 
+import static Applicant.ApplicantController.getApplicantRepository;
+
 public class ProjectRepository extends Repository<Project>{
-        public ProjectRepository(String filePath) {
+    public ProjectRepository(String filePath) {
             super(filePath);
         }
 
@@ -62,7 +64,6 @@ public class ProjectRepository extends Repository<Project>{
         }
         return null;
     }
-
     public boolean deleteProjectByID(String projectID) {
         Project project = this.getByID(projectID);
         if(project == null) {

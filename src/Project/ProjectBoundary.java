@@ -46,6 +46,53 @@ public class ProjectBoundary {
 
     public void createNewProject() {
         System.out.println("\n=== Project Creator ===");
+        System.out.println("Enter Project ID: ");
+        String projectID = sc.nextLine();
+
+        System.out.print("Enter Project Name: ");
+        String projectName = sc.nextLine().trim();
+
+        System.out.print("Enter Neighbourhood: ");
+        String neighbourhood = sc.nextLine().trim();
+
+        System.out.print("Enter Room Type 1: ");
+        String roomType1 = sc.nextLine().trim();
+
+        int noOfUnitsType1 = SafeScanner.getValidatedIntInput(sc, "Enter Number Of Units for Room Type 1: ", 0, 1000);
+        int sellPriceType1 = SafeScanner.getValidatedIntInput(sc, "Enter Selling Price for Room Type 1: ", 0, 10000000);
+
+        System.out.print("Enter Room Type 2: ");
+        String roomType2 = sc.nextLine().trim();
+
+        int noOfUnitsType2 = SafeScanner.getValidatedIntInput(sc, "Enter Number Of Units for Room Type 2: ", 0, 1000);
+        int sellPriceType2 = SafeScanner.getValidatedIntInput(sc, "Enter Selling Price for Room Type 2: ", 0, 10000000);
+
+        System.out.print("Enter Application Opening Date (DD/MM/YY): ");
+        String appDateOpen = sc.nextLine().trim();
+
+        System.out.print("Enter Application Closing Date (DD/MM/YY): ");
+        String appDateClose = sc.nextLine().trim();
+
+        System.out.print("Enter Manager in Charge: ");
+        String manager = sc.nextLine().trim();
+
+        int noOfficersSlots = SafeScanner.getValidatedIntInput(sc, "Enter Number of Officer Slots: ", 0, 100);
+
+        System.out.print("Enter Officers (comma-separated): ");
+        String officersInput = sc.nextLine().trim();
+        String[] officers = officersInput.split(",");
+
+        // Create a new project instance
+        Project newProject = new Project(projectID,projectName, neighbourhood, roomType1, noOfUnitsType1,
+                sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
+                appDateOpen, appDateClose, manager, noOfficersSlots, officers);
+
+        // Delegate the creation process to the ProjectController
+        if (ProjectController.createProject(newProject)) {
+            System.out.println("Project created successfully.");
+        } else {
+            System.out.println("Failed to create project. It might already exist.");
+            }
     }
 
     public void projectChangesMenu() {
@@ -80,7 +127,6 @@ public class ProjectBoundary {
             }
         }
         while (choice != 0);
-        sc.close();
     }
 
     public void deleteProject() {
