@@ -5,12 +5,11 @@ import java.util.Scanner;
 
 import Applicant.Applicant;
 import Utils.SafeScanner;
-import Applicant.ApplicantBoundary;
+
 
 public class UserBoundary {
 
     public static void route(User user) {
-
         System.out.println("Loading " + user.getRole().toString() + " menu...");
         UserController.route(user);
     }

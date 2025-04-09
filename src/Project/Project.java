@@ -4,6 +4,7 @@ import Abstract.IEntity;
 import Utils.CsvUtils;
 
 public class Project implements IEntity {
+    private String projectID;
     private String projectName;
     private String neighbourhood;
     private String type1;
@@ -18,11 +19,11 @@ public class Project implements IEntity {
     private int noOfficersSlots;
     private String[] officer;
 
-    public Project(String projectName, String neighbourhood, String type1, int noOfUnitsType1,
+    public Project(String ID,String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    int sellPriceType1, String type2, int noOfUnitsType2, int getSellPriceType2,
                     String appDateOpen, String appDateClose, String manager,int noOfficersSlots,
                    String[] officer) {
-
+        this.projectID = ID;
         this.projectName = projectName;
         this.neighbourhood = neighbourhood;
         this.type1 = type1;
@@ -37,7 +38,6 @@ public class Project implements IEntity {
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
     }
-
     public String getProjectName() {
         return projectName;
     }
@@ -75,6 +75,7 @@ public class Project implements IEntity {
     @Override
     public String toCSVRow() {
         return String.join(",",
+                projectID,
                 projectName,
                 neighbourhood,
                 type1,
@@ -93,13 +94,13 @@ public class Project implements IEntity {
 
     public Project fromCSVRow(String row) {
         String[] values = row.split(",");
-        int noOfUnitsType1 = Integer.parseInt(values[3]);
-        int sellPriceType1 = Integer.parseInt(values[4]);
-        int noOfUnitsType2 = Integer.parseInt(values[6]);
-        int sellPriceType2 = Integer.parseInt(values[7]);
-        int noOfficersSlots = Integer.parseInt(values[10]);
-        String[] officer = values[12].split(",");
-        return new Project(values[0], values[1],values[2],noOfUnitsType1,
+        int noOfUnitsType1 = Integer.parseInt(values[4]);
+        int sellPriceType1 = Integer.parseInt(values[5]);
+        int noOfUnitsType2 = Integer.parseInt(values[7]);
+        int sellPriceType2 = Integer.parseInt(values[8]);
+        int noOfficersSlots = Integer.parseInt(values[11]);
+        String[] officer = values[13].split(",");
+        return new Project(values[0],values[1], values[1],values[2],noOfUnitsType1,
                             sellPriceType1,values[5],noOfUnitsType2,sellPriceType2,
                             values[8],values[9],values[10],noOfficersSlots,
                             officer);
@@ -107,12 +108,13 @@ public class Project implements IEntity {
 
     @Override
     public String getID() {
-        return projectName;
+        return projectID;
     }
 
     @Override
     public String toString() {
-        return "Project Name: " + projectName + '\'' +
+        return "Project ID:" + projectID+'\''+
+                "Project Name: " + projectName + '\'' +
                 ", Neighbourhood: '" + neighbourhood + '\'' +
                 ", Type 1: " + type1 + '\'' +
                 ", Number Of Units of Type 1: " + noOfUnitsType1 +
@@ -127,4 +129,39 @@ public class Project implements IEntity {
                 ", Officer/s: " + String.join(",", officer)
                 ;
     }
+    public void setProjectName(String name){
+        this.projectName = name;
+    }
+
+    public void setProjectNeighbourhood(String newProjectNeighbourhood) {
+        this.neighbourhood = newProjectNeighbourhood;
+    }
+    public void setProjectRoomType1(String roomType1){
+        this.type1 = roomType1;
+    }
+    public void setProjectNumOfType1(int numOfType1){
+        this.noOfUnitsType1 = numOfType1;
+    }
+    public void setProjectRoomType2(String roomType2){
+        this.type2= roomType2;
+    }
+    public void setProjectNumOfType2(int numOfType2){
+        this.noOfUnitsType2=numOfType2;
+    }
+    public void setProjectApplicationOpenData(String openDate){
+        this.appDateOpen=openDate;
+    }
+    public void setProjectApplicationCloseDate(String closeDate){
+        this.appDateClose = closeDate;
+    }
+    public void setProjectManager(String manager){
+        this.manager = manager;
+    }
+    public void setProjectNumOfOfficers(int numOfOfficers){
+        this.noOfficersSlots = numOfOfficers;
+    }
+    public void setProjectID(String projectID){
+        this.projectID = projectID;
+    }
 }
+

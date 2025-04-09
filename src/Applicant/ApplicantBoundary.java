@@ -9,10 +9,8 @@ import Project.ProjectController;
 import Project.ProjectBoundary;
 import Utils.SafeScanner;
 import User.UserBoundary;
-<<<<<<< HEAD
 import Enquiry.EnquiryBoundary;
-=======
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
+
 
 public class ApplicantBoundary {
     private Applicant applicant;
@@ -30,11 +28,7 @@ public class ApplicantBoundary {
             System.out.println("2. View Projects");
             System.out.println("3. Apply Projects");
             System.out.println("4. ");
-<<<<<<< HEAD
             System.out.println("5. Enquiry");
-=======
-            System.out.println("5. ");
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
             System.out.println("6. ");
             System.out.println("7. Change Password");
             System.out.println("0. Exit");
@@ -43,14 +37,15 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectController.showProjects();
-                case 3 -> System.out.println("TBC");
-                case 4 -> System.out.println("TBC");
-<<<<<<< HEAD
+                case 2 -> ProjectController.showProjectMenu();
+                case 3 -> {
+                }
+                case 4 ->{
+                }
+
+
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
-=======
-                case 5 -> System.out.println("TBC");
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
+
                 case 6 -> System.out.println("TBC");
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");

@@ -4,12 +4,9 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-<<<<<<< HEAD
 import Project.Project;
 import Project.ProjectController;
 
-=======
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
 
 /**
  * Utility class for safe and validated input handling from the console.
@@ -226,7 +223,7 @@ public class SafeScanner {
         return password.toString().trim();
     }
 
-<<<<<<< HEAD
+
     public static String getValidProjectName(Scanner scanner) {
         String projectName;
         Project project;
@@ -243,8 +240,4 @@ public class SafeScanner {
             }
         }
     }
-    
-=======
-
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
 }

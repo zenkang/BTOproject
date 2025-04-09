@@ -1,10 +1,10 @@
-<<<<<<< HEAD
-﻿Name,NRIC,Age,Marital Status,Password
+
+Name,NRIC,Age,Marital Status,Password
 Daniel,T2109876H,36,Single,password
 Emily,S6543210I,28,Single,password
-=======
-﻿Name,NRIC,Age,Marital Status,Password
+
+Name,NRIC,Age,Marital Status,Password
 Daniel,T2109876H,36,Single,password
 Emily,S6543210I,28,Single,password
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
+
 David,T1234567J,29,Married,password
