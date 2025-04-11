@@ -2,11 +2,10 @@
 import User.User;
 
 import User.UserBoundary;
-
+import Login.LoginBoundary;
 public class Main {
     public static void main(String[] args) {
-        UserBoundary.getAllUsers();
-        User user = UserBoundary.login();
+        User user = LoginBoundary.login();
         if (user == null) {
             return;
         }

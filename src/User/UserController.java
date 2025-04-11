@@ -43,18 +43,8 @@ public class UserController {
         return usersRepository.update(user);
     }
 
-    public static User login(String nric, String password) {
-        UsersRepository usersRepository = getUsersRepository();
-        User user = usersRepository.getByID(nric);
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
-        }
-        return null;
-    }
 
-    public static ArrayList<User> getAllUsers() {
-        return getUsersRepository().getAllUsers();
-    }
+
 
     public static Applicant createApplicant(User user){
         // get the applicants detaails from repo
