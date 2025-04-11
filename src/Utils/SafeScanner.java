@@ -3,9 +3,9 @@ package Utils;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+
 import Project.Project;
 import Project.ProjectController;
-
 
 
 /**
@@ -240,6 +240,4 @@ public class SafeScanner {
             }
         }
     }
-    
-
 }
