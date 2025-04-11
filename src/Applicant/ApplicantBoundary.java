@@ -37,7 +37,7 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectController.showProjectMenu();
+                case 2 -> ProjectController.displayAllProjects();
                 case 3 -> {
                 }
                 case 4 ->{
