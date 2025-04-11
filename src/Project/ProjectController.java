@@ -9,12 +9,12 @@ public class ProjectController {
         projectBoundary.displayProjectMenu();
     }
 
-    private static ProjectRepository getprojectRepository() {
+    private static ProjectRepository retrieveProjectRepository() {
         return new ProjectRepository("./src/data/ProjectList.csv");
     }
 
     public static ArrayList<Project> getAllProjects() {
-        return getprojectRepository().getAllProjects();
+        return retrieveProjectRepository().getAllProjects();
     }
     public static void displayAllProjects(){
         ProjectBoundary projectBoundary = new ProjectBoundary();
@@ -22,15 +22,15 @@ public class ProjectController {
     }
 
     public static Project getProjectByName(String projectName) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         return projectRepository.getByProjectName(projectName);
     }
     public static Project getProjectByID(String projectID) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         return projectRepository.getByProjectID(projectID);
     }
     public static void updateProjectName(String projectID, String newProjectName) {
-            ProjectRepository projectRepository = getprojectRepository();
+            ProjectRepository projectRepository = retrieveProjectRepository();
             Project project = projectRepository.getByID(projectID);
 
             if (project == null) {
@@ -49,7 +49,7 @@ public class ProjectController {
 
             }
     public static void updateProjectNeighbourhood(String projectID, String newProjectNeighbourhood) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByID(projectID);
 
         if (project == null) {
@@ -66,7 +66,7 @@ public class ProjectController {
 
     }
     public static void updateProjectRoomType1(String projectID, String newRoomType1) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -83,7 +83,7 @@ public class ProjectController {
 
     }
     public static void updateProjectRoomType2(String projectID, String newRoomType2) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -100,7 +100,7 @@ public class ProjectController {
 
     }
     public static void updateProjectNumOfRoomType1(String projectID, int newNumOfRoomType1) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -117,7 +117,7 @@ public class ProjectController {
 
     }
     public static void updateProjectNumOfRoomType2(String projectID, int newNumOfRoomType2) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -134,7 +134,7 @@ public class ProjectController {
 
     }
     public static void updateSellPriceOfRoomType1(String projectID, int newSellPrice){
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -151,7 +151,7 @@ public class ProjectController {
 
     }
     public static void updateSellPriceOfRoomType2(String projectID, int newSellPrice){
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -168,7 +168,7 @@ public class ProjectController {
 
     }
     public static void updateProjectApplicationOpenDate(String projectID, String newAppOpenDate) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -185,7 +185,7 @@ public class ProjectController {
 
     }
     public static void updateProjectApplicationCloseDate(String projectID, String newAppCloseDate) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -202,7 +202,7 @@ public class ProjectController {
 
     }
     public static void updateProjectManager(String projectID, String newProjectManager) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -219,7 +219,7 @@ public class ProjectController {
 
     }
     public static void updateProjectNumOfOfficerSlots(String projectID, int newProjectNumOfOfficerSlots) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -236,11 +236,11 @@ public class ProjectController {
 
     }
     public static boolean deleteProject(String projectID) {
-        ProjectRepository projectRepository = getprojectRepository();
+        ProjectRepository projectRepository = retrieveProjectRepository();
         return projectRepository.deleteProjectByID(projectID);
     }
     public static boolean createProject(Project newProject){
-        ProjectRepository repository = getprojectRepository();
+        ProjectRepository repository = retrieveProjectRepository();
         return repository.create(newProject);
     }
     }
