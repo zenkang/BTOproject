@@ -9,7 +9,6 @@ import Project.ProjectController;
 import Project.ProjectBoundary;
 import Utils.SafeScanner;
 import User.UserBoundary;
-
 import Enquiry.EnquiryBoundary;
 
 
@@ -30,7 +29,6 @@ public class ApplicantBoundary {
             System.out.println("3. Apply Projects");
             System.out.println("4. ");
             System.out.println("5. Enquiry");
-            System.out.println("5. ");
             System.out.println("6. ");
             System.out.println("7. Change Password");
             System.out.println("0. Exit");
@@ -39,9 +37,8 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectController.showProjects();
-                case 3 -> System.out.println("TBC");
-                case 4 -> System.out.println("TBC");
+                case 2 -> ProjectController.displayAllProjects();
+                case 3, 4 -> System.out.println("TBC");
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
                 case 6 -> System.out.println("TBC");
                 case 7 -> changePassword();

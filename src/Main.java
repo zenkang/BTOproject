@@ -1,21 +1,11 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
-import Applicant.Applicant;
-import Applicant.ApplicantRepository;
-import Project.ProjectBoundary;
 import User.User;
-import java.util.ArrayList;
-import User.UsersRepository;
-import java.util.Scanner;
-import User.UserController;
-import Utils.SafeScanner;
+
 import User.UserBoundary;
 
 public class Main {
     public static void main(String[] args) {
-        UserBoundary.displayUsers();
+        UserBoundary.getAllUsers();
         User user = UserBoundary.login();
         if (user == null) {
             return;

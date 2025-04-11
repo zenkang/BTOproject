@@ -3,7 +3,6 @@ package User;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import Applicant.Applicant;
 import Utils.SafeScanner;
 
 
@@ -41,8 +40,9 @@ public class UserBoundary {
         }
     }
 
-    public static void displayUsers(){
+    public static void getAllUsers(){
         ArrayList<User> users = UserController.getAllUsers();
+        //Logging purposes
         for (User user : users) {
             System.out.println(user);
         }

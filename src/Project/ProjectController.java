@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 public class ProjectController {
-    public static void showProjectMenu() {
+    public static void showProjectModificationsMenu() {
         ProjectBoundary projectBoundary = new ProjectBoundary();
         projectBoundary.displayProjectMenu();
     }
@@ -16,7 +16,10 @@ public class ProjectController {
     public static ArrayList<Project> getAllProjects() {
         return getprojectRepository().getAllProjects();
     }
-
+    public static void displayAllProjects(){
+        ProjectBoundary projectBoundary = new ProjectBoundary();
+        projectBoundary.displayProjects();
+    }
 
     public static Project getProjectByName(String projectName) {
         ProjectRepository projectRepository = getprojectRepository();
