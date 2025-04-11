@@ -26,6 +26,8 @@ public class ApplicantRepository extends Repository<Applicant> {
         return "Name,NRIC,Age,Marital Status";
     }
 
+
+    //What is this for? --Jarrel
     public boolean CreateApplicant(String name, String nric, int age, String Status, String password) {
         if(!CsvUtils.isValidMaritalStatus(Status)) {
             System.out.println("Invalid Marital Status");
@@ -36,6 +38,7 @@ public class ApplicantRepository extends Repository<Applicant> {
         return this.create(app);
     }
 
+    //What is this for? --Jarrel
     public boolean deleteApplicantByNRIC(String nric) {
         Applicant app = this.getByID(nric);
         if(app == null) {

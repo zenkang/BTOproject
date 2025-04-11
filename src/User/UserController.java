@@ -1,11 +1,12 @@
 package User;
-import User.UsersRepository;
-import User.User;
+import Manager.Manager;
+import Manager.ManagerBoundary;
+
 import Applicant.Applicant;
 import Applicant.ApplicantBoundary;
 
-import java.util.ArrayList;
 
+import static Manager.ManagerController.getManagerRepository;
 import static Applicant.ApplicantController.getApplicantRepository;
 
 public class UserController {
@@ -29,6 +30,11 @@ public class UserController {
             }
             case MANAGER ->{
                 // create the manager and show the menu
+                Manager manager = UserController.createManager(user);
+                ManagerBoundary view = new ManagerBoundary(manager);
+                assert manager != null;
+                System.out.println("\nWelcome " + manager.getName());
+                view.displayMenu();
             }
             default -> {
                 // do shit
@@ -51,6 +57,13 @@ public class UserController {
         Applicant applicant = getApplicantRepository().getByID(user.getID());
         if (applicant != null){
             return applicant;
+        }
+        return null;
+    }
+    public static Manager createManager(User user){
+        Manager manager = getManagerRepository().getByID(user.getID());
+        if (manager != null){
+            return manager;
         }
         return null;
     }
