@@ -38,8 +38,7 @@ public class ApplicantBoundary {
             switch (choice) {
                 case 1 -> viewApplicantProfile();
                 case 2 -> ProjectController.displayAllProjects();
-                case 3 -> {
-                }
+                case 3 ->{}
                 case 4 ->{
                 }
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());

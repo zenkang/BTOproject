@@ -47,40 +47,50 @@ public class ProjectBoundary {
     public void createNewProject() {
         System.out.println("\n=== Project Creator ===");
         System.out.println("Enter Project ID: ");
-        String projectID = sc.nextLine();
+        String projectID = sc.nextLine().trim();
+        if(projectID.isEmpty()){
+            System.out.println("Empty ProjectID. Please enter a valid input.");
+        }
 
         System.out.print("Enter Project Name: ");
         String projectName = sc.nextLine().trim();
+        if(projectName.isEmpty()){
+            System.out.println("Empty Project Name. Please enter a valid input.");
+        }
 
         System.out.print("Enter Neighbourhood: ");
         String neighbourhood = sc.nextLine().trim();
+        if(neighbourhood.isEmpty()){
+            System.out.println("Empty Neighbourhood. Please enter a valid input.");
+        }
 
         System.out.print("Enter Room Type 1: ");
         String roomType1 = sc.nextLine().trim();
+        if(roomType1.isEmpty()){
+            System.out.println("Empty Room Type 1. Please enter a valid input.");
+        }
 
         int noOfUnitsType1 = SafeScanner.getValidatedIntInput(sc, "Enter Number Of Units for Room Type 1: ", 0, 1000);
         int sellPriceType1 = SafeScanner.getValidatedIntInput(sc, "Enter Selling Price for Room Type 1: ", 0, 10000000);
 
         System.out.print("Enter Room Type 2: ");
         String roomType2 = sc.nextLine().trim();
+        if(roomType2.isEmpty()){
+            System.out.println("Empty Room Type 2. Please enter a valid input.");
+        }
 
         int noOfUnitsType2 = SafeScanner.getValidatedIntInput(sc, "Enter Number Of Units for Room Type 2: ", 0, 1000);
         int sellPriceType2 = SafeScanner.getValidatedIntInput(sc, "Enter Selling Price for Room Type 2: ", 0, 10000000);
-
-        System.out.print("Enter Application Opening Date (DD/MM/YY): ");
-        String appDateOpen = sc.nextLine().trim();
-
-        System.out.print("Enter Application Closing Date (DD/MM/YY): ");
-        String appDateClose = sc.nextLine().trim();
+        String appDateOpen = SafeScanner.getValidatedDateInput(sc,"Enter Application Opening Date (DD/MM/YY): ");
+        String appDateClose = SafeScanner.getValidatedDateInput(sc,"Enter Application Closing Date (DD/MM/YY): ");
 
         System.out.print("Enter Manager in Charge: ");
         String manager = sc.nextLine().trim();
 
-        int noOfficersSlots = SafeScanner.getValidatedIntInput(sc, "Enter Number of Officer Slots: ", 0, 100);
+        int noOfficersSlots = SafeScanner.getValidatedIntInput(sc, "Enter Number of Officer Slots: ", 0, 10);
 
-        System.out.print("Enter Officers (comma-separated): ");
-        String officersInput = sc.nextLine().trim();
-        String[] officers = officersInput.split(",");
+        System.out.print("Enter officer names (comma-separated)");
+        String[] officers = SafeScanner.getValidatedOfficerNames(sc, noOfficersSlots);
 
         // Create a new project instance
         Project newProject = new Project(projectID,projectName, neighbourhood, roomType1, noOfUnitsType1,

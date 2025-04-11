@@ -101,16 +101,16 @@ public class Project implements IEntity {
     }
 
     public Project fromCSVRow(String row) {
-        String[] values = row.split(",");
+        String[] values = row.split(",",14);
         int noOfUnitsType1 = Integer.parseInt(values[4]);
         int sellPriceType1 = Integer.parseInt(values[5]);
         int noOfUnitsType2 = Integer.parseInt(values[7]);
         int sellPriceType2 = Integer.parseInt(values[8]);
         int noOfficersSlots = Integer.parseInt(values[11]);
         String[] officer = values[13].split(",");
-        return new Project(values[0],values[1], values[1],values[2],noOfUnitsType1,
-                            sellPriceType1,values[5],noOfUnitsType2,sellPriceType2,
-                            values[8],values[9],values[10],noOfficersSlots,
+        return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
+                            sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
+                            values[9],values[10],values[11],noOfficersSlots,
                             officer);
     }
 
