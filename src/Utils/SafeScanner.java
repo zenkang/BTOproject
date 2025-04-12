@@ -100,7 +100,7 @@ public class SafeScanner {
 
         while (!valid) {
             System.out.print(prompt);
-            input = scanner.nextLine().trim(); // Get the line and trim spaces
+            input = scanner.nextLine().trim().toLowerCase(); // Get the line and trim spaces
 
             if (input.isEmpty()) {
                 System.out.println("Invalid input. Please enter a non-empty string.");
@@ -252,7 +252,6 @@ public class SafeScanner {
             }
 
             String[] names = input.split(",");
-            // Trim spaces around each name
             for (int i = 0; i < names.length; i++) {
                 names[i] = names[i].trim();
             }
@@ -304,4 +303,19 @@ public class SafeScanner {
         }
         return input;
     }
+    public static String getValidProjectID(Scanner sc) {
+        String projectID;
+        Project project;
+
+        do {
+            projectID = sc.nextLine().trim();
+            project = ProjectController.getProjectByID(projectID);
+            if (project == null) {
+                System.out.println("No Project found with ID: " + projectID + ". Please Enter a valid Project ID again.");
+            }
+        } while (project == null);
+
+        return projectID;
+    }
+
 }

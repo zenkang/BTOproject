@@ -4,7 +4,11 @@ import Applicant.Applicant;
 import Enumerations.ApplicationStatus;
 import Enumerations.ProjectApplicationStatus;
 
+import Utils.SafeScanner;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class ProjectApplicationBoundary {
@@ -35,10 +39,11 @@ public class ProjectApplicationBoundary {
         } else {
             System.out.println("\n=== Project Application ===");
             String appID = ProjectApplicationController.generateNewAppID();
+            System.out.println("Your Application ID is: "+appID);
             System.out.print("Enter Project ID you want to apply for: ");
-            String projectID = sc.nextLine().trim();
-            System.out.print("Enter desired flat type (2-Room or 3-Room): ");
-            String roomType = sc.nextLine().trim();
+            String projectID = SafeScanner.getValidProjectID(sc);
+            List<String> validRoomTypes = Arrays.asList("2-room", "3-room");
+            String roomType = SafeScanner.getValidatedStringInput(sc, "Enter a room type (2-Room or 3-Room): ", validRoomTypes);
 
             ProjectApplication application = new ProjectApplication(
                     appID,

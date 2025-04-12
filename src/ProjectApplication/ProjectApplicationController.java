@@ -3,9 +3,8 @@ package ProjectApplication;
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
 import Enumerations.ProjectApplicationStatus;
-import Enumerations.ApplicationStatus;
-
 import java.util.ArrayList;
+
 
 public class ProjectApplicationController {
     private static ProjectApplicationRepository retrieveProjectApplicationsRepository() {
@@ -93,4 +92,5 @@ public class ProjectApplicationController {
         }
         return true;
     }
+
 }
