@@ -1,35 +1,30 @@
-package Applicant;
+package Manager;
 
+import Applicant.ApplicantController;
+import Enquiry.EnquiryBoundary;
+import Project.ProjectBoundary;
+import Project.ProjectController;
+import User.UserBoundary;
+import Utils.SafeScanner;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import Project.ProjectController;
-import ProjectApplication.ProjectApplication;
-import ProjectApplication.ProjectApplicationController;
-import Utils.SafeScanner;
-import User.UserBoundary;
-import Enquiry.EnquiryBoundary;
-import Enumerations.ProjectApplicationStatus;
-
-
-public class ApplicantBoundary {
-    private Applicant applicant;
-
-    public ApplicantBoundary(Applicant applicant) {
-        this.applicant = applicant;
+public class ManagerBoundary  {
+    private Manager manager;
+    public ManagerBoundary(Manager manager) {
+        this.manager = manager;
     }
-
     public void displayMenu() {
         int choice;
         Scanner sc = new Scanner(System.in);
         do {
-            System.out.println("\n=== Applicant Menu ===");
+            System.out.println("\n=== Manager Menu ===");
             System.out.println("1. View/update my profile");
-            System.out.println("2. View Projects");
+            System.out.println("2. View Projects Menu");
             System.out.println("3. Apply Projects");
-            System.out.println("4. View Project Application");
+            System.out.println("4. Display Projects Created By Me");
             System.out.println("5. Enquiry");
             System.out.println("6. ");
             System.out.println("7. Change Password");
@@ -39,10 +34,9 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectController.displayProjectForApplicant(applicant);
-                case 3 -> ProjectApplicationController.displayProjectApplicationMenu(applicant);
-                case 4 -> ProjectApplicationController.displayUserProjectApplication(applicant.getNric());
-                case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
+                case 2 -> ProjectBoundary.displayProjectMenu();
+                case 3, 4 -> ProjectController.displayProjectsCreatedByManager(manager.getName());
+                case 5 -> System.out.println("TBC");
                 case 6 -> System.out.println("TBC");
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
@@ -52,18 +46,16 @@ public class ApplicantBoundary {
         while (choice != 0) ;
         sc.close();
     }
-
-
     public void viewApplicantProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
         do {
             System.out.println("\n=== Applicant Profile ===");
-            System.out.println("Name: " + applicant.getName());
-            System.out.println("NRIC: " + applicant.getNric());
-            System.out.println("Age: " + applicant.getAge());
-            System.out.println("MaritalStatus: " + applicant.getMaritalStatus().toString());
-            System.out.println("Password: " + applicant.getPassword());
+            System.out.println("Name: " + manager.getName());
+            System.out.println("NRIC: " + manager.getNric());
+            System.out.println("Age: " + manager.getAge());
+            System.out.println("MaritalStatus: " + manager.getMaritalStatus().toString());
+            System.out.println("Password: " + manager.getPassword());
 
             List<String> validOptions = Arrays.asList("y", "n");
             selection = SafeScanner.getValidatedStringInput(sc,"Would you like to update your profile?\nEnter: y/n\n",validOptions);
@@ -78,9 +70,9 @@ public class ApplicantBoundary {
         int choice;
         Scanner sc = new Scanner(System.in);
         do{
-            System.out.println("1. Update Name: " + applicant.getName());
-            System.out.println("2. Update Age: " + applicant.getAge());
-            System.out.println("3. Update Marital Status: " + applicant.getMaritalStatus().toString());
+            System.out.println("1. Update Name: " + manager.getName());
+            System.out.println("2. Update Age: " + manager.getAge());
+            System.out.println("3. Update Marital Status: " + manager.getMaritalStatus().toString());
             System.out.println("0. Back");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
@@ -97,14 +89,14 @@ public class ApplicantBoundary {
     }
 
     private void changePassword() {
-        UserBoundary.changePassword(applicant.getUserProfile());
+        UserBoundary.changePassword(manager.getUserProfile());
     }
 
     private void updateAge(){
         Scanner sc = new Scanner(System.in);
         int age;
         age = SafeScanner.getValidatedIntInput(sc, "Enter your new age: ", 0, 200);
-        if(ApplicantController.updateAge(applicant, age)){
+        if(ManagerController.updateAge(manager, age)){
             System.out.println("Your age has been updated!\n");
         }
         else{
@@ -115,7 +107,7 @@ public class ApplicantBoundary {
     private void updateName(){
         Scanner sc = new Scanner(System.in);
         String newName = SafeScanner.getValidatedStringInput(sc,"Enter your new Name: ",50);
-        if(ApplicantController.updateName(applicant, newName)){
+        if(ManagerController.updateName(manager, newName)){
             System.out.println("Your name has been updated!\n");
         }
         else{
@@ -127,7 +119,7 @@ public class ApplicantBoundary {
         Scanner sc = new Scanner(System.in);
         List<String> validOptions = Arrays.asList("m", "s");
         String maritalStatus = SafeScanner.getValidatedStringInput(sc,"Enter your marital status: ( m: Married , s: Single)\n", validOptions);
-        if(ApplicantController.updateMaritalStatus(applicant, maritalStatus)){
+        if(ManagerController.updateMaritalStatus(manager, maritalStatus)){
             System.out.println("Your marital status has been updated!\n");
         }
         else{

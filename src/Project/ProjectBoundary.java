@@ -1,15 +1,17 @@
 package Project;
 
+import Applicant.Applicant;
 import Utils.SafeScanner;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class ProjectBoundary {
-    Scanner sc = new Scanner(System.in);
+    static Scanner sc = new Scanner(System.in);
 
-    public void displayProjectMenu() {
+    public static void displayProjectMenu() {
         int choice;
         do {
             System.out.println("\n=== Project Menu ===");
@@ -33,7 +35,7 @@ public class ProjectBoundary {
         while (choice != 0);
     }
 
-    public void displayProjects() {
+    public static void displayProjects() {
         ArrayList<Project> projects = ProjectController.getAllProjects();
         if (projects.isEmpty()) {
             System.out.println("No Projects Available.");
@@ -44,7 +46,26 @@ public class ProjectBoundary {
         }
     }
 
-    public void createNewProject() {
+    public void displayProjectsForApplicant(Applicant applicant) {
+        List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
+        if(filteredProjects.isEmpty()){
+            System.out.println("No projects are open to your user group.");
+        } else {
+            filteredProjects.forEach(System.out::println);
+        }
+    }
+
+    public static void displayProjectsCreatedByManager(String managerName) {
+        List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerName);
+        if (managerProjects.isEmpty()) {
+            System.out.println("You have not created any projects.");
+        } else {
+            System.out.println("Projects created by you:");
+            managerProjects.forEach(System.out::println);
+        }
+    }
+
+    public static void createNewProject() {
         System.out.println("\n=== Project Creator ===");
         System.out.println("Enter Project ID: ");
         String projectID = sc.nextLine().trim();
@@ -106,7 +127,7 @@ public class ProjectBoundary {
             }
     }
 
-    public void projectChangesMenu() {
+    public static void projectChangesMenu() {
         int choice;
         do {
             System.out.println("\n=== Project Menu ===");
@@ -140,7 +161,7 @@ public class ProjectBoundary {
         while (choice != 0);
     }
 
-    public void deleteProject() {
+    public static void deleteProject() {
         System.out.println("\n=== Deleting Project ===");
         System.out.print("Please enter the Project ID to delete: ");
         String projectID = sc.nextLine();
@@ -152,7 +173,7 @@ public class ProjectBoundary {
         }
     }
 
-    public void updateProjectName() {
+    public static void updateProjectName() {
         String projectID;
         String newProjectName;
         System.out.println("Please enter the Project ID:");
@@ -162,7 +183,7 @@ public class ProjectBoundary {
         ProjectController.updateProjectName(projectID, newProjectName);
     }
 
-    public void updateProjectNeighbourhood() {
+    public static void updateProjectNeighbourhood() {
         String projectID;
         String newNeighbourhood;
         System.out.println("Please enter the Project ID:");
@@ -172,7 +193,7 @@ public class ProjectBoundary {
         ProjectController.updateProjectNeighbourhood(projectID, newNeighbourhood);
     }
 
-    public void updateProjectRoomType() {
+    public static void updateProjectRoomType() {
         String projectID;
         String roomType;
         int choice;
@@ -205,7 +226,7 @@ public class ProjectBoundary {
         }
     }
 
-    public void updateProjectNumOfUnit() {
+    public static void updateProjectNumOfUnit() {
         String projectID;
         int numOfUnits;
         int choice;
@@ -240,7 +261,7 @@ public class ProjectBoundary {
         }
     }
 
-    public void updateSellingPrice(){
+    public static void updateSellingPrice(){
         String projectID;
         int sellPrice;
         int choice;
@@ -275,7 +296,7 @@ public class ProjectBoundary {
         }
     }
 
-    public void updateProjectApplicationOpen(){
+    public static void updateProjectApplicationOpen(){
         String projectID;
         String newOpenDate;
         System.out.println("Please enter the Project ID:");
@@ -287,7 +308,7 @@ public class ProjectBoundary {
         ProjectController.updateProjectApplicationOpenDate(projectID, newOpenDate);
     }
 
-    public void updateProjectApplicationClose(){
+    public static void updateProjectApplicationClose(){
         String projectID;
         String newCloseDate;
         System.out.println("Please enter the Project ID:");
@@ -299,7 +320,7 @@ public class ProjectBoundary {
         ProjectController.updateProjectApplicationCloseDate(projectID,newCloseDate);
     }
 
-    public void updateManagerInCharge(){
+    public static void updateManagerInCharge(){
         String projectID;
         String newManager;
         System.out.println("Please enter the Project ID:");
@@ -311,7 +332,7 @@ public class ProjectBoundary {
         ProjectController.updateProjectManager(projectID, newManager);
     }
 
-    public void updateNumberOfOfficers(){
+    public static void updateNumberOfOfficers(){
         String projectID;
         int newNumberOfOfficers;
         System.out.println("Please enter the Project ID:");
