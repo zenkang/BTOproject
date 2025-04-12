@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import Project.ProjectController;
-import Project.ProjectBoundary;
+import ProjectApplication.ProjectApplication;
+import ProjectApplication.ProjectApplicationController;
 import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryBoundary;
@@ -27,7 +28,7 @@ public class ApplicantBoundary {
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects");
             System.out.println("3. Apply Projects");
-            System.out.println("4. ");
+            System.out.println("4. View Project Application");
             System.out.println("5. Enquiry");
             System.out.println("6. ");
             System.out.println("7. Change Password");
@@ -38,9 +39,8 @@ public class ApplicantBoundary {
             switch (choice) {
                 case 1 -> viewApplicantProfile();
                 case 2 -> ProjectController.displayAllProjects();
-                case 3 ->{}
-                case 4 ->{
-                }
+                case 3 -> applyForProject();
+                case 4 -> ProjectApplicationController.displayUserProjectApplication(applicant.getNric());
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
                 case 6 -> System.out.println("TBC");
                 case 7 -> changePassword();
@@ -51,6 +51,7 @@ public class ApplicantBoundary {
         while (choice != 0) ;
         sc.close();
     }
+
 
     public void viewApplicantProfile() {
         Scanner sc = new Scanner(System.in);
@@ -133,4 +134,32 @@ public class ApplicantBoundary {
         }
     }
 
+    private void applyForProject() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("\n=== Project Application ===");
+        String appID = ProjectApplicationController.generateNewAppID();
+        System.out.print("Enter Project ID you want to apply for: ");
+        String projectID = sc.nextLine().trim();
+        System.out.print("Enter desired flat type (2-Room or 3-Room): ");
+        String roomType = sc.nextLine().trim();
+
+        // Create the project application object
+        ProjectApplication application = new ProjectApplication(
+                appID,
+                projectID,
+                roomType,
+                applicant.getID(),
+                "Pending"
+        );
+
+        // Call the controller to process and create the application,
+        // which should enforce the single-application rule and eligibility.
+        boolean created = ProjectApplicationController.createProjectApplication(application, applicant);
+        if (created) {
+            System.out.println("Your project application has been submitted successfully.");
+        } else {
+            System.out.println("Failed to submit application. Please check your eligibility and ensure you haven't already applied.");
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package ProjectApplication;
 
 import Abstract.Repository;
-import Project.Project;
 
 import java.util.ArrayList;
 
@@ -12,10 +11,16 @@ public class ProjectApplicationRepository extends Repository<ProjectApplication>
 
     @Override
     public ProjectApplication fromCSVRow(String row) {
-        String[] values = row.split(",",5);
-        return new ProjectApplication(values[0],values[1], values[2],values[3],values[4]);
-
+        String[] values = row.split(",", 5);
+        return new ProjectApplication(
+                values[0].trim(),
+                values[1].trim(),
+                values[2].trim(),
+                values[3].trim(),
+                values[4].trim()
+        );
     }
+
 
     @Override
     public String CSVHeader() {
@@ -32,13 +37,19 @@ public class ProjectApplicationRepository extends Repository<ProjectApplication>
         }
     }
 
-    public ProjectApplication getByAppID(String appID) {
+    public ProjectApplication getByApplicantID(String applicantID) {
         for (ProjectApplication projectApplication : entities) {
-            if (projectApplication.getID().equalsIgnoreCase(appID)) {
+            if (projectApplication.getApplicantID().equalsIgnoreCase(applicantID)) {
                 return projectApplication;
             }
         }
         return null;
     }
-
+    public boolean deleteProjectApplicationByID(String appID) {
+        ProjectApplication projectApplication = this.getByID(appID);
+        if(projectApplication == null) {
+            return false;
+        }
+        return this.delete(projectApplication);
+    }
 }

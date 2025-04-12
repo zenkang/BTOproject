@@ -9,6 +9,7 @@ public class ProjectApplication implements IEntity {
     private String roomType;
     private String applicantID;
     private String status;
+
     public ProjectApplication(String appID,String projectID,String roomType,String applicantID,String status){
         this.appID=appID;
         this.projectID=projectID;
@@ -43,9 +44,16 @@ public class ProjectApplication implements IEntity {
                 status);
     }
 
+    @Override
     public ProjectApplication fromCSVRow(String row) {
-        String[] values = row.split(",",5);
-        return new ProjectApplication(values[0],values[1], values[2],values[3],values[4]);
+        String[] values = row.split(",", 5);
+        return new ProjectApplication(
+                values[0].trim(),
+                values[1].trim(),
+                values[2].trim(),
+                values[3].trim(),
+                values[4].trim()
+        );
     }
 
     @Override

@@ -35,8 +35,9 @@ public abstract class Repository <T extends IEntity>{
                 // Split the line by commas
 
                 T t = this.fromCSVRow(line);
-                entities.add(t);
-
+                if (t != null) {  // Only add if t is not null.
+                    entities.add(t);
+                }
             }
             return true;
         } catch (IOException e) {
