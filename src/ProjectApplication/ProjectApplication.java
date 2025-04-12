@@ -1,16 +1,17 @@
 package ProjectApplication;
 
 import Abstract.IEntity;
-import Project.Project;
+import Enumerations.ApplicationStatus;
+
 
 public class ProjectApplication implements IEntity {
     private String appID;
     private String projectID;
     private String roomType;
     private String applicantID;
-    private String status;
+    private ApplicationStatus status;
 
-    public ProjectApplication(String appID,String projectID,String roomType,String applicantID,String status){
+    public ProjectApplication(String appID, String projectID, String roomType, String applicantID, ApplicationStatus status){
         this.appID=appID;
         this.projectID=projectID;
         this.roomType=roomType;
@@ -30,7 +31,7 @@ public class ProjectApplication implements IEntity {
     public String getApplicantID() {
         return applicantID;
     }
-    public String getStatus() {
+    public ApplicationStatus getStatus() {
         return status;
     }
 
@@ -41,7 +42,7 @@ public class ProjectApplication implements IEntity {
                 projectID,
                 roomType,
                 applicantID,
-                status);
+                status.name());
     }
 
     @Override
@@ -52,7 +53,7 @@ public class ProjectApplication implements IEntity {
                 values[1].trim(),
                 values[2].trim(),
                 values[3].trim(),
-                values[4].trim()
+                ApplicationStatus.valueOf(values[4].trim().toUpperCase())
         );
     }
 
@@ -62,7 +63,7 @@ public class ProjectApplication implements IEntity {
                 ", Project ID: " + projectID + '\'' +
                 ", Room Type: '" + roomType + '\'' +
                 ", Applicant ID: " + applicantID + '\'' +
-                ", Status: " + status +'\''
+                ", Status: " + status.name() +'\''
                 ;
     }
 
@@ -82,7 +83,7 @@ public class ProjectApplication implements IEntity {
         this.applicantID = applicantID;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ApplicationStatus status) {
         this.status = status;
     }
 }

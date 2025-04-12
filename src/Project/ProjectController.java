@@ -8,11 +8,9 @@ public class ProjectController {
         ProjectBoundary projectBoundary = new ProjectBoundary();
         projectBoundary.displayProjectMenu();
     }
-
     private static ProjectRepository retrieveProjectRepository() {
         return new ProjectRepository("./src/data/ProjectList.csv");
     }
-
     public static ArrayList<Project> getAllProjects() {
         return retrieveProjectRepository().getAllProjects();
     }
@@ -20,7 +18,6 @@ public class ProjectController {
         ProjectBoundary projectBoundary = new ProjectBoundary();
         projectBoundary.displayProjects();
     }
-
     public static Project getProjectByName(String projectName) {
         ProjectRepository projectRepository = retrieveProjectRepository();
         return projectRepository.getByProjectName(projectName);

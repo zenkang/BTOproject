@@ -1,6 +1,7 @@
 package ProjectApplication;
 
 import Abstract.Repository;
+import Enumerations.ApplicationStatus;
 
 import java.util.ArrayList;
 
@@ -17,7 +18,7 @@ public class ProjectApplicationRepository extends Repository<ProjectApplication>
                 values[1].trim(),
                 values[2].trim(),
                 values[3].trim(),
-                values[4].trim()
+                ApplicationStatus.valueOf(values[4].trim().toUpperCase())
         );
     }
 

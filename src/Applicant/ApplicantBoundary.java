@@ -11,6 +11,7 @@ import ProjectApplication.ProjectApplicationController;
 import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryBoundary;
+import Enumerations.ProjectApplicationStatus;
 
 
 public class ApplicantBoundary {
@@ -39,7 +40,7 @@ public class ApplicantBoundary {
             switch (choice) {
                 case 1 -> viewApplicantProfile();
                 case 2 -> ProjectController.displayAllProjects();
-                case 3 -> applyForProject();
+                case 3 -> ProjectApplicationController.displayProjectApplicationMenu(applicant);
                 case 4 -> ProjectApplicationController.displayUserProjectApplication(applicant.getNric());
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
                 case 6 -> System.out.println("TBC");
@@ -134,32 +135,5 @@ public class ApplicantBoundary {
         }
     }
 
-    private void applyForProject() {
-        Scanner sc = new Scanner(System.in);
 
-        System.out.println("\n=== Project Application ===");
-        String appID = ProjectApplicationController.generateNewAppID();
-        System.out.print("Enter Project ID you want to apply for: ");
-        String projectID = sc.nextLine().trim();
-        System.out.print("Enter desired flat type (2-Room or 3-Room): ");
-        String roomType = sc.nextLine().trim();
-
-        // Create the project application object
-        ProjectApplication application = new ProjectApplication(
-                appID,
-                projectID,
-                roomType,
-                applicant.getID(),
-                "Pending"
-        );
-
-        // Call the controller to process and create the application,
-        // which should enforce the single-application rule and eligibility.
-        boolean created = ProjectApplicationController.createProjectApplication(application, applicant);
-        if (created) {
-            System.out.println("Your project application has been submitted successfully.");
-        } else {
-            System.out.println("Failed to submit application. Please check your eligibility and ensure you haven't already applied.");
-        }
-    }
 }

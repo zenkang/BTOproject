@@ -2,7 +2,8 @@ package ProjectApplication;
 
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
-
+import Enumerations.ProjectApplicationStatus;
+import Enumerations.ApplicationStatus;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,11 @@ public class ProjectApplicationController {
     public static void displayAllProjectApplications(){
         ProjectApplicationBoundary projectApplicationBoundary = new ProjectApplicationBoundary();
         projectApplicationBoundary.displayProjectApplications();
+    }
+
+    public static void displayProjectApplicationMenu(Applicant applicant){
+        ProjectApplicationBoundary projectApplicationBoundary = new ProjectApplicationBoundary();
+        projectApplicationBoundary.applyForProject(applicant);
     }
 
     public static void displayUserProjectApplication(String applicantID){
@@ -33,41 +39,29 @@ public class ProjectApplicationController {
         return null;
     }
 
-    public static boolean createProjectApplication(ProjectApplication newApplication, Applicant applicant) {
+    public static ProjectApplicationStatus createProjectApplication(ProjectApplication newApplication, Applicant applicant) {
         ProjectApplicationRepository applicationRepository = retrieveProjectApplicationsRepository();
-        for (ProjectApplication existing : applicationRepository.getAllProjectApplications()) {
-            if (existing.getApplicantID().equalsIgnoreCase(applicant.getID())) {
-                System.out.println("You have already applied for a project and cannot apply for multiple projects.");
-                return false;
-            }
-        }
-
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
             if (applicant.getAge() < 35) {
-                System.out.println("Singles must be 35 years or older to apply for a project.");
-                return false;
+                return ProjectApplicationStatus.AGE_RESTRICTION_SINGLE;
             }
             if (!newApplication.getRoomType().equalsIgnoreCase("2-Room")) {
-                System.out.println("Singles can only apply for a 2-Room flat.");
-                return false;
+                return ProjectApplicationStatus.FLAT_TYPE_SINGLE;
             }
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED) {
             if (applicant.getAge() < 21) {
-                System.out.println("Married applicants must be 21 years or older to apply.");
-                return false;
+                return ProjectApplicationStatus.AGE_RESTRICTION_MARRIED;
             }
         } else {
-            System.out.println("Applicant eligibility cannot be determined.");
-            return false;
+            return ProjectApplicationStatus.ELIGIBILITY_UNDETERMINED;
         }
 
         boolean created = applicationRepository.create(newApplication);
         if (created) {
-            System.out.println("Project application created successfully.");
+            return ProjectApplicationStatus.SUCCESS;
         } else {
-            System.out.println("Failed to create project application.");
+            return ProjectApplicationStatus.FAILURE;
         }
-        return created;
     }
 
     public static boolean deleteProjectApplication(String appID) {
@@ -88,5 +82,15 @@ public class ProjectApplicationController {
                 }
             }
             return String.format("%03d", maxID + 1);
+    }
+
+    public static boolean checkPreviousApplication(String applicantID){
+        ProjectApplicationRepository applicationRepository = retrieveProjectApplicationsRepository();
+        for (ProjectApplication existing : applicationRepository.getAllProjectApplications()) {
+            if (existing.getApplicantID().equalsIgnoreCase(applicantID)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

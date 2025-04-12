@@ -86,18 +86,19 @@ public class ProjectBoundary {
 
         System.out.print("Enter Manager in Charge: ");
         String manager = sc.nextLine().trim();
+        if(manager.isEmpty()){
+            System.out.println("Empty Manager Slot. Please enter a valid input.");
+        }
 
         int noOfficersSlots = SafeScanner.getValidatedIntInput(sc, "Enter Number of Officer Slots: ", 0, 10);
 
         System.out.print("Enter officer names (comma-separated)");
         String[] officers = SafeScanner.getValidatedOfficerNames(sc, noOfficersSlots);
 
-        // Create a new project instance
         Project newProject = new Project(projectID,projectName, neighbourhood, roomType1, noOfUnitsType1,
                 sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
                 appDateOpen, appDateClose, manager, noOfficersSlots, officers);
 
-        // Delegate the creation process to the ProjectController
         if (ProjectController.createProject(newProject)) {
             System.out.println("Project created successfully.");
         } else {
