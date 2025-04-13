@@ -1,21 +1,24 @@
 package ProjectFilter;
 
 public class ProjectFilter {
-    private String location;
+
+
+    private String neighbourhoodName;
     private String flatType; // e.g., "2-Room" or "3-Room"
 
     public ProjectFilter() {
         // defaults: no filter is applied (empty strings)
-        this.location = "";
+        this.neighbourhoodName = "";
         this.flatType = "";
     }
 
     // Getters and setters
-    public String getLocation() {
-        return location;
+    public String getNeighbourhoodName() {
+        return neighbourhoodName;
     }
-    public void setLocation(String location) {
-        this.location = location;
+
+    public void setNeighbourhoodName(String neighbourhoodName) {
+        this.neighbourhoodName = neighbourhoodName;
     }
     public String getFlatType() {
         return flatType;

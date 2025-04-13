@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class ProjectController {
 
 
-    private static ProjectRepository getprojectRepository() {
+    public static ProjectRepository getprojectRepository() {
         return new ProjectRepository("./src/data/ProjectList.csv");
     }
 
@@ -14,11 +14,6 @@ public class ProjectController {
         return getprojectRepository().getAllProjects();
     }
 
-    //redo this function, this is for applicant, only show projects that are visible and fits the type-requirement
-    //based on age and marital status
-    public static void displayApplicantProjects(){
-
-    }
 
 
     public static Project getProjectByName(String projectName) {
@@ -259,6 +254,28 @@ public class ProjectController {
     public static boolean checkUniqueProjectName(String projectName) {
         ProjectRepository projectRepository = getprojectRepository();
         return projectRepository.checkUniqueProjectName(projectName);
+    }
+
+    public static boolean checkActiveProject(String manager_name) {
+        ProjectRepository projectRepository = getprojectRepository();
+        return projectRepository.checkActiveProject(manager_name);
+    }
+
+    public static void updateProjectVisibility(String projectID, boolean b) {
+        ProjectRepository projectRepository = getprojectRepository();
+        Project project = projectRepository.getByProjectID(projectID);
+        if (project == null) {
+            System.out.println("No project found with the name: " + projectID);;
+        }
+        assert project != null;
+        project.setVisibility(b);
+        boolean result = projectRepository.update(project);
+        if (result) {
+            System.out.println("Project Visibility updated successfully.");
+        }
+        else{
+            System.out.println("Update failed.");
+        }
     }
 }
 

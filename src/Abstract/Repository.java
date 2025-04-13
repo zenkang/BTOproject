@@ -149,22 +149,8 @@ public abstract class Repository <T extends IEntity>{
         this.store();
         return true;
     }
-    /**
-     * Retrieves all entities matching a specific filter.
-     *
-     * @param predicate The predicate to filter entities.
-     * @return A list of entities matching the filter.
-     */
 
-    public List<T> getByFilter(Predicate<T> predicate) {
-        return this.entities.stream().filter(predicate).toList();
-    }
-    /**Example
-     *      gets list of enquiries with enquiry.applicantID == applicant object id
-     *
-     *     public static List<Enquiry> getEnquires(Applicant applicant){
-     *         EnquiryRepository repo = getEnquiryRepository();
-     *         return repo.getByFilter((Enquiry enquiry) -> record.getApplicantID().equals(applicant.getID()));
-     *     }
-     */
+
+
+
 }

@@ -18,6 +18,15 @@ public class Project implements IEntity {
     private String manager;
     private int noOfficersSlots;
     private String[] officer;
+
+    public boolean isVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
     private boolean visibility;
     public Project(String ID,String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    int sellPriceType1, String type2, int noOfUnitsType2, int getSellPriceType2,

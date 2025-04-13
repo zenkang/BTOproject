@@ -91,6 +91,17 @@ public class ProjectRepository extends Repository<Project>{
         }
         return true;
     }
+
+    public boolean checkActiveProject(String managerName) {
+        for (Project p : entities) {
+            if(p.getManager().equalsIgnoreCase(managerName) && p.isVisibility()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
 
 
