@@ -1,2 +1,3 @@
-ID,Project Name,Neighbourhood,Type 1,Number of Units,Selling Price,Type 2,Number of Units,Selling Price,Application Open Date,Application Closing Date,Manager,Officer Slot,Officer
-001,New Acacia Breeze,Bedok,2-Room,2,400000,3-Room,3,475000,03/2/25,14/12/25,Jessica,4,Daniel,Emily
+ID,Project Name,Neighbourhood,Type 1,Number of Units,Selling Price,Type 2,Number of Units,Selling Price,Application Open DateApplication Closing Date,Manager,Officer Slot,OfficerVisible
+1,New True Breeze,Yishun,3-Room,2,350000,3-Room,3,450000,15/2/2025,20/3/2025,Jessica,3,Daniel,false
+79,NRE,Punggol,2-Room,234,10000,3-Room,245,13455,15/04/2025,11/11/2024,Jessica,23,,false

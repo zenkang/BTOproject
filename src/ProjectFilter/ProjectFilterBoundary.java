@@ -13,7 +13,7 @@ public class ProjectFilterBoundary {
     static Scanner sc = new Scanner(System.in);
     public static void displayFilteredProjects() {
         List<Project> filteredProjects = ProjectFilterController.getFilteredProjects(
-                currentFilterCriteria.getLocation(), currentFilterCriteria.getFlatType()
+                currentFilterCriteria.getNeighbourhoodName(), currentFilterCriteria.getFlatType()
         );
 
         if (filteredProjects.isEmpty()) {
@@ -22,7 +22,7 @@ public class ProjectFilterBoundary {
             System.out.println("Filtered Projects:");
             filteredProjects.forEach(System.out::println);
             System.out.println("Filters Applied: " +
-                    "Location: " + currentFilterCriteria.getLocation() +
+                    "Location: " + currentFilterCriteria.getNeighbourhoodName() +
                     " Room Type: " + currentFilterCriteria.getFlatType());
         }
     }
@@ -36,15 +36,15 @@ public class ProjectFilterBoundary {
             System.out.println("3. Reset Filters");
             System.out.println("0. Exit");
             System.out.println("Filters Applied: "+
-                    "Location: "+currentFilterCriteria.getLocation()+
+                    "Location: "+currentFilterCriteria.getNeighbourhoodName()+
                     " Room Type:"+currentFilterCriteria.getFlatType());
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
 
             switch (choice) {
                 case 1 ->{
                     List<String> validNeighbourhoodOptions = Arrays.asList("bedok", "punggol");
-                    String location = SafeScanner.getValidatedStringInput(sc,"Enter location filter:", validNeighbourhoodOptions);
-                    currentFilterCriteria.setLocation(location);
+                    String neighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter location filter:", validNeighbourhoodOptions);
+                    currentFilterCriteria.setNeighbourhoodName(neighbourhood);
                 }
                 case 2 ->{
                     List<String> validRoomOptions = Arrays.asList("2-room","3-room");
@@ -52,7 +52,7 @@ public class ProjectFilterBoundary {
                     currentFilterCriteria.setFlatType(flatType);
                 }
                 case 3 ->{
-                    currentFilterCriteria.setLocation("");
+                    currentFilterCriteria.setNeighbourhoodName("");
                     currentFilterCriteria.setFlatType("");
                 }
                 case 0 -> {

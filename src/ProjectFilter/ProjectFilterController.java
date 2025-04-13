@@ -35,7 +35,7 @@ public class ProjectFilterController {
     }
 
     public static List<Project> getFilteredProjects(String location, String flatType) {
-        ProjectRepository repo = ProjectController.retrieveProjectRepository();
+        ProjectRepository repo = ProjectController.getprojectRepository();
 
         // Build a composite predicate. Start with a predicate that accepts all projects.
         Predicate<Project> compositePredicate = p -> true;
@@ -61,12 +61,12 @@ public class ProjectFilterController {
     }
 
     public static List<Project> getProjectsCreatedByManager(String managerName) {
-        ProjectRepository repo = ProjectController.retrieveProjectRepository();
+        ProjectRepository repo = ProjectController.getprojectRepository();
         return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
     }
 
     public static List<Project> getProjectsForApplicant(Applicant applicant) {
-        ProjectRepository repo = ProjectController.retrieveProjectRepository();
+        ProjectRepository repo = ProjectController.getprojectRepository();
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
             return repo.getByFilter(project ->
                     project.getType1().equalsIgnoreCase("2-Room") ||

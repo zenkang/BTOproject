@@ -1,34 +1,31 @@
 package Project;
 
-
 import java.util.ArrayList;
 
-public class ProjectController {
-    public static void showProjectModificationsMenu() {
-        ProjectBoundary projectBoundary = new ProjectBoundary();
-        ProjectBoundary.displayProjectMenu();
-    }
 
-    public static ProjectRepository retrieveProjectRepository() {
+public class ProjectController {
+
+
+    public static ProjectRepository getprojectRepository() {
         return new ProjectRepository("./src/data/ProjectList.csv");
     }
 
     public static ArrayList<Project> getAllProjects() {
-        return retrieveProjectRepository().getAllProjects();
+        return getprojectRepository().getAllProjects();
     }
+
+
 
     public static Project getProjectByName(String projectName) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         return projectRepository.getByProjectName(projectName);
     }
-
     public static Project getProjectByID(String projectID) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         return projectRepository.getByProjectID(projectID);
     }
-
     public static void updateProjectName(String projectID, String newProjectName) {
-            ProjectRepository projectRepository = retrieveProjectRepository();
+            ProjectRepository projectRepository = getprojectRepository();
             Project project = projectRepository.getByID(projectID);
 
             if (project == null) {
@@ -46,9 +43,8 @@ public class ProjectController {
             }
 
             }
-
     public static void updateProjectNeighbourhood(String projectID, String newProjectNeighbourhood) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByID(projectID);
 
         if (project == null) {
@@ -64,9 +60,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectRoomType1(String projectID, String newRoomType1) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -82,9 +77,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectRoomType2(String projectID, String newRoomType2) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -100,9 +94,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectNumOfRoomType1(String projectID, int newNumOfRoomType1) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -118,9 +111,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectNumOfRoomType2(String projectID, int newNumOfRoomType2) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -136,9 +128,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateSellPriceOfRoomType1(String projectID, int newSellPrice){
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -154,9 +145,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateSellPriceOfRoomType2(String projectID, int newSellPrice){
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -172,9 +162,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectApplicationOpenDate(String projectID, String newAppOpenDate) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -190,9 +179,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectApplicationCloseDate(String projectID, String newAppCloseDate) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -208,9 +196,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectManager(String projectID, String newProjectManager) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -226,9 +213,8 @@ public class ProjectController {
         }
 
     }
-
     public static void updateProjectNumOfOfficerSlots(String projectID, int newProjectNumOfOfficerSlots) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
         if (project == null) {
@@ -244,19 +230,53 @@ public class ProjectController {
         }
 
     }
-
     public static boolean deleteProject(String projectID) {
-        ProjectRepository projectRepository = retrieveProjectRepository();
+        ProjectRepository projectRepository = getprojectRepository();
         return projectRepository.deleteProjectByID(projectID);
     }
-
     public static boolean createProject(Project newProject){
-        ProjectRepository repository = retrieveProjectRepository();
+        ProjectRepository repository = getprojectRepository();
         return repository.create(newProject);
     }
 
+    public static String generateUniqueProjectID() {
+        ProjectRepository repository = getprojectRepository();
+        int randomId = 0;
+        boolean validId = false;
+        while (!validId) {
+            randomId = (int) (Math.random() * 101);
+            validId = repository.checkValidId(randomId);
+        }
 
+        return String.valueOf(randomId);
+    }
 
+    public static boolean checkUniqueProjectName(String projectName) {
+        ProjectRepository projectRepository = getprojectRepository();
+        return projectRepository.checkUniqueProjectName(projectName);
+    }
+
+    public static boolean checkActiveProject(String manager_name) {
+        ProjectRepository projectRepository = getprojectRepository();
+        return projectRepository.checkActiveProject(manager_name);
+    }
+
+    public static void updateProjectVisibility(String projectID, boolean b) {
+        ProjectRepository projectRepository = getprojectRepository();
+        Project project = projectRepository.getByProjectID(projectID);
+        if (project == null) {
+            System.out.println("No project found with the name: " + projectID);;
+        }
+        assert project != null;
+        project.setVisibility(b);
+        boolean result = projectRepository.update(project);
+        if (result) {
+            System.out.println("Project Visibility updated successfully.");
+        }
+        else{
+            System.out.println("Update failed.");
+        }
+    }
 }
 
 
