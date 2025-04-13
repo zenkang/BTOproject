@@ -1,33 +1,33 @@
 package Project;
 
-import Applicant.Applicant;
+import ProjectFilter.ProjectFilterController;
 import Utils.SafeScanner;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 
 public class ProjectBoundary {
     static Scanner sc = new Scanner(System.in);
-
     public static void displayProjectMenu() {
         int choice;
         do {
             System.out.println("\n=== Project Menu ===");
-            System.out.println("1. Display Current Projects");
+            System.out.println("1. Display Projects");
             System.out.println("2. Create New Project");
             System.out.println("3. Edit Project");
             System.out.println("4. Delete Project");
+            System.out.println("5. Update Filters");
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
-                case 1 -> displayProjects();
+                case 1 -> ProjectFilterController.displayFilteredProjects();
                 case 2 -> createNewProject();
                 case 3 -> projectChangesMenu();
                 case 4 -> deleteProject();
+                case 5 -> ProjectFilterController.displayFilterMenu();
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -43,25 +43,6 @@ public class ProjectBoundary {
             for (Project project : projects) {
                 System.out.println(project);
             }
-        }
-    }
-
-    public void displayProjectsForApplicant(Applicant applicant) {
-        List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
-        if(filteredProjects.isEmpty()){
-            System.out.println("No projects are open to your user group.");
-        } else {
-            filteredProjects.forEach(System.out::println);
-        }
-    }
-
-    public static void displayProjectsCreatedByManager(String managerName) {
-        List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerName);
-        if (managerProjects.isEmpty()) {
-            System.out.println("You have not created any projects.");
-        } else {
-            System.out.println("Projects created by you:");
-            managerProjects.forEach(System.out::println);
         }
     }
 
@@ -338,6 +319,7 @@ public class ProjectBoundary {
         System.out.println("Please enter the Project ID:");
         projectID = sc.nextLine();
         Project project = ProjectController.getProjectByID(projectID);
+
         System.out.println("The Current Number of Officers Slots is : "+ project.getNoOfficersSlots());
         System.out.println("Please enter the New Number of Officer Slots:");
         newNumberOfOfficers = sc.nextInt();

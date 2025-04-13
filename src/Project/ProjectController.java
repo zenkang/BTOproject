@@ -1,50 +1,20 @@
 package Project;
 
-import Applicant.Applicant;
-import Enumerations.MaritalStatus;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+
 public class ProjectController {
     public static void showProjectModificationsMenu() {
         ProjectBoundary projectBoundary = new ProjectBoundary();
         ProjectBoundary.displayProjectMenu();
     }
-    private static ProjectRepository retrieveProjectRepository() {
+
+    public static ProjectRepository retrieveProjectRepository() {
         return new ProjectRepository("./src/data/ProjectList.csv");
     }
 
     public static ArrayList<Project> getAllProjects() {
         return retrieveProjectRepository().getAllProjects();
-    }
-
-    public static void displayAllProjects(){
-        ProjectBoundary projectBoundary = new ProjectBoundary();
-        ProjectBoundary.displayProjects();
-    }
-    public static void displayProjectForApplicant(Applicant applicant){
-        ProjectBoundary projectBoundary = new ProjectBoundary();
-        projectBoundary.displayProjectsForApplicant(applicant);
-    }
-
-    public static void displayProjectsCreatedByManager(String managerName){
-        ProjectBoundary projectBoundary = new ProjectBoundary();
-        ProjectBoundary.displayProjectsCreatedByManager(managerName);
-    }
-
-    public static List<Project> getProjectsForApplicant(Applicant applicant) {
-        ProjectRepository repo = retrieveProjectRepository();
-        if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
-            return repo.getByFilter(project ->
-                    project.getType1().equalsIgnoreCase("2-Room") ||
-                            project.getType2().equalsIgnoreCase("2-Room")
-            );
-        } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED) {
-            return repo.getAllProjects();
-        } else {
-            return repo.getAllProjects();
-        }
     }
 
     public static Project getProjectByName(String projectName) {
@@ -55,32 +25,6 @@ public class ProjectController {
     public static Project getProjectByID(String projectID) {
         ProjectRepository projectRepository = retrieveProjectRepository();
         return projectRepository.getByProjectID(projectID);
-    }
-
-    public static List<Project> getFilteredAndSortedProjects(String location, String flatType) {
-        ProjectRepository repo = retrieveProjectRepository();
-        // Use getByFilter to return projects that meet the filtering criteria.
-        List<Project> filtered = repo.getByFilter(project -> {
-            boolean matches = true;
-            // If a location filter is provided, verify the project's neighbourhood matches.
-            if (!location.isEmpty()) {
-                matches &= project.getNeighbourhood().equalsIgnoreCase(location);
-            }
-            // If a flat type filter is provided, verify the project offers that room type.
-            if (!flatType.isEmpty()) {
-                matches &= (project.getType1().equalsIgnoreCase(flatType) ||
-                        project.getType2().equalsIgnoreCase(flatType));
-            }
-            return matches;
-        });
-        // Then sort by project name (alphabetical order) using a comparator.
-        filtered.sort(Comparator.comparing(Project::getProjectName, String.CASE_INSENSITIVE_ORDER));
-        return filtered;
-    }
-
-    public static List<Project> getProjectsCreatedByManager(String managerName) {
-        ProjectRepository repo = retrieveProjectRepository();
-        return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
     }
 
     public static void updateProjectName(String projectID, String newProjectName) {

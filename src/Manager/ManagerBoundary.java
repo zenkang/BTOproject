@@ -4,6 +4,7 @@ import Applicant.ApplicantController;
 import Enquiry.EnquiryBoundary;
 import Project.ProjectBoundary;
 import Project.ProjectController;
+import ProjectFilter.ProjectFilterController;
 import User.UserBoundary;
 import Utils.SafeScanner;
 
@@ -35,7 +36,8 @@ public class ManagerBoundary  {
             switch (choice) {
                 case 1 -> viewApplicantProfile();
                 case 2 -> ProjectBoundary.displayProjectMenu();
-                case 3, 4 -> ProjectController.displayProjectsCreatedByManager(manager.getName());
+                case 3 ->{}
+                case 4 -> ProjectFilterController.displayProjectsCreatedByManager(manager.getName());
                 case 5 -> System.out.println("TBC");
                 case 6 -> System.out.println("TBC");
                 case 7 -> changePassword();

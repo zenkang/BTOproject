@@ -8,6 +8,7 @@ import java.util.Scanner;
 import Project.ProjectController;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
+import ProjectFilter.ProjectFilterController;
 import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryBoundary;
@@ -39,11 +40,11 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectController.displayProjectForApplicant(applicant);
+                case 2 -> ProjectFilterController.displayProjectForApplicant(applicant);
                 case 3 -> ProjectApplicationController.displayProjectApplicationMenu(applicant);
                 case 4 -> ProjectApplicationController.displayUserProjectApplication(applicant.getNric());
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
-                case 6 -> System.out.println("TBC");
+                case 6 -> {}
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
@@ -134,6 +135,5 @@ public class ApplicantBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
-
 
 }
