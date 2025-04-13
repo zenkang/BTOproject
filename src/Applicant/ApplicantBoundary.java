@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Scanner;
 
 import Project.ProjectController;
-
+import ProjectApplication.ProjectApplication;
+import ProjectApplication.ProjectApplicationController;
+import ProjectFilter.ProjectFilterController;
 import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryBoundary;
+import Enumerations.ProjectApplicationStatus;
 
 
 public class ApplicantBoundary {
@@ -27,7 +30,7 @@ public class ApplicantBoundary {
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects");
             System.out.println("3. Apply Projects");
-            System.out.println("4. ");
+            System.out.println("4. View Project Application");
             System.out.println("5. Enquiry");
             System.out.println("6. ");
             System.out.println("7. Change Password");
@@ -37,10 +40,11 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectController.displayApplicantProjects();
-                case 3, 4 -> System.out.println("TBC");
+                case 2 -> ProjectFilterController.displayProjectForApplicant(applicant);
+                case 3 -> ProjectApplicationController.displayProjectApplicationMenu(applicant);
+                case 4 -> ProjectApplicationController.displayUserProjectApplication(applicant.getNric());
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
-                case 6 -> System.out.println("TBC");
+                case 6 -> {}
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
@@ -49,6 +53,7 @@ public class ApplicantBoundary {
         while (choice != 0) ;
         sc.close();
     }
+
 
     public void viewApplicantProfile() {
         Scanner sc = new Scanner(System.in);

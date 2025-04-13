@@ -3,6 +3,8 @@ package Utils;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import Project.Project;
 import Project.ProjectController;
@@ -98,7 +100,7 @@ public class SafeScanner {
 
         while (!valid) {
             System.out.print(prompt);
-            input = scanner.nextLine().trim(); // Get the line and trim spaces
+            input = scanner.nextLine().trim().toLowerCase(); // Get the line and trim spaces
 
             if (input.isEmpty()) {
                 System.out.println("Invalid input. Please enter a non-empty string.");
@@ -240,4 +242,80 @@ public class SafeScanner {
             }
         }
     }
+    public static String[] getValidatedOfficerNames(Scanner scanner, int expectedCount) {
+        while (true) {
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty()) {
+                System.out.println("Input cannot be empty. Please try again.");
+                continue;
+            }
+
+            String[] names = input.split(",");
+            for (int i = 0; i < names.length; i++) {
+                names[i] = names[i].trim();
+            }
+
+            if (names.length != expectedCount) {
+                System.out.println("Invalid input: you must enter exactly " + expectedCount + " names. You entered " + names.length + ".");
+                System.out.print("Enter Officers (comma-separated): ");
+                continue;
+            }
+
+            boolean valid = true;
+            for (String name : names) {
+                if (name.isEmpty()) {
+                    System.out.println("One or more names are empty. Please ensure all names are non-empty.");
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (valid) {
+                return names;
+            }
+        }
+    }
+    /**
+     * Prompts the user for a date input in the specified format and validates it.
+     *
+     * @param scanner The Scanner instance to read input.
+     * @param prompt  The message to prompt the user.
+     * @return A validated date string in "dd/MM/yy" format.
+     */
+    public static String getValidatedDateInput(Scanner scanner, String prompt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yy");
+        sdf.setLenient(false);
+        String input;
+        while (true) {
+            System.out.print(prompt);
+            input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Invalid input. Please enter a non-empty date.");
+                continue;
+            }
+            try {
+                sdf.parse(input); // this will throw ParseException for invalid date formats
+                break;
+            } catch (ParseException e) {
+                System.out.println("Invalid date format. Please enter the date in dd/mm/yy format.");
+            }
+        }
+        return input;
+    }
+    public static String getValidProjectID(Scanner sc) {
+        String projectID;
+        Project project;
+
+        do {
+            projectID = sc.nextLine().trim();
+            project = ProjectController.getProjectByID(projectID);
+            if (project == null) {
+                System.out.println("No Project found with ID: " + projectID + ". Please Enter a valid Project ID again.");
+            }
+        } while (project == null);
+
+        return projectID;
+    }
+
 }
