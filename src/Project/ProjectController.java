@@ -4,10 +4,7 @@ import java.util.ArrayList;
 
 
 public class ProjectController {
-    public static void showProjectModificationsMenu() {
-        ProjectBoundary projectBoundary = new ProjectBoundary();
-        projectBoundary.displayProjectMenu();
-    }
+
 
     private static ProjectRepository getprojectRepository() {
         return new ProjectRepository("./src/data/ProjectList.csv");
@@ -16,10 +13,13 @@ public class ProjectController {
     public static ArrayList<Project> getAllProjects() {
         return getprojectRepository().getAllProjects();
     }
-    public static void displayAllProjects(){
-        ProjectBoundary projectBoundary = new ProjectBoundary();
-        projectBoundary.displayProjects();
+
+    //redo this function, this is for applicant, only show projects that are visible and fits the type-requirement
+    //based on age and marital status
+    public static void displayApplicantProjects(){
+
     }
+
 
     public static Project getProjectByName(String projectName) {
         ProjectRepository projectRepository = getprojectRepository();
@@ -243,7 +243,24 @@ public class ProjectController {
         ProjectRepository repository = getprojectRepository();
         return repository.create(newProject);
     }
+
+    public static String generateUniqueProjectID() {
+        ProjectRepository repository = getprojectRepository();
+        int randomId = 0;
+        boolean validId = false;
+        while (!validId) {
+            randomId = (int) (Math.random() * 101);
+            validId = repository.checkValidId(randomId);
+        }
+
+        return String.valueOf(randomId);
     }
+
+    public static boolean checkUniqueProjectName(String projectName) {
+        ProjectRepository projectRepository = getprojectRepository();
+        return projectRepository.checkUniqueProjectName(projectName);
+    }
+}
 
 
 

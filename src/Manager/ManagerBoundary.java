@@ -1,9 +1,8 @@
 package Manager;
 
-import Applicant.ApplicantController;
-import Enquiry.EnquiryBoundary;
+
 import Project.ProjectBoundary;
-import Project.ProjectController;
+
 import User.UserBoundary;
 import Utils.SafeScanner;
 
@@ -13,8 +12,11 @@ import java.util.Scanner;
 
 public class ManagerBoundary  {
     private Manager manager;
+    private ProjectBoundary projectBoundary;
     public ManagerBoundary(Manager manager) {
+        this.projectBoundary = new ProjectBoundary(manager);
         this.manager = manager;
+
     }
     public void displayMenu() {
         int choice;
@@ -23,11 +25,10 @@ public class ManagerBoundary  {
             System.out.println("\n=== Manager Menu ===");
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects Menu");
-            System.out.println("3. Apply Projects");
-            System.out.println("4. ");
-            System.out.println("5. Enquiry");
-            System.out.println("6. ");
-            System.out.println("7. Change Password");
+            System.out.println("3. View Applications Menu");
+            System.out.println("4. View Project Registration Menu");
+            System.out.println("5. View Enquiry Menu");
+            System.out.println("6. Change Password");
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
@@ -35,10 +36,10 @@ public class ManagerBoundary  {
             switch (choice) {
                 case 1 -> viewApplicantProfile();
                 case 2 -> ProjectBoundary.displayProjectMenu();
-                case 3, 4 -> System.out.println("TBC");
+                case 3 -> System.out.println("TBC");
+                case 4 -> System.out.println("TBC");
                 case 5 -> System.out.println("TBC");
-                case 6 -> System.out.println("TBC");
-                case 7 -> changePassword();
+                case 6 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }

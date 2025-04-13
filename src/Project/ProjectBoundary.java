@@ -1,14 +1,21 @@
 package Project;
 
+import Manager.Manager;
 import Utils.SafeScanner;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class ProjectBoundary {
     static Scanner sc = new Scanner(System.in);
-
+    private static Manager manager;
+    public ProjectBoundary(Manager manager) {
+        ProjectBoundary.manager = manager;
+    }
     public static void displayProjectMenu() {
         int choice;
         do {
@@ -17,13 +24,13 @@ public class ProjectBoundary {
             System.out.println("2. Create New Project");
             System.out.println("3. Edit Project");
             System.out.println("4. Delete Project");
-            System.out.println("0. Exit");
+            System.out.println("0. Back to Manager Menu");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
 
             switch (choice) {
                 case 1 -> displayProjects();
-                case 2 -> createNewProject();
+                case 2 -> createNewProject(manager.getName());
                 case 3 -> projectChangesMenu();
                 case 4 -> deleteProject();
                 case 0 -> System.out.println("Exiting the Project Menu.");
@@ -39,18 +46,43 @@ public class ProjectBoundary {
             System.out.println("No Projects Available.");
         } else {
             for (Project project : projects) {
-                System.out.println(project);
+                System.out.println("Project ID: "+project.getID());
+                System.out.println("Project name: " + project.getProjectName());
+                System.out.println("Neighbourhood: " + project.getNeighbourhood());
+                System.out.println("Room Type 1: "+project.getType1());
+                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
+                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
+                System.out.println("Room Type 2: "+project.getType2());
+                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
+                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
+                System.out.println("Application Open Date: "+project.getAppDateOpen());
+                System.out.println("Application Close Date: "+project.getAppDateClose());
+                System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
+                System.out.println("Officer(s) Assigned: ");
+                String[] officers = project.getOfficer();
+                for (String officer : officers) {
+                    System.out.println(officer);
+                }
+                System.out.println("------------------------");
+
             }
         }
     }
 
-    public static void createNewProject() {
+    public static void createNewProject(String manager_name) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        boolean isValidOpenDate = false, isValidCloseDate = false;
+        String appDateOpen = "", appDateClose = "";
         System.out.println("\n=== Project Creator ===");
-        System.out.println("Enter Project ID: ");
-        String projectID = sc.nextLine();
+
+        String projectID = ProjectController.generateUniqueProjectID();
 
         System.out.print("Enter Project Name: ");
         String projectName = sc.nextLine().trim();
+        while(!ProjectController.checkUniqueProjectName(projectName)){
+            System.out.print("Project Name exists in database, please enter a valid project name: ");
+            projectName = sc.nextLine().trim();
+        }
 
         System.out.print("Enter Neighbourhood: ");
         String neighbourhood = sc.nextLine().trim();
@@ -67,25 +99,44 @@ public class ProjectBoundary {
         int noOfUnitsType2 = SafeScanner.getValidatedIntInput(sc, "Enter Number Of Units for Room Type 2: ", 0, 1000);
         int sellPriceType2 = SafeScanner.getValidatedIntInput(sc, "Enter Selling Price for Room Type 2: ", 0, 10000000);
 
-        System.out.print("Enter Application Opening Date (DD/MM/YY): ");
-        String appDateOpen = sc.nextLine().trim();
+        LocalDate dateOpen = null;
+        while (!isValidOpenDate) {
+            System.out.print("Enter Application Opening Date (DD/MM/YYYY): ");
+            appDateOpen = sc.nextLine().trim();
+            try {
+                dateOpen = LocalDate.parse(appDateOpen, dateFormatter);
+                isValidOpenDate = true; // Set to true if parsing is successful
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
+            }
+        }
 
-        System.out.print("Enter Application Closing Date (DD/MM/YY): ");
-        String appDateClose = sc.nextLine().trim();
-
-        System.out.print("Enter Manager in Charge: ");
-        String manager = sc.nextLine().trim();
+        LocalDate dateClose = null;
+        while (!isValidCloseDate) {
+            System.out.print("Enter Application Closing Date (DD/MM/YYYY): ");
+            appDateClose = sc.nextLine().trim();
+            try {
+                dateClose = LocalDate.parse(appDateOpen, dateFormatter);
+                isValidCloseDate = true; // Set to true if parsing is successful
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
+            }
+        }
 
         int noOfficersSlots = SafeScanner.getValidatedIntInput(sc, "Enter Number of Officer Slots: ", 0, 100);
 
         System.out.print("Enter Officers (comma-separated): ");
         String officersInput = sc.nextLine().trim();
         String[] officers = officersInput.split(",");
+        LocalDate currentDate = LocalDate.now();
+
+        boolean visible;
+        visible = !currentDate.isBefore(dateOpen) && !currentDate.isAfter(dateClose);
 
         // Create a new project instance
         Project newProject = new Project(projectID,projectName, neighbourhood, roomType1, noOfUnitsType1,
                 sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
-                appDateOpen, appDateClose, manager, noOfficersSlots, officers);
+                appDateOpen, appDateClose, manager_name, noOfficersSlots, officers,visible);
 
         // Delegate the creation process to the ProjectController
         if (ProjectController.createProject(newProject)) {

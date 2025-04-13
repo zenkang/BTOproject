@@ -18,11 +18,11 @@ public class Project implements IEntity {
     private String manager;
     private int noOfficersSlots;
     private String[] officer;
-
+    private boolean visibility;
     public Project(String ID,String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    int sellPriceType1, String type2, int noOfUnitsType2, int getSellPriceType2,
                     String appDateOpen, String appDateClose, String manager,int noOfficersSlots,
-                   String[] officer) {
+                   String[] officer, boolean visibile) {
         this.projectID = ID;
         this.projectName = projectName;
         this.neighbourhood = neighbourhood;
@@ -37,6 +37,7 @@ public class Project implements IEntity {
         this.manager=manager;
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
+        this.visibility=visibile;
     }
 
     @Override
@@ -96,7 +97,8 @@ public class Project implements IEntity {
                 appDateClose,
                 manager,
                 String.valueOf(noOfficersSlots),
-                String.join(",", officer)
+                String.join(",", officer),
+                String.valueOf(visibility)
         );
     }
 
@@ -108,10 +110,11 @@ public class Project implements IEntity {
         int sellPriceType2 = Integer.parseInt(values[8]);
         int noOfficersSlots = Integer.parseInt(values[11]);
         String[] officer = values[13].split(",");
+        boolean visibility = Boolean.parseBoolean(values[14]);
         return new Project(values[0],values[1], values[1],values[2],noOfUnitsType1,
                             sellPriceType1,values[5],noOfUnitsType2,sellPriceType2,
                             values[8],values[9],values[10],noOfficersSlots,
-                            officer);
+                            officer,visibility);
     }
 
 
