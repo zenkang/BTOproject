@@ -2,6 +2,7 @@ package Utils;
 import Applicant.ApplicantRepository;
 import Manager.ManagerRepository;
 import Project.ProjectRepository;
+import ProjectApplication.ProjectApplicationRepository;
 import User.UsersRepository;
 
 public class RepositoryGetter {
@@ -16,6 +17,9 @@ public class RepositoryGetter {
     }
     public static ManagerRepository getManagerRepository() {
         return ManagerRepository.getInstance("./src/data/ManagerList.csv");
+    }
+    public static ProjectApplicationRepository getProjectApplicationsRepository() {
+        return ProjectApplicationRepository.getInstance("./src/data/ProjectApplication.csv");
     }
 
 }

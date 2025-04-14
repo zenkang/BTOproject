@@ -5,13 +5,13 @@ import Enumerations.MaritalStatus;
 import Enumerations.ProjectApplicationStatus;
 import java.util.ArrayList;
 
+import static Utils.RepositoryGetter.getProjectApplicationsRepository;
+
 
 public class ProjectApplicationController {
-    private static ProjectApplicationRepository retrieveProjectApplicationsRepository() {
-        return new ProjectApplicationRepository("./src/data/ProjectApplication.csv");
-    }
+
     public static ArrayList<ProjectApplication> getAllProjectApplications() {
-        return retrieveProjectApplicationsRepository().getAllProjectApplications();
+        return getProjectApplicationsRepository().getAllProjectApplications();
     }
     public static void displayAllProjectApplications(){
         ProjectApplicationBoundary projectApplicationBoundary = new ProjectApplicationBoundary();
@@ -29,7 +29,7 @@ public class ProjectApplicationController {
     }
 
     public static ProjectApplication getApplicationByApplicantID(String applicantID) {
-        ProjectApplicationRepository repository = retrieveProjectApplicationsRepository();
+        ProjectApplicationRepository repository = getProjectApplicationsRepository();
         for (ProjectApplication app : repository.getAllProjectApplications()) {
             if (app.getApplicantID().equalsIgnoreCase(applicantID)) {
                 return app;
@@ -39,7 +39,7 @@ public class ProjectApplicationController {
     }
 
     public static ProjectApplicationStatus createProjectApplication(ProjectApplication newApplication, Applicant applicant) {
-        ProjectApplicationRepository applicationRepository = retrieveProjectApplicationsRepository();
+        ProjectApplicationRepository applicationRepository = getProjectApplicationsRepository();
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
             if (applicant.getAge() < 35) {
                 return ProjectApplicationStatus.AGE_RESTRICTION_SINGLE;
@@ -64,27 +64,13 @@ public class ProjectApplicationController {
     }
 
     public static boolean deleteProjectApplication(String appID) {
-        ProjectApplicationRepository projectApplicationRepository = retrieveProjectApplicationsRepository();
+        ProjectApplicationRepository projectApplicationRepository = getProjectApplicationsRepository();
         return projectApplicationRepository.deleteProjectApplicationByID(appID);
     }
 
-        public static String generateNewAppID() {
-            ProjectApplicationRepository repository = retrieveProjectApplicationsRepository();
-            int maxID = 0;
-            for (ProjectApplication app : repository.getAllProjectApplications()) {
-                try {
-                    int idNum = Integer.parseInt(app.getID());
-                    if (idNum > maxID) {
-                        maxID = idNum;
-                    }
-                } catch (NumberFormatException e) {
-                }
-            }
-            return String.format("%03d", maxID + 1);
-    }
 
     public static boolean checkPreviousApplication(String applicantID){
-        ProjectApplicationRepository applicationRepository = retrieveProjectApplicationsRepository();
+        ProjectApplicationRepository applicationRepository = getProjectApplicationsRepository();
         for (ProjectApplication existing : applicationRepository.getAllProjectApplications()) {
             if (existing.getApplicantID().equalsIgnoreCase(applicantID)) {
                 return false;
