@@ -13,6 +13,8 @@ public class UserController {
     private static UsersRepository getUsersRepository() {
         return new UsersRepository("./src/data/User.csv");
     }
+
+
     public static void route(User user) {
         switch(user.getRole()){
             case APPLICANT ->{
