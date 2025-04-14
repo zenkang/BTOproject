@@ -1,12 +1,11 @@
 package Applicant;
 
 import Enumerations.MaritalStatus;
+import static Utils.RepositoryGetter.*;
+
 
 public class ApplicantController {
 
-    public static ApplicantRepository getApplicantRepository(){
-        return new ApplicantRepository("./src/data/ApplicantList.csv");
-    }
 
     public static boolean updateAge(Applicant applicant, int age){
         ApplicantRepository applicantRepository = getApplicantRepository();

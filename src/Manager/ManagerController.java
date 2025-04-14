@@ -4,10 +4,9 @@ package Manager;
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
 
+import static Utils.RepositoryGetter.*;
+
 public class ManagerController {
-    public static ManagerRepository getManagerRepository(){
-        return new ManagerRepository("./src/data/ManagerList.csv");
-    }
     public static boolean updateAge(Manager manager, int age){
         ManagerRepository applicantRepository = getManagerRepository();
         manager.setAge(age);
