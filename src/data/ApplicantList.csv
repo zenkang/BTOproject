@@ -1,9 +1,5 @@
 Name,NRIC,Age,Marital Status
-<<<<<<< HEAD
-hee,S1234567A,20,Single
-=======
-hweej,S1234567A,2,Single
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
+John,S1234567A,35,Single
 Sarah,T7654321B,40,Married
 Grace,S9876543C,37,Married
 James,T2345678D,30,Married
