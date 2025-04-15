@@ -54,10 +54,6 @@ public class ProjectRepository extends Repository<Project>{
                     "Visible";
         }
 
-        public ArrayList<Project> getAllProjects() {
-            return this.entities;
-        }
-
 
         public void display(){
             for (Project p : entities){

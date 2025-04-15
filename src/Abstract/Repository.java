@@ -176,4 +176,8 @@ public abstract class Repository <T extends IEntity>{
         return entities.isEmpty();
     }
 
+    public ArrayList<T> getAll() {
+        return this.entities;
+    }
+
 }
