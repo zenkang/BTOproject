@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import static Utils.RepositoryGetter.getProjectApplicationsRepository;
+
 public class ProjectApplicationBoundary {
     public void displayProjectApplications() {
         ArrayList<ProjectApplication> projectApplications = ProjectApplicationController.getAllProjectApplications();
@@ -38,7 +40,7 @@ public class ProjectApplicationBoundary {
             System.out.println("You have already submitted an Application Before.");
         } else {
             System.out.println("\n=== Project Application ===");
-            String appID = ProjectApplicationController.generateNewAppID();
+            String appID = getProjectApplicationsRepository().generateId();
             System.out.println("Your Application ID is: "+appID);
             System.out.print("Enter Project ID you want to apply for: ");
             String projectID = SafeScanner.getValidProjectID(sc);

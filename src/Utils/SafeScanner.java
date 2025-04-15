@@ -1,5 +1,8 @@
 package Utils;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -283,26 +286,45 @@ public class SafeScanner {
      * @param prompt  The message to prompt the user.
      * @return A validated date string in "dd/MM/yy" format.
      */
-    public static String getValidatedDateInput(Scanner scanner, String prompt) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yy");
-        sdf.setLenient(false);
-        String input;
-        while (true) {
-            System.out.print(prompt);
-            input = scanner.nextLine().trim();
-            if (input.isEmpty()) {
-                System.out.println("Invalid input. Please enter a non-empty date.");
-                continue;
-            }
+    public static LocalDate getValidDate(Scanner scanner, String prompt) {
+        System.out.print(prompt);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        boolean valid = false;
+        LocalDate date = null;
+        while (!valid) {
             try {
-                sdf.parse(input); // this will throw ParseException for invalid date formats
-                break;
-            } catch (ParseException e) {
-                System.out.println("Invalid date format. Please enter the date in dd/mm/yy format.");
+                String input = scanner.nextLine().trim();
+                date = LocalDate.parse(input, dateFormatter);
+                valid = true; // Set to true if parsing is successful
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
             }
         }
-        return input;
+        return date;
     }
+
+    public static LocalDate getValidDateAfterDate(Scanner scanner,LocalDate startDate, String prompt) {
+        System.out.print(prompt);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        boolean valid = false;
+        LocalDate date = null;
+        while (!valid) {
+            try {
+                String input = scanner.nextLine().trim();
+                date = LocalDate.parse(input, dateFormatter);
+                if (date.isAfter(startDate)) {
+                valid = true; // Set to true if parsing is successful
+                }
+                else{
+                    System.out.println("Error, date must be after start date.");
+                }
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
+            }
+        }
+        return date;
+    }
+
     public static String getValidProjectID(Scanner sc) {
         String projectID;
         Project project;

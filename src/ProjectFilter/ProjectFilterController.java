@@ -10,32 +10,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static Utils.RepositoryGetter.*;
 
 
 public class ProjectFilterController {
 
-    public static void displayFilteredProjects(){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
-        ProjectFilterBoundary.displayFilteredProjects();
-    }
-
-    public static void displayFilterMenu(){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
-        ProjectFilterBoundary.displayFilterMenu();
-    }
-
-    public static void displayProjectForApplicant(Applicant applicant){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
-        projectFilterBoundary.displayProjectsForApplicant(applicant);
-    }
-
-    public static void displayProjectsCreatedByManager(String managerName){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
-        ProjectFilterBoundary.displayProjectsCreatedByManager(managerName);
-    }
-
     public static List<Project> getFilteredProjects(String location, String flatType) {
-        ProjectRepository repo = ProjectController.getprojectRepository();
+        ProjectRepository repo = getProjectRepository();
 
         // Build a composite predicate. Start with a predicate that accepts all projects.
         Predicate<Project> compositePredicate = p -> true;
@@ -61,12 +42,12 @@ public class ProjectFilterController {
     }
 
     public static List<Project> getProjectsCreatedByManager(String managerName) {
-        ProjectRepository repo = ProjectController.getprojectRepository();
+        ProjectRepository repo = getProjectRepository();
         return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
     }
 
     public static List<Project> getProjectsForApplicant(Applicant applicant) {
-        ProjectRepository repo = ProjectController.getprojectRepository();
+        ProjectRepository repo = getProjectRepository();
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
             return repo.getByFilter(project ->
                     project.getType1().equalsIgnoreCase("2-Room") ||

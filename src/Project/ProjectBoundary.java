@@ -1,6 +1,7 @@
 package Project;
 
 import Manager.Manager;
+import ProjectFilter.ProjectFilterBoundary;
 import ProjectFilter.ProjectFilterController;
 import Utils.SafeScanner;
 
@@ -33,11 +34,11 @@ public class ProjectBoundary {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
-                case 1 -> ProjectFilterController.displayFilteredProjects();
+                case 1 -> ProjectFilterBoundary.displayFilteredProjects();
                 case 2 -> createNewProject(manager.getName());
                 case 3 -> projectChangesMenu();
                 case 4 -> deleteProject();
-                case 5 -> ProjectFilterController.displayFilterMenu();
+                case 5 -> ProjectFilterBoundary.displayFilterMenu();
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -79,14 +80,11 @@ public class ProjectBoundary {
     }
 
     public static void createNewProject(String manager_name) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        boolean isValidOpenDate = false, isValidCloseDate = false;
-        String appDateOpen = "", appDateClose = "";
         boolean canCreateNewProject = ProjectController.checkActiveProject(manager_name);
         if(canCreateNewProject) {
             System.out.println("\n=== Project Creator ===");
 
-            String projectID = ProjectController.generateUniqueProjectID();
+//            String projectID = ;
 
             System.out.print("Enter Project Name: ");
             String projectName = sc.nextLine().trim();
@@ -119,33 +117,9 @@ public class ProjectBoundary {
             int noOfUnitsType2 = SafeScanner.getValidatedIntInput(sc, "Enter Number Of Units for Room Type 2: ", 0, 1000);
             int sellPriceType2 = SafeScanner.getValidatedIntInput(sc, "Enter Selling Price for Room Type 2: ", 0, 10000000);
 
-            LocalDate dateOpen = null;
-            while (!isValidOpenDate) {
-                while(appDateOpen.isEmpty()) {
-                    System.out.print("Enter Application Opening Date (DD/MM/YYYY): ");
-                    appDateOpen = sc.nextLine().trim();
-                }
-                try {
-                    dateOpen = LocalDate.parse(appDateOpen, dateFormatter);
-                    isValidOpenDate = true; // Set to true if parsing is successful
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
-                }
-            }
+            LocalDate dateOpen = SafeScanner.getValidDate(sc, "Enter Application Opening Date (DD/MM/YYYY): ");
 
-            LocalDate dateClose = null;
-            while (!isValidCloseDate) {
-                while(appDateClose.isEmpty()) {
-                    System.out.print("Enter Application Closing Date (DD/MM/YYYY): ");
-                    appDateClose = sc.nextLine().trim();
-                }
-                try {
-                    dateClose = LocalDate.parse(appDateClose, dateFormatter);
-                    isValidCloseDate = true; // Set to true if parsing is successful
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
-                }
-            }
+            LocalDate dateClose = SafeScanner.getValidDateAfterDate(sc,dateOpen,"Enter Application Closing Date (DD/MM/YYYY): ");
 
             int noOfficersSlots = SafeScanner.getValidatedIntInput(sc, "Enter Number of Officer Slots: ", 0, 100);
 
@@ -158,12 +132,8 @@ public class ProjectBoundary {
             visible = !currentDate.isBefore(dateOpen) && !currentDate.isAfter(dateClose);
 
             // Create a new project instance
-            Project newProject = new Project(projectID,projectName, neighbourhood, roomType1, noOfUnitsType1,
-                    sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
-                    appDateOpen, appDateClose, manager_name, noOfficersSlots, officers,visible);
-
             // Delegate the creation process to the ProjectController
-            if (ProjectController.createProject(newProject)) {
+            if (ProjectController.createProject(projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2, dateOpen, dateClose, manager_name, noOfficersSlots, officers,visible)) {
                 System.out.println("Project created successfully.");
             } else {
                 System.out.println("Failed to create project. It might already exist.");
@@ -375,48 +345,20 @@ public class ProjectBoundary {
     }
 
     public static void updateProjectApplicationOpen(){
-        String projectID;
-        String newOpenDate ="";
-        boolean isValidOpenDate= false;
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         System.out.println("Please enter the Project ID:");
-        projectID = sc.nextLine();
+        String projectID = sc.nextLine();
         Project project = ProjectController.getProjectByID(projectID);
         System.out.println("The Current Opening Date is :"+ project.getAppDateOpen());
-        while (!isValidOpenDate) {
-            System.out.print("Please enter the New Application Opening Date in DD/MM/YYYY format: ");
-            newOpenDate = sc.nextLine().trim();
-            try {
-                LocalDate.parse(newOpenDate, dateFormatter);
-                isValidOpenDate = true; // Set to true if parsing is successful
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
-            }
-        }
+        LocalDate newOpenDate = SafeScanner.getValidDate(sc,"Please enter the New Application Opening Date in DD/MM/YYYY format: ");
         ProjectController.updateProjectApplicationOpenDate(projectID, newOpenDate);
     }
 
     public static void updateProjectApplicationClose(){
-        String projectID;
-        String newCloseDate = "";
-        boolean isValidOpenDate= false;
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         System.out.println("Please enter the Project ID:");
-        projectID = sc.nextLine();
+        String projectID = sc.nextLine();
         Project project = ProjectController.getProjectByID(projectID);
         System.out.println("The Current Closing Date is :"+ project.getAppDateClose());
-        while (!isValidOpenDate) {
-            System.out.print("Please enter the New Application Closing Date in DD/MM/YYYY format: ");
-            newCloseDate = sc.nextLine().trim();
-            try {
-                LocalDate.parse(newCloseDate, dateFormatter);
-                isValidOpenDate = true; // Set to true if parsing is successful
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
-            }
-        }
-
+        LocalDate newCloseDate = SafeScanner.getValidDateAfterDate(sc,project.getAppDateOpen(),"Please enter the New Application Closing Date in DD/MM/YYYY format: ");
         ProjectController.updateProjectApplicationCloseDate(projectID,newCloseDate);
     }
 

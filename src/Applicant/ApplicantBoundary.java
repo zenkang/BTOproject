@@ -8,6 +8,7 @@ import java.util.Scanner;
 import Project.ProjectController;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
+import ProjectFilter.ProjectFilterBoundary;
 import ProjectFilter.ProjectFilterController;
 import Utils.SafeScanner;
 import User.UserBoundary;
@@ -40,7 +41,7 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectFilterController.displayProjectForApplicant(applicant);
+                case 2 -> ProjectFilterBoundary.displayProjectsForApplicant(applicant);
                 case 3 -> ProjectApplicationController.displayProjectApplicationMenu(applicant);
                 case 4 -> ProjectApplicationController.displayUserProjectApplication(applicant.getNric());
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());

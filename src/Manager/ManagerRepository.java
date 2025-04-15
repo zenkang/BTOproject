@@ -6,8 +6,15 @@ import Enumerations.Role;
 import User.User;
 
 public class ManagerRepository extends Repository<Manager> {
-    public ManagerRepository(String filePath) {
+    private static ManagerRepository instance;
+    private ManagerRepository(String filePath) {
         super(filePath);
+    }
+    public static ManagerRepository getInstance(String filePath) {
+        if (instance == null) {
+            instance = new ManagerRepository(filePath);
+        }
+        return instance;
     }
 
     @Override

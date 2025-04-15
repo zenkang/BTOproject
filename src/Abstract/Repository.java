@@ -143,4 +143,33 @@ public abstract class Repository <T extends IEntity>{
      *         return repo.getByFilter((Enquiry enquiry) -> record.getApplicantID().equals(applicant.getID()));
      *     }
      */
+    protected String getLastId() {
+        if (entities == null || entities.isEmpty()) {
+            return "0";
+        }
+        int lastEntry = entities.size() - 1;
+        if (lastEntry < 0) return "0"; // Edge case for empty CSV
+        if (entities.get(lastEntry) == null) return "0";
+        return entities.get(lastEntry).getID();
+    }
+
+    /**
+     * Retrieves the last ID from the list of entities.
+     *
+     * @return The last ID as a string.
+     */
+    public String generateId() {
+        String lastId = this.getLastId();
+        int i;
+        for (i = 0; i < lastId.length(); i++) {
+            if (Character.isDigit(lastId.charAt(i))) {
+                break;
+            }
+        }
+        String prefix = lastId.substring(0, i);
+        int number = Integer.parseInt(lastId.substring(i));
+        number++;
+        return String.format("%s%03d", prefix, number);
+    }
+
 }
