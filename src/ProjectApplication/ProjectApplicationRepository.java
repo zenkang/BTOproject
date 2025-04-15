@@ -6,8 +6,15 @@ import Enumerations.ApplicationStatus;
 import java.util.ArrayList;
 
 public class ProjectApplicationRepository extends Repository<ProjectApplication> {
-    public ProjectApplicationRepository(String filePath) {
+    private static ProjectApplicationRepository instance;
+    private ProjectApplicationRepository(String filePath) {
         super(filePath);
+    }
+    public static ProjectApplicationRepository getInstance(String filePath) {
+        if (instance == null) {
+            instance = new ProjectApplicationRepository(filePath);
+        }
+        return instance;
     }
 
     @Override

@@ -4,10 +4,10 @@ import User.User;
 import User.UsersRepository;
 import java.util.ArrayList;
 
+import static Utils.RepositoryGetter.getUsersRepository;
+
 public class LoginController {
-    private static UsersRepository getUsersRepository() {
-        return new UsersRepository("./src/data/User.csv");
-    }
+
     public static ArrayList<User> getAllUsers() {
         return getUsersRepository().getAllUsers();
     }

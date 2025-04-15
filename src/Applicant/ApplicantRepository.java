@@ -7,8 +7,16 @@ import Utils.CsvUtils;
 import User.User;
 
 public class ApplicantRepository extends Repository<Applicant> {
-    public ApplicantRepository(String filePath) {
+    static ApplicantRepository instance;
+    private ApplicantRepository(String filePath) {
         super(filePath);
+    }
+
+    public static ApplicantRepository getInstance(String filePath) {
+        if (instance == null) {
+            instance = new ApplicantRepository(filePath);
+        }
+        return instance;
     }
 
     @Override

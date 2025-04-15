@@ -4,8 +4,6 @@ import java.io.*;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
 
 public abstract class Repository <T extends IEntity>{
     protected ArrayList<T> entities;
@@ -80,28 +78,6 @@ public abstract class Repository <T extends IEntity>{
         return null;
     }
 
-    /**
-     * Retrieves all entities matching a specific filter.
-     *
-     * @param predicate The predicate to filter entities.
-     * @return A list of entities matching the filter.
-     */
-
-    public List<T> getByFilter(Predicate<T> predicate) {
-        return this.entities.stream().filter(predicate).toList();
-    }
-    /**Example
-     *      gets list of enquiries with enquiry.applicantID == applicant object id
-     *
-     *     public static List<Enquiry> getEnquires(Applicant applicant){
-     *         EnquiryRepository repo = getEnquiryRepository();
-     *         return repo.getByFilter((Enquiry enquiry) -> record.getApplicantID().equals(applicant.getID()));
-     *     }
-     */
-
-
-
-
     public void display(){
         for (T t : entities) {
             System.out.println(t.toString());
@@ -149,8 +125,51 @@ public abstract class Repository <T extends IEntity>{
         this.store();
         return true;
     }
+    /**
+     * Retrieves all entities matching a specific filter.
+     *
+     * @param predicate The predicate to filter entities.
+     * @return A list of entities matching the filter.
+     */
 
+    public List<T> getByFilter(Predicate<T> predicate) {
+        return this.entities.stream().filter(predicate).toList();
+    }
+    /**Example
+     *      gets list of enquiries with enquiry.applicantID == applicant object id
+     *
+     *     public static List<Enquiry> getEnquires(Applicant applicant){
+     *         EnquiryRepository repo = getEnquiryRepository();
+     *         return repo.getByFilter((Enquiry enquiry) -> record.getApplicantID().equals(applicant.getID()));
+     *     }
+     */
+    protected String getLastId() {
+        if (entities == null || entities.isEmpty()) {
+            return "0";
+        }
+        int lastEntry = entities.size() - 1;
+        if (lastEntry < 0) return "0"; // Edge case for empty CSV
+        if (entities.get(lastEntry) == null) return "0";
+        return entities.get(lastEntry).getID();
+    }
 
-
+    /**
+     * Retrieves the last ID from the list of entities.
+     *
+     * @return The last ID as a string.
+     */
+    public String generateId() {
+        String lastId = this.getLastId();
+        int i;
+        for (i = 0; i < lastId.length(); i++) {
+            if (Character.isDigit(lastId.charAt(i))) {
+                break;
+            }
+        }
+        String prefix = lastId.substring(0, i);
+        int number = Integer.parseInt(lastId.substring(i));
+        number++;
+        return String.format("%s%03d", prefix, number);
+    }
 
 }
