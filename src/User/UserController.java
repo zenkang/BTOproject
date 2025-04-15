@@ -1,9 +1,11 @@
 package User;
 import Manager.Manager;
 import Manager.ManagerBoundary;
+import Manager.ManagerController;
 
 import Applicant.Applicant;
 import Applicant.ApplicantBoundary;
+import Applicant.ApplicantController;
 
 import static Utils.RepositoryGetter.*;
 
@@ -13,22 +15,30 @@ public class UserController {
         switch(user.getRole()){
             case APPLICANT ->{
                 // create the applicant and show the menu
-                Applicant app = UserController.createApplicant(user);
-                ApplicantBoundary view = new ApplicantBoundary(app);
-                assert app != null;
-                System.out.println("\nWelcome " + app.getName());
-                view.displayMenu();
+                Applicant app = ApplicantController.createApplicant(user);
+                if(app!=null){
+                    ApplicantBoundary view = new ApplicantBoundary(app);
+                    System.out.println("\nWelcome " + app.getName());
+                    view.displayMenu();
+                }
+                else{
+                    System.out.println("Applicant creation failed");
+                }
             }
             case OFFICER ->{
                 // create the officer and show the menu
             }
             case MANAGER ->{
                 // create the manager and show the menu
-                Manager manager = UserController.createManager(user);
-                ManagerBoundary view = new ManagerBoundary(manager);
-                assert manager != null;
-                System.out.println("\nWelcome " + manager.getName());
-                view.displayMenu();
+                Manager manager = ManagerController.createManager(user);
+                if(manager != null) {
+                    ManagerBoundary view = new ManagerBoundary(manager);
+                    System.out.println("\nWelcome " + manager.getName());
+                    view.displayMenu();
+                }
+                else{
+                    System.out.println("Manager creation failed");
+                }
             }
             default -> {
                 // do shit
@@ -44,21 +54,4 @@ public class UserController {
     }
 
 
-
-
-    public static Applicant createApplicant(User user){
-        // get the applicants detaails from repo
-        Applicant applicant = getApplicantRepository().getByID(user.getID());
-        if (applicant != null){
-            return applicant;
-        }
-        return null;
-    }
-    public static Manager createManager(User user){
-        Manager manager = getManagerRepository().getByID(user.getID());
-        if (manager != null){
-            return manager;
-        }
-        return null;
-    }
 }

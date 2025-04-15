@@ -22,9 +22,8 @@ public class ManagerRepository extends Repository<Manager> {
         String[] values = row.split(",");
         int age = Integer.parseInt(values[2].trim());
         MaritalStatus status = MaritalStatus.valueOf(values[3].toUpperCase());
-        // Create a User with an empty password; actual password is managed in User.csv
-        User user = new User(values[1], "", Role.MANAGER);
-        return new Manager(values[0], age, status, user);
+        String nric = values[1];
+        return new Manager(values[0], age, status, nric);
     }
 
     @Override

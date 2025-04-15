@@ -172,4 +172,8 @@ public abstract class Repository <T extends IEntity>{
         return String.format("%s%03d", prefix, number);
     }
 
+    public boolean isEmpty() {
+        return entities.isEmpty();
+    }
+
 }

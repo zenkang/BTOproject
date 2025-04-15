@@ -1,21 +1,23 @@
 package Applicant;
 
 import Abstract.IEntity;
+import Abstract.IUserProfile;
 import Enumerations.Role;
 import User.User;
 import Enumerations.MaritalStatus;
 import Utils.CsvUtils;
 
-public class Applicant implements IEntity {
+public class Applicant implements IEntity, IUserProfile {
     private User userProfile;
     private String name;
     private int age;
     private MaritalStatus maritalStatus;
+    private String Nric;
 
     // Constructor using a User object (password managed in User.csv)
-    public Applicant(String name, int age, MaritalStatus maritalStatus, User userProfile) {
+    public Applicant(String name, int age, MaritalStatus maritalStatus, String Nric) {
         this.name = name;
-        this.userProfile = userProfile;
+        this.Nric = Nric;
         this.age = age;
         this.maritalStatus = maritalStatus;
     }
@@ -31,7 +33,7 @@ public class Applicant implements IEntity {
     @Override
     public String toCSVRow() {
         String normalisedStatus = CsvUtils.capitalizeFirstLetter(this.maritalStatus.toString());
-        return name + "," + userProfile.getNric() + "," + age + "," + normalisedStatus;
+        return name + "," + Nric + "," + age + "," + normalisedStatus;
     }
 
     @Override
@@ -39,16 +41,15 @@ public class Applicant implements IEntity {
         String[] values = row.split(",");
         int age = Integer.parseInt(values[2]);
         MaritalStatus status = MaritalStatus.valueOf(values[3].toUpperCase());
-        // Create a User with an empty password; actual password data is maintained in User.csv
-        User user = new User(values[1], "", Role.APPLICANT);
-        return new Applicant(values[0], age, status, user);
+        String nric = values[1];
+        return new Applicant(values[0], age, status, nric);
     }
 
     @Override
     public String getID() {
-        return userProfile.getID();
+        return Nric;
     }
-
+    @Override
     public String getName() {
         return name;
     }
@@ -56,15 +57,16 @@ public class Applicant implements IEntity {
     public void setName(String name) {
         this.name = name;
     }
-
+    @Override
     public String getNric() {
-        return userProfile.getNric();
+        return Nric;
     }
 
     public void setNric(String nric) {
         this.userProfile.setNric(nric);
+        this.Nric = nric;
     }
-
+    @Override
     public int getAge() {
         return age;
     }
@@ -72,7 +74,7 @@ public class Applicant implements IEntity {
     public void setAge(int age) {
         this.age = age;
     }
-
+    @Override
     public MaritalStatus getMaritalStatus() {
         return maritalStatus;
     }
@@ -80,7 +82,7 @@ public class Applicant implements IEntity {
     public void setMaritalStatus(MaritalStatus maritalStatus) {
         this.maritalStatus = maritalStatus;
     }
-
+    @Override
     public String getPassword() {
         return this.userProfile.getPassword();
     }
@@ -99,7 +101,7 @@ public class Applicant implements IEntity {
 
     @Override
     public String toString() {
-        return "Applicant [name=" + name + ", NRIC=" + this.userProfile.getNric()
+        return "Applicant [name=" + name + ", NRIC=" + Nric
                 + ", Age=" + age + ", MaritalStatus=" + maritalStatus.toString() + "]";
     }
 }
