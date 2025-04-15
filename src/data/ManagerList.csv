@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-﻿Name,NRIC,Age,Marital Status,Password
-Michael,T8765432F,36,Single,password
-=======
-﻿Name,NRIC,Age,Marital Status,Password
-Michael,T8765432F,36,Single,password
->>>>>>> d2031f6cce777e80ef284d1c18a1715bf0700fef
-Jessica,S5678901G,26,Married,password
+Name,NRIC,Age,Marital Status
+Michael,T8765432F,45,Single
+Jessica,S5678901G,36,Single

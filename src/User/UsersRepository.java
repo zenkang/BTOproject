@@ -5,9 +5,15 @@ import Enumerations.Role;
 import java.util.ArrayList;
 
 public class UsersRepository extends Repository<User> {
-
-    public UsersRepository(String filePath) {
+    private static UsersRepository instance;
+    private UsersRepository(String filePath) {
         super(filePath);
+    }
+    public static UsersRepository getInstance(String filePath) {
+        if (instance == null) {
+            instance = new UsersRepository(filePath);
+        }
+        return instance;
     }
 
     @Override

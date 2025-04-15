@@ -1,6 +1,8 @@
 package Abstract;
 
 import java.io.*;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.ArrayList;
 
 public abstract class Repository <T extends IEntity>{
@@ -35,8 +37,9 @@ public abstract class Repository <T extends IEntity>{
                 // Split the line by commas
 
                 T t = this.fromCSVRow(line);
-                entities.add(t);
-
+                if (t != null) {  // Only add if t is not null.
+                    entities.add(t);
+                }
             }
             return true;
         } catch (IOException e) {
@@ -122,4 +125,51 @@ public abstract class Repository <T extends IEntity>{
         this.store();
         return true;
     }
+    /**
+     * Retrieves all entities matching a specific filter.
+     *
+     * @param predicate The predicate to filter entities.
+     * @return A list of entities matching the filter.
+     */
+
+    public List<T> getByFilter(Predicate<T> predicate) {
+        return this.entities.stream().filter(predicate).toList();
+    }
+    /**Example
+     *      gets list of enquiries with enquiry.applicantID == applicant object id
+     *
+     *     public static List<Enquiry> getEnquires(Applicant applicant){
+     *         EnquiryRepository repo = getEnquiryRepository();
+     *         return repo.getByFilter((Enquiry enquiry) -> record.getApplicantID().equals(applicant.getID()));
+     *     }
+     */
+    protected String getLastId() {
+        if (entities == null || entities.isEmpty()) {
+            return "0";
+        }
+        int lastEntry = entities.size() - 1;
+        if (lastEntry < 0) return "0"; // Edge case for empty CSV
+        if (entities.get(lastEntry) == null) return "0";
+        return entities.get(lastEntry).getID();
+    }
+
+    /**
+     * Retrieves the last ID from the list of entities.
+     *
+     * @return The last ID as a string.
+     */
+    public String generateId() {
+        String lastId = this.getLastId();
+        int i;
+        for (i = 0; i < lastId.length(); i++) {
+            if (Character.isDigit(lastId.charAt(i))) {
+                break;
+            }
+        }
+        String prefix = lastId.substring(0, i);
+        int number = Integer.parseInt(lastId.substring(i));
+        number++;
+        return String.format("%s%03d", prefix, number);
+    }
+
 }

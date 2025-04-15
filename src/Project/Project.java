@@ -1,9 +1,12 @@
 package Project;
 
 import Abstract.IEntity;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import Utils.CsvUtils;
 
 public class Project implements IEntity {
+    private String projectID;
     private String projectName;
     private String neighbourhood;
     private String type1;
@@ -12,17 +15,26 @@ public class Project implements IEntity {
     private String type2;
     private int noOfUnitsType2;
     private int sellPriceType2;
-    private String appDateOpen;
-    private String appDateClose;
+    private LocalDate appDateOpen;
+    private LocalDate appDateClose;
     private String manager;
     private int noOfficersSlots;
     private String[] officer;
 
-    public Project(String projectName, String neighbourhood, String type1, int noOfUnitsType1,
-                   int sellPriceType1, String type2, int noOfUnitsType2, int getSellPriceType2,
-                    String appDateOpen, String appDateClose, String manager,int noOfficersSlots,
-                   String[] officer) {
+    public boolean isVisibility() {
+        return visibility;
+    }
 
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    private boolean visibility;
+    public Project(String ID,String projectName, String neighbourhood, String type1, int noOfUnitsType1,
+                   int sellPriceType1, String type2, int noOfUnitsType2, int getSellPriceType2,
+                    LocalDate appDateOpen, LocalDate appDateClose, String manager,int noOfficersSlots,
+                   String[] officer, boolean visibile) {
+        this.projectID = ID;
         this.projectName = projectName;
         this.neighbourhood = neighbourhood;
         this.type1 = type1;
@@ -36,8 +48,11 @@ public class Project implements IEntity {
         this.manager=manager;
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
+        this.visibility=visibile;
     }
 
+    @Override
+    public String getID() {return projectID;}
     public String getProjectName() {
         return projectName;
     }
@@ -62,6 +77,11 @@ public class Project implements IEntity {
     public int getSellPriceType2() {
         return sellPriceType2;
     }
+    public LocalDate getAppDateOpen(){
+        return appDateOpen;
+    }
+    public LocalDate getAppDateClose(){
+        return appDateClose;}
     public String getManager() {
         return manager;
     }
@@ -75,6 +95,7 @@ public class Project implements IEntity {
     @Override
     public String toCSVRow() {
         return String.join(",",
+                projectID,
                 projectName,
                 neighbourhood,
                 type1,
@@ -83,36 +104,38 @@ public class Project implements IEntity {
                 type2,
                 String.valueOf(noOfUnitsType2),
                 String.valueOf(sellPriceType2),
-                appDateOpen,
-                appDateClose,
+                CsvUtils.getFmtDate(appDateOpen),
+                CsvUtils.getFmtDate(appDateClose),
                 manager,
                 String.valueOf(noOfficersSlots),
-                String.join(",", officer)
+                String.join(",", officer),
+                String.valueOf(visibility)
         );
     }
 
     public Project fromCSVRow(String row) {
         String[] values = row.split(",");
-        int noOfUnitsType1 = Integer.parseInt(values[3]);
-        int sellPriceType1 = Integer.parseInt(values[4]);
-        int noOfUnitsType2 = Integer.parseInt(values[6]);
-        int sellPriceType2 = Integer.parseInt(values[7]);
-        int noOfficersSlots = Integer.parseInt(values[10]);
-        String[] officer = values[12].split(",");
-        return new Project(values[0], values[1],values[2],noOfUnitsType1,
-                            sellPriceType1,values[5],noOfUnitsType2,sellPriceType2,
-                            values[8],values[9],values[10],noOfficersSlots,
-                            officer);
+        int noOfUnitsType1 = Integer.parseInt(values[4].trim());
+        int sellPriceType1 = Integer.parseInt(values[5].trim());
+        int noOfUnitsType2 = Integer.parseInt(values[7].trim());
+        int sellPriceType2 = Integer.parseInt(values[8].trim());
+        int noOfficersSlots = Integer.parseInt(values[12].trim());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate openDate = LocalDate.parse(values[9], formatter);
+        LocalDate closeDate = LocalDate.parse(values[10], formatter);
+        String[] officer = values[13].split(",");
+        boolean visible = Boolean.parseBoolean(values[14].trim());
+        return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
+                sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
+                openDate,closeDate,values[11],noOfficersSlots,
+                officer,visible);
     }
 
-    @Override
-    public String getID() {
-        return projectName;
-    }
 
     @Override
     public String toString() {
-        return "Project Name: " + projectName + '\'' +
+        return " Project ID: '" + projectID+'\''+
+                ", Project Name: " + projectName + '\'' +
                 ", Neighbourhood: '" + neighbourhood + '\'' +
                 ", Type 1: " + type1 + '\'' +
                 ", Number Of Units of Type 1: " + noOfUnitsType1 +
@@ -120,11 +143,52 @@ public class Project implements IEntity {
                 ", Type 2: " + type2 + '\'' +
                 ", Number Of Units of Type 2: " + noOfUnitsType2 +
                 ", Selling Price of Type 2: " + sellPriceType2 +
-                ", Application Opening Date: " + appDateOpen + '\'' +
-                ", Application Closing Date: " + appDateClose + '\'' +
+                ", Application Opening Date: " + CsvUtils.getFmtDate(appDateOpen) + '\'' +
+                ", Application Closing Date: " +  CsvUtils.getFmtDate(appDateClose) + '\'' +
                 ", Manager: " + manager + '\'' +
                 ", Number of Officer Slots: " + noOfficersSlots +
                 ", Officer/s: " + String.join(",", officer)
                 ;
     }
+    public void setProjectID(String projectID){
+        this.projectID = projectID;
+    }
+    public void setProjectName(String name){
+        this.projectName = name;
+    }
+    public void setProjectNeighbourhood(String newProjectNeighbourhood) {
+        this.neighbourhood = newProjectNeighbourhood;
+    }
+    public void setProjectRoomType1(String roomType1){
+        this.type1 = roomType1;
+    }
+    public void setProjectNumOfType1(int numOfType1){
+        this.noOfUnitsType1 = numOfType1;
+    }
+    public void setSellPriceType1(int sellPriceType1){
+        this.sellPriceType1=sellPriceType1;
+    }
+    public void setProjectRoomType2(String roomType2){
+        this.type2= roomType2;
+    }
+    public void setProjectNumOfType2(int numOfType2){
+        this.noOfUnitsType2 = numOfType2;
+    }
+    public void setSellPriceType2(int sellPriceType2){
+        this.sellPriceType2=sellPriceType2;
+    }
+    public void setProjectApplicationOpenData(LocalDate openDate){
+        this.appDateOpen=openDate;
+    }
+    public void setProjectApplicationCloseDate(LocalDate closeDate){
+        this.appDateClose = closeDate;
+    }
+    public void setProjectManager(String manager){
+        this.manager = manager;
+    }
+    public void setProjectNumOfOfficers(int numOfOfficers){
+        this.noOfficersSlots = numOfOfficers;
+    }
+
 }
+
