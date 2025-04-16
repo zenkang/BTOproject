@@ -4,7 +4,6 @@ import Applicant.Applicant;
 import Enumerations.MaritalStatus;
 import Project.Project;
 import Project.ProjectRepository;
-import Project.ProjectController;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -66,7 +65,7 @@ public class ProjectFilterController {
         return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
     }
 
-    public static List<Project> getProjectsForApplicant(Applicant applicant) {
+    /*public static List<Project> getProjectsForApplicant(Applicant applicant) {
         ProjectRepository repo = getProjectRepository();
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
             return repo.getByFilter(project ->
@@ -78,5 +77,5 @@ public class ProjectFilterController {
         } else {
             return repo.getAllProjects();
         }
-    }
+    }*/
 }

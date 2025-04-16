@@ -4,6 +4,8 @@ import Applicant.Applicant;
 import Project.Project;
 import Utils.SafeScanner;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -12,6 +14,7 @@ public class ProjectFilterBoundary {
     private static ProjectFilter currentFilterCriteria = new ProjectFilter();
     static Scanner sc = new Scanner(System.in);
     public static void displayFilteredProjects() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<Project> filteredProjects = ProjectFilterController.getFilteredProjects(
                 currentFilterCriteria.getNeighbourhoodName(), currentFilterCriteria.getFlatType()
         );
@@ -20,7 +23,28 @@ public class ProjectFilterBoundary {
             System.out.println("No projects match your filter criteria.");
         } else {
             System.out.println("Filtered Projects:");
-            filteredProjects.forEach(System.out::println);
+            for (Project project : filteredProjects) {
+                System.out.println("Project ID: " + project.getID());
+                System.out.println("Project name: " + project.getProjectName());
+                System.out.println("Neighbourhood: " + project.getNeighbourhood());
+                System.out.println("Room Type 1: " + project.getType1());
+                System.out.println("Number of units for Room Type 1: " + project.getNoOfUnitsType1());
+                System.out.println("Selling price of Room Type 1: " + project.getSellPriceType1());
+                System.out.println("Room Type 2: " + project.getType2());
+                System.out.println("Number of units for Room Type 2: " + project.getNoOfUnitsType2());
+                System.out.println("Selling price of Room Type 2: " + project.getSellPriceType2());
+                System.out.println("Application Open Date: " + dateFormatter.format(project.getAppDateOpen()));
+                System.out.println("Application Close Date: " + dateFormatter.format(project.getAppDateClose()));
+                System.out.println("Manager-in-charge: " + project.getManager());
+                System.out.println("Number of Officer Slot(s): " + project.getNoOfficersSlots());
+                System.out.println("Officer(s) Assigned: ");
+                String[] officers = project.getOfficer();
+                for (String officer : officers) {
+                    System.out.println(officer);
+                }
+                System.out.println("Active Project: " + project.isVisibility());
+                System.out.println("------------------------");
+            }
             System.out.println("Filters Applied: " +
                     "Location: " + currentFilterCriteria.getNeighbourhoodName() +
                     " Room Type: " + currentFilterCriteria.getFlatType());
@@ -66,12 +90,13 @@ public class ProjectFilterBoundary {
     }
 
     public void displayProjectsForApplicant(Applicant applicant) {
-        List<Project> filteredProjects = ProjectFilterController.getProjectsForApplicant(applicant);
+        /*List<Project> filteredProjects = ProjectFilterController.getProjectsForApplicant(applicant);
         if(filteredProjects.isEmpty()){
             System.out.println("No projects are open to your user group.");
         } else {
             filteredProjects.forEach(System.out::println);
-        }
+        }*/
+        System.out.println("display projects for applicant " + applicant.getName());
     }
 
     public static void displayProjectsCreatedByManager(String managerName) {

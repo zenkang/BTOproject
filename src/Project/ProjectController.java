@@ -136,7 +136,7 @@ public class ProjectController {
         }
 
     }
-    public static void updateSellPriceOfRoomType1(String projectID, int newSellPrice){
+    public static void updateSellPriceOfRoomType1(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
@@ -153,7 +153,7 @@ public class ProjectController {
         }
 
     }
-    public static void updateSellPriceOfRoomType2(String projectID, int newSellPrice){
+    public static void updateSellPriceOfRoomType2(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
@@ -242,19 +242,15 @@ public class ProjectController {
         ProjectRepository projectRepository = getProjectRepository();
         return projectRepository.deleteProjectByID(projectID);
     }
-    public static boolean createProject(Project newProject){
-        ProjectRepository repository = getProjectRepository();
-        return repository.create(newProject);
-    }
 
     public static boolean createProject(String projectName,
                                         String neighbourhood,
                                         String roomType1,
                                         int noOfUnitsType1,
-                                        int sellPriceType1,
+                                        double sellPriceType1,
                                         String roomType2,
                                         int noOfUnitsType2,
-                                        int sellPriceType2,
+                                        double sellPriceType2,
                                         LocalDate appDateOpen,
                                         LocalDate appDateClose,
                                         String manager_name,
@@ -295,6 +291,7 @@ public class ProjectController {
             System.out.println("Update failed.");
         }
     }
+
 }
 
 

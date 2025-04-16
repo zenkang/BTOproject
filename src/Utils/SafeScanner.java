@@ -57,7 +57,34 @@ public class SafeScanner {
 
         return input;
     }
+    public static double getValidatedDoubleInput(Scanner scanner, String prompt, double min, double max) {
+        double input = -1;
+        boolean valid = false;
 
+        while (!valid) {
+            System.out.print(prompt);
+            String userInput = scanner.nextLine();
+
+            // Regex to match only non-negative decimal numbers (e.g., 2.5, 0.01)
+            if (userInput.matches("\\d+\\.\\d+")) {
+                try {
+                    input = Double.parseDouble(userInput);
+
+                    if (input >= min && input <= max) {
+                        valid = true;
+                    } else {
+                        System.out.println("Please enter a number between " + min + " and " + max + ".");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a valid decimal number.");
+                }
+            } else {
+                System.out.println("Invalid format. Please enter a positive decimal number (e.g., 2.5).");
+            }
+        }
+
+        return input;
+    }
 
     /**
      * Prompts the user for a string input with validation for length and illegal characters.
