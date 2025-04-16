@@ -9,7 +9,6 @@ import Applicant.Applicant;
 
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
-import ProjectFilter.ProjectFilterController;
 import User.UserBoundary;
 import Utils.SafeScanner;
 
@@ -18,10 +17,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
+
 import static Utils.RepositoryGetter.*;
 
 public class ManagerBoundary  {
     private Manager manager;
+    private static Predicate<Project> Filter = null;
+    static Scanner sc = new Scanner(System.in);
     public ManagerBoundary(Manager manager) {
         this.manager = manager;
 
@@ -71,11 +74,11 @@ public class ManagerBoundary  {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
-                case 1 -> ProjectFilterController.displayFilteredProjects();
+                case 1 -> displayFilteredProjects(Filter);
                 case 2 -> createNewProject(this.manager.getName(),sc);
                 case 3 -> projectChangesMenu(sc);
                 case 4 -> deleteProject(sc);
-                case 5 -> System.out.println("Update Filter menu");//ProjectFilterController.displayFilterMenu(sc);
+                case 5 -> displayFilterMenu();
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -114,6 +117,7 @@ public class ManagerBoundary  {
             }
         }
     }
+
     public static void createNewProject(String manager_name, Scanner sc) {
         int noOfUnitsType2, noOfUnitsType1;
         double sellPriceType2,sellPriceType1;
@@ -230,7 +234,7 @@ public class ManagerBoundary  {
         while(ProjectController.getProjectByID(projectID) == null){
             System.out.println("Invalid Project ID. Please enter a valid Project ID.");
             projectID = sc.nextLine();
-        };
+        }
         Project project = ProjectController.getProjectByID(projectID);
 
         if (project.isVisibility()) {
@@ -458,6 +462,7 @@ public class ManagerBoundary  {
         sc.nextLine();
         ProjectController.updateProjectNumOfOfficerSlots(projectID, newNumberOfOfficers);
     }
+
     public void viewApplicantProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
@@ -593,6 +598,68 @@ public class ManagerBoundary  {
         }
     }
 
+    public static void displayFilterMenu() {
+        int choice;
+        do {
+            System.out.println("\n=== Project Filter Menu ===");
+            System.out.println("1. Location");
+            System.out.println("2. Flat Type");
+            System.out.println("3. Reset Filters");
+            System.out.println("0. Exit");
 
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+
+            switch (choice) {
+                case 1 ->{
+                    List<String> validNeighbourhoodOptions = Arrays.asList("bedok", "punggol");
+                    String neighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter location filter:", validNeighbourhoodOptions);
+                    Filter = project -> project.getNeighbourhood().equalsIgnoreCase(neighbourhood);
+                    ProjectController.getFilteredProjects(Filter);
+                }
+                case 2 ->{
+                    List<String> validRoomOptions = Arrays.asList("2-room","3-room");
+                    String flatType = SafeScanner.getValidatedStringInput(sc,"Enter flat type filter(e.g.,2-Room,3-Room:)",validRoomOptions);
+                    if(flatType.equals("2-room")){
+                        Filter = project -> project.getType1().equalsIgnoreCase("2-room");
+                        ProjectController.getFilteredProjects(Filter);
+                    }
+                    else{
+                        Filter = project -> project.getType1().equalsIgnoreCase("3-room");
+                        ProjectController.getFilteredProjects(Filter);
+                    }
+                }
+                case 3 ->{
+                    Filter = null;
+                    System.out.println("Filter Reset.");
+                }
+                case 0 -> {
+                    System.out.println("Filter preferences updated.");
+                    System.out.println("Exiting the Project Filter Menu.");
+                }
+                default -> System.out.println("Invalid choice. Please select a valid option.");
+            }
+        }
+        while (choice != 0);
+    }
+
+    public static void displayFilteredProjects(Predicate<Project> Filter) {
+        List<Project> filteredProjects = ProjectController.getFilteredProjects(Filter);
+        if (filteredProjects.isEmpty()) {
+            System.out.println("No projects match your filter criteria.");
+        } else {
+            System.out.println("Filtered Projects:");
+            filteredProjects.forEach(System.out::println);
+        }
+    }
+
+    public static void displayProjectsCreatedByManager(String managerName) {
+        List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerName);
+        if (managerProjects.isEmpty()) {
+            System.out.println("You have not created any projects.");
+        } else {
+            System.out.println("Projects created by you:");
+            managerProjects.forEach(System.out::println);
+        }
+    }
 
 }

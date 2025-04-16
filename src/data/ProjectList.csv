@@ -1,4 +1,3 @@
-ID,Project Name,Neighbourhood,Type 1,Number of Units,Selling Price,Type 2,Number of Units,Selling Price,Application Open Date,Application Closing Date,Manager,Officer Slot,OfficerVisible
-PR001,New True Breeze,Yishun,3-Room,2,350000.0,3-Room,3,450000.0,15/02/2025,20/03/2025,Jessica,3,Daniel,false
-PR002,updatedName,Punggol,2-Room,234,10000.0,3-Room,245,13455.0,15/04/2025,11/12/2026,Jessica,23,,false
-PR003,Testing123,Serangoon,2-Room,50,1000.75,3-Room,345,13455.23,16/04/2025,18/04/2025,Jessica,5,Daniel,true
+ID,Project Name,Neighbourhood,Type 1,Number of Units,Selling Price,Type 2,Number of Units,Selling Price,Application Open DateApplication Closing Date,Manager,Officer Slot,OfficerVisible
+PR001,New True Breeze,Yishun,3-Room,2,350000,3-Room,3,450000,15/02/2025,20/03/2025,Jessica,3,Daniel,false
+PR002,updatedName,Punggol,2-Room,234,10000,3-Room,245,13455,15/04/2025,11/11/2024,Jessica,23,,false
