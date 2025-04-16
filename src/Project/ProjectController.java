@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static Utils.RepositoryGetter.getProjectRepository;
 
@@ -137,7 +138,7 @@ public class ProjectController {
         }
 
     }
-    public static void updateSellPriceOfRoomType1(String projectID, int newSellPrice){
+    public static void updateSellPriceOfRoomType1(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
@@ -154,7 +155,7 @@ public class ProjectController {
         }
 
     }
-    public static void updateSellPriceOfRoomType2(String projectID, int newSellPrice){
+    public static void updateSellPriceOfRoomType2(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
 
@@ -252,10 +253,10 @@ public class ProjectController {
                                         String neighbourhood,
                                         String roomType1,
                                         int noOfUnitsType1,
-                                        int sellPriceType1,
+                                        double sellPriceType1,
                                         String roomType2,
                                         int noOfUnitsType2,
-                                        int sellPriceType2,
+                                        double sellPriceType2,
                                         LocalDate appDateOpen,
                                         LocalDate appDateClose,
                                         String manager_name,
@@ -323,6 +324,8 @@ public class ProjectController {
         filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
         return filteredProjects;
     }
+
+
 }
 
 

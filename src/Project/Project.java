@@ -11,10 +11,10 @@ public class Project implements IEntity {
     private String neighbourhood;
     private String type1;
     private int noOfUnitsType1;
-    private int sellPriceType1;
+    private double sellPriceType1;
     private String type2;
     private int noOfUnitsType2;
-    private int sellPriceType2;
+    private double sellPriceType2;
     private LocalDate appDateOpen;
     private LocalDate appDateClose;
     private String manager;
@@ -31,9 +31,9 @@ public class Project implements IEntity {
 
     private boolean visibility;
     public Project(String ID,String projectName, String neighbourhood, String type1, int noOfUnitsType1,
-                   int sellPriceType1, String type2, int noOfUnitsType2, int getSellPriceType2,
+                   double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
                     LocalDate appDateOpen, LocalDate appDateClose, String manager,int noOfficersSlots,
-                   String[] officer, boolean visibility) {
+                   String[] officer, boolean visible) {
         this.projectID = ID;
         this.projectName = projectName;
         this.neighbourhood = neighbourhood;
@@ -48,7 +48,7 @@ public class Project implements IEntity {
         this.manager=manager;
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
-        this.visibility= visibility;
+        this.visibility=visible;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Project implements IEntity {
     public int getNoOfUnitsType1(){
         return noOfUnitsType1;
     }
-    public int getSellPriceType1() {
+    public double getSellPriceType1() {
         return sellPriceType1;
     }
     public String getType2() {
@@ -74,7 +74,7 @@ public class Project implements IEntity {
     public int getNoOfUnitsType2() {
         return noOfUnitsType2;
     }
-    public int getSellPriceType2() {
+    public double getSellPriceType2() {
         return sellPriceType2;
     }
     public LocalDate getAppDateOpen(){
@@ -116,9 +116,9 @@ public class Project implements IEntity {
     public Project fromCSVRow(String row) {
         String[] values = row.split(",");
         int noOfUnitsType1 = Integer.parseInt(values[4].trim());
-        int sellPriceType1 = Integer.parseInt(values[5].trim());
+        double sellPriceType1 = Double.parseDouble(values[5].trim());
         int noOfUnitsType2 = Integer.parseInt(values[7].trim());
-        int sellPriceType2 = Integer.parseInt(values[8].trim());
+        double sellPriceType2 = Double.parseDouble(values[8].trim());
         int noOfficersSlots = Integer.parseInt(values[12].trim());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate openDate = LocalDate.parse(values[9], formatter);
@@ -165,7 +165,7 @@ public class Project implements IEntity {
     public void setProjectNumOfType1(int numOfType1){
         this.noOfUnitsType1 = numOfType1;
     }
-    public void setSellPriceType1(int sellPriceType1){
+    public void setSellPriceType1(double sellPriceType1){
         this.sellPriceType1=sellPriceType1;
     }
     public void setProjectRoomType2(String roomType2){
@@ -174,7 +174,7 @@ public class Project implements IEntity {
     public void setProjectNumOfType2(int numOfType2){
         this.noOfUnitsType2 = numOfType2;
     }
-    public void setSellPriceType2(int sellPriceType2){
+    public void setSellPriceType2(double sellPriceType2){
         this.sellPriceType2=sellPriceType2;
     }
     public void setProjectApplicationOpenData(LocalDate openDate){

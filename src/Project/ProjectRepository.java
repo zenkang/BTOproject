@@ -25,13 +25,14 @@ public class ProjectRepository extends Repository<Project>{
         return instance;
     }
 
+
         @Override
         public Project fromCSVRow(String row) {
             String[] values = row.split(",");
             int noOfUnitsType1 = Integer.parseInt(values[4].trim());
-            int sellPriceType1 = Integer.parseInt(values[5].trim());
+            double sellPriceType1 = Double.parseDouble(values[5].trim());
             int noOfUnitsType2 = Integer.parseInt(values[7].trim());
-            int sellPriceType2 = Integer.parseInt(values[8].trim());
+            double sellPriceType2 = Double.parseDouble(values[8].trim());
             int noOfficersSlots = Integer.parseInt(values[12].trim());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate openDate = LocalDate.parse(CsvUtils.formatDate(values[9]), formatter);
