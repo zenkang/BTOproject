@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.ArrayList;
+import java.util.Optional;
+
 
 public abstract class Repository <T extends IEntity>{
     protected ArrayList<T> entities;
@@ -179,7 +181,5 @@ public abstract class Repository <T extends IEntity>{
     public ArrayList<T> getAll() {
         return this.entities;
     }
-
-
 
 }

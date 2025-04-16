@@ -332,6 +332,12 @@ public class ProjectController {
         return filteredProjects;
     }
 
+    public static List<Project> getProjectsManagedBy(String managerName) {
+        return getProjectRepository().getAll().stream()
+                .filter(project -> project.getManager().equalsIgnoreCase(managerName))
+                .toList();
+    }
+
 }
 
 

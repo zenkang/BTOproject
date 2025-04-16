@@ -13,10 +13,7 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 import Utils.SafeScanner;
 import User.UserBoundary;
-import Enquiry.EnquiryBoundary;
-import Enumerations.ProjectApplicationStatus;
-
-import static Utils.RepositoryGetter.getProjectApplicationsRepository;
+import Enquiry.EnquiryApplicantBoundary;
 
 
 public class ApplicantBoundary {
@@ -47,7 +44,7 @@ public class ApplicantBoundary {
                 case 2 -> displayProjectsForApplicant(applicant);
                 case 3 -> applyForProject(applicant);
                 case 4 -> viewApplication(applicant);
-                case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
+                case 5 -> EnquiryApplicantBoundary.applicantMenu(applicant);
                 case 6 -> System.out.println("blanshs");
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
