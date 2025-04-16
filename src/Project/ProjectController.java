@@ -1,8 +1,13 @@
 package Project;
 
+import Applicant.Applicant;
+import Enumerations.MaritalStatus;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static Utils.RepositoryGetter.getProjectRepository;
 
@@ -17,13 +22,9 @@ public class ProjectController {
         .toList();
     }
 
-
     public static ArrayList<Project> getAllProjects() {
         return getProjectRepository().getAll();
     }
-
-
-
     public static Project getProjectByName(String projectName) {
         ProjectRepository projectRepository = getProjectRepository();
         return projectRepository.getByProjectName(projectName);
@@ -294,6 +295,33 @@ public class ProjectController {
         else{
             System.out.println("Update failed.");
         }
+    }
+
+    public static List<Project> getProjectsCreatedByManager(String managerName) {
+        ProjectRepository repo = getProjectRepository();
+        return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
+    }
+
+    public static List<Project> getProjectsForApplicant(Applicant applicant) {
+        ProjectRepository repo = getProjectRepository();
+        if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge()<=35) {
+            return repo.getByFilter(project ->
+                    project.getType1().equalsIgnoreCase("2-Room") ||
+                            project.getType2().equalsIgnoreCase("2-Room")
+            );
+        } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge()<21) {
+            return repo.getAll();
+        } else {
+            return repo.getAll();
+        }
+    }
+
+    public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
+        ProjectRepository repo = getProjectRepository();
+        List<Project> filteredProjects = repo.getByFilter(Filter);
+        filteredProjects = new ArrayList<>(filteredProjects);
+        filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
+        return filteredProjects;
     }
 }
 

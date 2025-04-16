@@ -7,10 +7,10 @@ import java.util.Scanner;
 
 import Enumerations.ApplicationStatus;
 import Enumerations.MaritalStatus;
+import Project.Project;
 import Project.ProjectController;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
-import ProjectFilter.ProjectFilterController;
 import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryBoundary;
@@ -44,7 +44,7 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> ProjectFilterController.displayProjectForApplicant(applicant);
+                case 2 -> displayProjectsForApplicant(applicant);
                 case 3 -> applyForProject(applicant);
                 case 4 -> viewApplication(applicant);
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
@@ -186,4 +186,12 @@ public class ApplicantBoundary {
         }
     }
 
+    public static void displayProjectsForApplicant(Applicant applicant) {
+        List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
+        if(filteredProjects.isEmpty()){
+            System.out.println("No projects are open to your user group.");
+        } else {
+            filteredProjects.forEach(System.out::println);
+        }
+    }
 }
