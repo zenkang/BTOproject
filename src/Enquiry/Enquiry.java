@@ -1,57 +1,47 @@
 package Enquiry;
 
 import Abstract.IEntity;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-public class Enquiry implements IEntity{
+public class Enquiry implements IEntity {
     private String enquiryId;
-    private String applicantNric;
+    private LocalDate date;
     private String projectName;
+    private String applicantNric;
     private String message;
-    private String reply;
+    private String status; // reply or "Pending"
 
-    public Enquiry(String enquiryId, String applicantNric, String projectId, String message) {
+    public Enquiry(String enquiryId, LocalDate date, String projectName, String applicantNric, String message) {
         this.enquiryId = enquiryId;
+        this.date = date;
+        this.projectName = projectName;
         this.applicantNric = applicantNric;
-        this.projectName = projectId;
         this.message = message;
-        this.reply = "Pending reply"; // Default value
+        this.status = "Pending";
     }
 
-    // Constructor used when loading from CSV with optional reply
-    public Enquiry(String enquiryId, String applicantNric, String projectId, String message, String reply) {
+    public Enquiry(String enquiryId, LocalDate date, String projectName, String applicantNric, String message, String status) {
         this.enquiryId = enquiryId;
+        this.date = date;
+        this.projectName = projectName;
         this.applicantNric = applicantNric;
-        this.projectName = projectId;
         this.message = message;
-        this.reply = (reply == null || reply.isEmpty()) ? "Pending reply" : reply;
+        this.status = (status == null || status.isEmpty()) ? "Pending" : status;
     }
 
-    public String getEnquiryId() {
-        return enquiryId;
-    }
+    public String getEnquiryId() { return enquiryId; }
+    public LocalDate getDate() { return date; }
+    public String getProjectName() { return projectName; }
+    public String getApplicantNric() { return applicantNric; }
+    public String getMessage() { return message; }
+    public String getStatus() { return status; }
 
-    public String getApplicantNric() {
-        return applicantNric;
-    }
+    public void setMessage(String message) { this.message = message; }
+    public void setStatus(String status) { this.status = status; }
 
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getReply() {
-        return reply;
-    }
-
-    public void setReply(String reply) {
-        this.reply = reply;
+    public boolean isReplied() {
+        return status != null && !status.equalsIgnoreCase("Pending");
     }
 
     @Override
@@ -61,26 +51,36 @@ public class Enquiry implements IEntity{
 
     @Override
     public String toCSVRow() {
-        // Escape commas inside message/reply with semicolons
-        String safeMessage = message != null ? message.replace(",", ";") : "";
-        String safeReply = reply != null ? reply.replace(",", ";") : "";
-        return enquiryId + "," + applicantNric + "," + projectName + "," + safeMessage + "," + safeReply;
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String safeMsg = message.replace(",", ";");
+        String safeStatus = (status != null) ? status.replace(",", ";") : "Pending";
+        return enquiryId + "," +
+                date.format(fmt) + "," +
+                projectName + "," +
+                applicantNric + "," +
+                safeMsg + "," +
+                safeStatus;
     }
 
     @Override
     public IEntity fromCSVRow(String row) {
-        String[] values = row.split(",", -1); // -1 keeps empty strings
+        String[] values = row.split(",", -1);
         String id = values[0];
-        String nric = values[1];
+        LocalDate date = LocalDate.parse(values[1], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         String project = values[2];
-        String msg = values[3].replace(";", ",");
-        String reply = values.length > 4 ? values[4].replace(";", ",") : null;
-        return new Enquiry(id, nric, project, msg, reply);
+        String nric = values[3];
+        String msg = values[4].replace(";", ",");
+        String status = (values.length > 5) ? values[5].replace(";", ",") : "Pending";
+        return new Enquiry(id, date, project, nric, msg, status);
     }
 
     @Override
     public String toString() {
-        return "Enquiry from " + applicantNric + " (Project: " + projectName + "): " + message +
-                "\nReply: " + reply;
+        return "Enquiry ID: " + enquiryId +
+                "\nDate: " + date +
+                "\nProject: " + projectName +
+                "\nFrom: " + applicantNric +
+                "\nQuestion: " + message +
+                "\nStatus: " + status + "\n";
     }
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EnquiryController {
-    private static final String FILE_PATH = "data/EnquiryList.csv";
+    private static final String FILE_PATH = "src/data/EnquiryList.csv";
     private static final EnquiryRepository repo = EnquiryRepository.getInstance(FILE_PATH);
 
     public static void loadFromCSV() {
@@ -36,7 +36,7 @@ public class EnquiryController {
     public static boolean replyToEnquiry(String enquiryId, String reply) {
         Enquiry enquiry = getEnquiryById(enquiryId);
         if (enquiry != null) {
-            enquiry.setReply(reply);
+            enquiry.setStatus(reply);
             return repo.update(enquiry);
         }
         return false;

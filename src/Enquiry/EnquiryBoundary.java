@@ -3,14 +3,12 @@ package Enquiry;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.List;
-import Project.Project;
-import Project.ProjectController;
+import java.util.stream.Collectors;
+import java.time.LocalDate;
 import Utils.SafeScanner;
 
-import java.util.ArrayList;
-
 public class EnquiryBoundary {
-	private static Scanner sc = new Scanner(System.in);
+    private static Scanner sc = new Scanner(System.in);
 
     public static void applicantMenu(String nric) {
         System.out.println("1. Submit new enquiry");
@@ -30,75 +28,19 @@ public class EnquiryBoundary {
     }
 
     public static void submitEnquiry(String nric) {
-    	String projectName = SafeScanner.getValidProjectName(sc);
-    	
+        String projectName = SafeScanner.getValidProjectName(sc);
         System.out.print("Enter your message: ");
         String message = sc.nextLine();
 
-        String id = UUID.randomUUID().toString().substring(0, 8); // Short unique ID
-        Enquiry enquiry = new Enquiry(id, nric, projectName, message);
+        String id = UUID.randomUUID().toString().substring(0, 8);
+        LocalDate today = LocalDate.now();
+
+        Enquiry enquiry = new Enquiry(id, today, projectName, nric, message);
         EnquiryController.addEnquiry(enquiry);
 
         System.out.println("Enquiry submitted!");
     }
 
-    public static void editEnquiry(String nric) {
-        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
-        if (enquiries.isEmpty()) {
-            System.out.println("You have no enquiries to edit.");
-            return;
-        }
-
-        System.out.println("Select an enquiry to edit:");
-        for (int i = 0; i < enquiries.size(); i++) {
-            System.out.println((i + 1) + ". " + enquiries.get(i));
-        }
-
-        int choice = sc.nextInt();
-        sc.nextLine(); // clear newline
-
-        if (choice < 1 || choice > enquiries.size()) {
-            System.out.println("Invalid choice.");
-            return;
-        }
-
-        Enquiry enquiry = enquiries.get(choice - 1);
-        System.out.print("Enter new message for enquiry: ");
-        String newMessage = sc.nextLine();
-        enquiry.setMessage(newMessage);
-
-        EnquiryController.updateEnquiry(enquiry);
-
-        System.out.println("Enquiry updated successfully!");
-    }
-
-    public static void deleteEnquiry(String nric) {
-        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
-        if (enquiries.isEmpty()) {
-            System.out.println("You have no enquiries to delete.");
-            return;
-        }
-
-        System.out.println("Select an enquiry to delete:");
-        for (int i = 0; i < enquiries.size(); i++) {
-            System.out.println((i + 1) + ". " + enquiries.get(i));
-        }
-
-        int choice = sc.nextInt();
-        sc.nextLine(); // clear newline
-
-        if (choice < 1 || choice > enquiries.size()) {
-            System.out.println("Invalid choice.");
-            return;
-        }
-
-        Enquiry enquiry = enquiries.get(choice - 1);
-        EnquiryController.deleteEnquiry(enquiry.getEnquiryId());
-
-        System.out.println("Enquiry deleted successfully!");
-    }
-
-    
     public static void viewEnquiries(String nric) {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
@@ -110,5 +52,66 @@ public class EnquiryBoundary {
         }
     }
 
+    public static void editEnquiry(String nric) {
+        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
+        List<Enquiry> editable = enquiries.stream()
+                .filter(e -> !e.isReplied())
+                .collect(Collectors.toList());
 
+        if (editable.isEmpty()) {
+            System.out.println("No editable enquiries found. You cannot edit replied enquiries.");
+            return;
+        }
+
+        System.out.println("Select an enquiry to edit:");
+        for (int i = 0; i < editable.size(); i++) {
+            System.out.println((i + 1) + ". " + editable.get(i));
+        }
+
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+        if (choice < 1 || choice > editable.size()) {
+            System.out.println("Invalid choice.");
+            return;
+        }
+
+        Enquiry enquiry = editable.get(choice - 1);
+        System.out.print("Enter new message for enquiry: ");
+        String newMessage = sc.nextLine();
+        enquiry.setMessage(newMessage);
+
+        EnquiryController.updateEnquiry(enquiry);
+        System.out.println("Enquiry updated successfully!");
+    }
+
+    public static void deleteEnquiry(String nric) {
+        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
+        List<Enquiry> deletable = enquiries.stream()
+                .filter(e -> !e.isReplied())
+                .collect(Collectors.toList());
+
+        if (deletable.isEmpty()) {
+            System.out.println("No deletable enquiries found. You cannot delete replied enquiries.");
+            return;
+        }
+
+        System.out.println("Select an enquiry to delete:");
+        for (int i = 0; i < deletable.size(); i++) {
+            System.out.println((i + 1) + ". " + deletable.get(i));
+        }
+
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+        if (choice < 1 || choice > deletable.size()) {
+            System.out.println("Invalid choice.");
+            return;
+        }
+
+        Enquiry enquiry = deletable.get(choice - 1);
+        EnquiryController.deleteEnquiry(enquiry.getEnquiryId());
+
+        System.out.println("Enquiry deleted successfully!");
+    }
 }

@@ -18,11 +18,11 @@ public class EnquiryRepository extends Repository<Enquiry> {
 
     @Override
     public Enquiry fromCSVRow(String row) {
-        return (Enquiry) new Enquiry("", "", "", "").fromCSVRow(row);
+        return (Enquiry) new Enquiry("", null, "", "", "").fromCSVRow(row);
     }
 
     @Override
     public String CSVHeader() {
-        return "EnquiryID,ApplicantNRIC,ProjectName,Message,Reply";
+        return "EnquiryID,Date,ProjectName,ApplicantID,Question,Status";
     }
 }

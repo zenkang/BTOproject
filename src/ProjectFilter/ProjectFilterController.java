@@ -4,7 +4,6 @@ import Applicant.Applicant;
 import Enumerations.MaritalStatus;
 import Project.Project;
 import Project.ProjectRepository;
-import Project.ProjectController;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -12,33 +11,27 @@ import java.util.function.Predicate;
 
 import static Utils.RepositoryGetter.*;
 
-
 public class ProjectFilterController {
 
-    public static void displayFilteredProjects(){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
+    public static void displayFilteredProjects() {
         ProjectFilterBoundary.displayFilteredProjects();
     }
 
-    public static void displayFilterMenu(){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
+    public static void displayFilterMenu() {
         ProjectFilterBoundary.displayFilterMenu();
     }
 
-    public static void displayProjectForApplicant(Applicant applicant){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
-        projectFilterBoundary.displayProjectsForApplicant(applicant);
+    public static void displayProjectForApplicant(Applicant applicant) {
+        new ProjectFilterBoundary().displayProjectsForApplicant(applicant);
     }
 
-    public static void displayProjectsCreatedByManager(String managerName){
-        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
+    public static void displayProjectsCreatedByManager(String managerName) {
         ProjectFilterBoundary.displayProjectsCreatedByManager(managerName);
     }
 
     public static List<Project> getFilteredProjects(String location, String flatType) {
         ProjectRepository repo = getProjectRepository();
 
-        // Build a composite predicate. Start with a predicate that accepts all projects.
         Predicate<Project> compositePredicate = p -> true;
 
         if (location != null && !location.isEmpty()) {
@@ -54,29 +47,26 @@ public class ProjectFilterController {
             );
         }
 
-        List<Project> filteredProjects = repo.getByFilter(compositePredicate);
-
-        filteredProjects = new ArrayList<>(filteredProjects);
+        List<Project> filteredProjects = new ArrayList<>(repo.getByFilter(compositePredicate));
         filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
         return filteredProjects;
     }
 
     public static List<Project> getProjectsCreatedByManager(String managerName) {
-        ProjectRepository repo = getProjectRepository();
-        return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
+        return getProjectRepository().getByFilter(
+                project -> project.getManager().equalsIgnoreCase(managerName)
+        );
     }
 
     public static List<Project> getProjectsForApplicant(Applicant applicant) {
         ProjectRepository repo = getProjectRepository();
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
             return repo.getByFilter(project ->
-                    project.getType1().equalsIgnoreCase("2-Room") ||
-                            project.getType2().equalsIgnoreCase("2-Room")
+                    "2-Room".equalsIgnoreCase(project.getType1()) ||
+                            "2-Room".equalsIgnoreCase(project.getType2())
             );
-        } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED) {
-            return repo.getAllProjects();
         } else {
-            return repo.getAllProjects();
+            return null;
         }
     }
 }
