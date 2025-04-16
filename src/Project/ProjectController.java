@@ -285,7 +285,7 @@ public class ProjectController {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
         if (project == null) {
-            System.out.println("No project found with the name: " + projectID);;
+            System.out.println("No project found with the name: " + projectID);
         }
         assert project != null;
         project.setVisibility(b);
@@ -319,12 +319,18 @@ public class ProjectController {
 
     public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
         ProjectRepository repo = getProjectRepository();
-        List<Project> filteredProjects = repo.getByFilter(Filter);
+        List<Project> filteredProjects;
+        if(Filter == null){
+            filteredProjects = repo.getAll();
+
+        }
+        else{
+            filteredProjects = repo.getByFilter(Filter);
+        }
         filteredProjects = new ArrayList<>(filteredProjects);
         filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
         return filteredProjects;
     }
-
 
 }
 
