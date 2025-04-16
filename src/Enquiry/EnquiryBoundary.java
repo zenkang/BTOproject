@@ -2,7 +2,7 @@ package Enquiry;
 
 import java.util.Scanner;
 import java.util.UUID;
-
+import java.util.List;
 import Project.Project;
 import Project.ProjectController;
 import Utils.SafeScanner;
@@ -43,7 +43,7 @@ public class EnquiryBoundary {
     }
 
     public static void editEnquiry(String nric) {
-        ArrayList<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
+        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
             System.out.println("You have no enquiries to edit.");
             return;
@@ -65,13 +65,15 @@ public class EnquiryBoundary {
         Enquiry enquiry = enquiries.get(choice - 1);
         System.out.print("Enter new message for enquiry: ");
         String newMessage = sc.nextLine();
-        enquiry.setMessage(newMessage); 
+        enquiry.setMessage(newMessage);
+
+        EnquiryController.updateEnquiry(enquiry);
 
         System.out.println("Enquiry updated successfully!");
     }
 
     public static void deleteEnquiry(String nric) {
-        ArrayList<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
+        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
             System.out.println("You have no enquiries to delete.");
             return;
@@ -98,7 +100,7 @@ public class EnquiryBoundary {
 
     
     public static void viewEnquiries(String nric) {
-        ArrayList<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
+        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
             System.out.println("You have no enquiries.");
         } else {

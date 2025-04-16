@@ -1,66 +1,68 @@
 package Enquiry;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnquiryController {
-	private static ArrayList<Enquiry> enquiries = new ArrayList<>();
+    private static final String FILE_PATH = "data/EnquiryList.csv";
+    private static final EnquiryRepository repo = EnquiryRepository.getInstance(FILE_PATH);
 
-    public static void addEnquiry(Enquiry enquiry) {
-        enquiries.add(enquiry);
+    public static void loadFromCSV() {
+        // Triggering getInstance already loads the data via Repository constructor
+        System.out.println("Enquiries loaded: " + repo.getAll().size());
     }
 
-    public static ArrayList<Enquiry> getEnquiriesByApplicant(String applicantNric) {
-        ArrayList<Enquiry> result = new ArrayList<>();
-        for (Enquiry e : enquiries) {
-            if (e.getApplicantNric().equals(applicantNric)) {
-                result.add(e);
-            }
-        }
-        return result;
+    public static void saveToCSV() {
+        repo.store();
+        System.out.println("Enquiries saved to CSV.");
     }
 
-    public static ArrayList<Enquiry> getEnquiriesByProject(String projectId) {
-        ArrayList<Enquiry> result = new ArrayList<>();
-        for (Enquiry e : enquiries) {
-            if (e.getProjectName().equals(projectId)) {
-                result.add(e);
-            }
-        }
-        return result;
+    public static void addEnquiry(Enquiry e) {
+        repo.create(e);
+    }
+
+    public static List<Enquiry> getAllEnquiries() {
+        return repo.getAll();
+    }
+
+    public static List<Enquiry> getEnquiriesByApplicant(String applicantNric) {
+        return repo.getByFilter(e -> e.getApplicantNric().equals(applicantNric));
+    }
+
+    public static List<Enquiry> getEnquiriesByProject(String projectId) {
+        return repo.getByFilter(e -> e.getProjectName().equals(projectId));
     }
 
     public static boolean replyToEnquiry(String enquiryId, String reply) {
-        for (Enquiry e : enquiries) {
-            if (e.getEnquiryId().equals(enquiryId)) {
-                e.setReply(reply);
-                return true;
-            }
+        Enquiry enquiry = getEnquiryById(enquiryId);
+        if (enquiry != null) {
+            enquiry.setReply(reply);
+            return repo.update(enquiry);
         }
         return false;
     }
 
-    public static ArrayList<Enquiry> getAllEnquiries() {
-        return enquiries;
-    }
-    
     public static void updateEnquiryMessage(String enquiryId, String newMessage) {
         Enquiry enquiry = getEnquiryById(enquiryId);
         if (enquiry != null) {
             enquiry.setMessage(newMessage);
+            repo.update(enquiry);
         }
     }
-    
+
     public static void deleteEnquiry(String enquiryId) {
-        enquiries.removeIf(e -> e.getEnquiryId().equals(enquiryId));
-    }
-    
-    public static Enquiry getEnquiryById(String enquiryId) {
-        for (Enquiry e : enquiries) {
-            if (e.getEnquiryId().equals(enquiryId)) {
-                return e;
-            }
+        Enquiry e = getEnquiryById(enquiryId);
+        if (e != null) {
+            repo.delete(e);
         }
-        return null;
+    }
+
+    public static Enquiry getEnquiryById(String enquiryId) {
+        return repo.getByID(enquiryId);
+    }
+
+    public static void updateEnquiry(Enquiry e) {
+        repo.update(e); // triggers store() in Repository
     }
 
 }
