@@ -76,7 +76,7 @@ public class ManagerBoundary  {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
-                case 1 -> displayFilteredProjects(Filter);
+                case 1 -> promptProjectViewChoice(this.manager.getName()) ;
                 case 2 -> createNewProject(this.manager.getName(),sc);
                 case 3 -> projectChangesMenu(sc);
                 case 4 -> deleteProject(sc);
@@ -87,38 +87,7 @@ public class ManagerBoundary  {
         }
         while (choice != 0);
     }
-    public static void displayProjects() {
-        System.out.println("Do you want to display projects assigned to you? y/n");
 
-        ArrayList<Project> projects = ProjectController.getAllProjects();
-        if (projects.isEmpty()) {
-            System.out.println("No Projects Available.");
-        } else {
-            for (Project project : projects) {
-                System.out.println("Project ID: "+project.getID());
-                System.out.println("Project name: " + project.getProjectName());
-                System.out.println("Neighbourhood: " + project.getNeighbourhood());
-                System.out.println("Room Type 1: "+project.getType1());
-                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-                System.out.println("Room Type 2: "+project.getType2());
-                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-                System.out.println("Application Open Date: "+project.getAppDateOpen());
-                System.out.println("Application Close Date: "+project.getAppDateClose());
-                System.out.println("Manager-in-charge: "+project.getManager());
-                System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
-                System.out.println("Officer(s) Assigned: ");
-                String[] officers = project.getOfficer();
-                for (String officer : officers) {
-                    System.out.println(officer);
-                }
-                System.out.println("Active Project: "+ project.isVisibility());
-                System.out.println("------------------------");
-
-            }
-        }
-    }
 
     public static void createNewProject(String manager_name, Scanner sc) {
         int noOfUnitsType2, noOfUnitsType1;
@@ -604,7 +573,7 @@ public class ManagerBoundary  {
         int choice;
         do {
             System.out.println("\n=== Project Filter Menu ===");
-            System.out.println("1. Location");
+            System.out.println("1. Neighbourhood");
             System.out.println("2. Flat Type");
             System.out.println("3. Reset Filters");
             System.out.println("0. Exit");
@@ -613,8 +582,8 @@ public class ManagerBoundary  {
 
             switch (choice) {
                 case 1 ->{
-                    List<String> validNeighbourhoodOptions = Arrays.asList("bedok", "punggol");
-                    String neighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter location filter:", validNeighbourhoodOptions);
+                    System.out.println("Enter the neighbourhood: ");
+                    String neighbourhood = sc.nextLine();
                     Filter = project -> project.getNeighbourhood().equalsIgnoreCase(neighbourhood);
                     ProjectController.getFilteredProjects(Filter);
                 }
@@ -650,18 +619,68 @@ public class ManagerBoundary  {
             System.out.println("No projects match your filter criteria.");
         } else {
             System.out.println("Filtered Projects:");
-            filteredProjects.forEach(System.out::println);
+            for (Project project : filteredProjects) {
+                System.out.println("Project ID: "+project.getID());
+                System.out.println("Project name: " + project.getProjectName());
+                System.out.println("Neighbourhood: " + project.getNeighbourhood());
+                System.out.println("Room Type 1: "+project.getType1());
+                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
+                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
+                System.out.println("Room Type 2: "+project.getType2());
+                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
+                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
+                System.out.println("Application Open Date: "+project.getAppDateOpen());
+                System.out.println("Application Close Date: "+project.getAppDateClose());
+                System.out.println("Manager-in-charge: "+project.getManager());
+                System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
+                System.out.println("Officer(s) Assigned: ");
+                String[] officers = project.getOfficer();
+                for (String officer : officers) {
+                    System.out.println(officer);
+                }
+                System.out.println("Active Project: "+ project.isVisibility());
+                System.out.println("------------------------");
+
+            }
         }
     }
 
-    public static void displayProjectsCreatedByManager(String managerName) {
-        List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerName);
-        if (managerProjects.isEmpty()) {
-            System.out.println("You have not created any projects.");
-        } else {
+    public static void promptProjectViewChoice(String managerName) {
+        List<String> validOptions = Arrays.asList("yes", "no");
+        String selection;
+        System.out.println("\n=== Prompt Project View ===");
+        selection = SafeScanner.getValidatedStringInput(sc,"Would you like to view projects created by you?\nEntering no will display all projects \nEnter yes or no: ",validOptions);
+        if(selection.equals("yes")) {
+            List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerName);
             System.out.println("Projects created by you:");
-            managerProjects.forEach(System.out::println);
+            for (Project project : managerProjects) {
+                System.out.println("Project ID: "+project.getID());
+                System.out.println("Project name: " + project.getProjectName());
+                System.out.println("Neighbourhood: " + project.getNeighbourhood());
+                System.out.println("Room Type 1: "+project.getType1());
+                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
+                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
+                System.out.println("Room Type 2: "+project.getType2());
+                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
+                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
+                System.out.println("Application Open Date: "+project.getAppDateOpen());
+                System.out.println("Application Close Date: "+project.getAppDateClose());
+                System.out.println("Manager-in-charge: "+project.getManager());
+                System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
+                System.out.println("Officer(s) Assigned: ");
+                String[] officers = project.getOfficer();
+                for (String officer : officers) {
+                    System.out.println(officer);
+                }
+                System.out.println("Active Project: "+ project.isVisibility());
+                System.out.println("------------------------");
+            }
         }
+        else{
+            displayFilteredProjects(Filter);
+        }
+
+
     }
 
 }
