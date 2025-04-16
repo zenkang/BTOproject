@@ -1,4 +1,4 @@
-package Reply;
+package Enquiry;
 
 import Abstract.IEntity;
 

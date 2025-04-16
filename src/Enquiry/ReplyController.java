@@ -1,11 +1,8 @@
-package Reply;
+package Enquiry;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-
-import Enquiry.Enquiry;
-import Enquiry.EnquiryController;
 
 public class ReplyController {
     private static final String FILE_PATH = "src/data/ReplyList.csv";

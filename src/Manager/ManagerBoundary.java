@@ -2,6 +2,8 @@ package Manager;
 
 
 import Applicant.ApplicantController;
+import Enquiry.EnquiryApplicantBoundary;
+import Enquiry.EnquiryManagerBoundary;
 import Enumerations.ApplicationStatus;
 import Project.ProjectBoundary;
 import Applicant.Applicant;
@@ -44,7 +46,7 @@ public class ManagerBoundary  {
                 case 2 -> ProjectBoundary.displayProjectMenu();
                 case 3 -> viewApplicantApplications();
                 case 4 -> System.out.println("TBC");
-                case 5 -> System.out.println("TBC");
+                case 5 -> EnquiryManagerBoundary.managerMenu(manager);
                 case 6 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");

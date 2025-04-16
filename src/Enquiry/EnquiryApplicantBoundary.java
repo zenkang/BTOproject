@@ -1,28 +1,31 @@
 package Enquiry;
 
-import java.util.Scanner;
-import java.util.UUID;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.time.LocalDate;
+import Applicant.Applicant;
 import Utils.SafeScanner;
 
-public class EnquiryBoundary {
-    private static Scanner sc = new Scanner(System.in);
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Scanner;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-    public static void applicantMenu(String nric) {
+public class EnquiryApplicantBoundary {
+    private static final Scanner sc = new Scanner(System.in);
+
+    public static void applicantMenu(Applicant applicant) {
+        System.out.println("\n--- Enquiry Menu (Applicant) ---");
         System.out.println("1. Submit new enquiry");
         System.out.println("2. View my enquiries");
         System.out.println("3. Edit an existing enquiry");
         System.out.println("4. Delete an enquiry");
-        int choice = sc.nextInt();
-        sc.nextLine(); // clear newline
+
+        int choice = SafeScanner.getValidatedIntInput(sc, "Enter option: ", 1, 4);
 
         switch (choice) {
-            case 1 -> submitEnquiry(nric);
-            case 2 -> viewEnquiries(nric);
-            case 3 -> editEnquiry(nric);
-            case 4 -> deleteEnquiry(nric);
+            case 1 -> submitEnquiry(applicant.getNric());
+            case 2 -> viewEnquiries(applicant.getNric());
+            case 3 -> editEnquiry(applicant.getNric());
+            case 4 -> deleteEnquiry(applicant.getNric());
             default -> System.out.println("Invalid option.");
         }
     }
@@ -68,13 +71,7 @@ public class EnquiryBoundary {
             System.out.println((i + 1) + ". " + editable.get(i));
         }
 
-        int choice = sc.nextInt();
-        sc.nextLine();
-
-        if (choice < 1 || choice > editable.size()) {
-            System.out.println("Invalid choice.");
-            return;
-        }
+        int choice = SafeScanner.getValidatedIntInput(sc, "Choose: ", 1, editable.size());
 
         Enquiry enquiry = editable.get(choice - 1);
         System.out.print("Enter new message for enquiry: ");
@@ -101,13 +98,7 @@ public class EnquiryBoundary {
             System.out.println((i + 1) + ". " + deletable.get(i));
         }
 
-        int choice = sc.nextInt();
-        sc.nextLine();
-
-        if (choice < 1 || choice > deletable.size()) {
-            System.out.println("Invalid choice.");
-            return;
-        }
+        int choice = SafeScanner.getValidatedIntInput(sc, "Choose: ", 1, deletable.size());
 
         Enquiry enquiry = deletable.get(choice - 1);
         EnquiryController.deleteEnquiry(enquiry.getEnquiryId());
