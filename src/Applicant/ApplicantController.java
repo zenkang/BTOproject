@@ -1,10 +1,23 @@
 package Applicant;
 
 import Enumerations.MaritalStatus;
+import User.User;
+
 import static Utils.RepositoryGetter.*;
 
 
 public class ApplicantController {
+
+    public static Applicant createApplicant(User user){
+        // get the applicants detaails from repo
+        Applicant applicant = getApplicantRepository().getByID(user.getID());
+        if (applicant == null){
+            System.out.println("Applicant not found");
+            return null;
+        }
+        applicant.setUserProfile(user);
+        return applicant;
+    }
 
 
     public static boolean updateAge(Applicant applicant, int age){
@@ -28,6 +41,10 @@ public class ApplicantController {
             applicant.setMaritalStatus(MaritalStatus.SINGLE);
         }
         return applicantRepository.update(applicant);
+    }
+
+    public static Applicant getApplicantById(String id){
+        return getApplicantRepository().getByID(id);
     }
 
 
