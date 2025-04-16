@@ -57,14 +57,7 @@ public class EnquiryManagerBoundary {
                 .map(Project::getProjectName)
                 .collect(Collectors.toList());
 
-        List<Enquiry> replyable = EnquiryController.getAllEnquiries().stream()
-                .filter(e ->
-                        myProjectNames.stream().anyMatch(
-                                p -> p.trim().equalsIgnoreCase(e.getProjectName().trim())
-                        )
-                                && !e.isReplied()
-                )
-                .collect(Collectors.toList());
+        List<Enquiry> replyable = EnquiryController.getUnrepliedEnquiriesByProjects(myProjectNames);
 
         if (replyable.isEmpty()) {
             System.out.println("No pending enquiries to reply to.");

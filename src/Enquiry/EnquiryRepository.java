@@ -2,6 +2,8 @@ package Enquiry;
 
 import Abstract.Repository;
 
+import java.util.List;
+
 public class EnquiryRepository extends Repository<Enquiry> {
     private static EnquiryRepository instance;
 
@@ -25,4 +27,13 @@ public class EnquiryRepository extends Repository<Enquiry> {
     public String CSVHeader() {
         return "EnquiryID,Date,ProjectName,ApplicantID,Question,Status";
     }
+
+    public List<Enquiry> getUnrepliedByProjectNames(List<String> projectNames) {
+        return this.getByFilter(e ->
+                projectNames.stream().anyMatch(
+                        name -> name.trim().equalsIgnoreCase(e.getProjectName().trim())
+                ) && !e.isReplied()
+        );
+    }
+
 }

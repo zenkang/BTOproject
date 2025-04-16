@@ -2,6 +2,7 @@ package Enquiry;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import Enumerations.EnquiryStatus;
 
 public class EnquiryController {
     private static final String FILE_PATH = "src/data/EnquiryList.csv";
@@ -36,7 +37,7 @@ public class EnquiryController {
     public static boolean replyToEnquiry(String enquiryId, String reply) {
         Enquiry enquiry = getEnquiryById(enquiryId);
         if (enquiry != null) {
-            enquiry.setStatus(reply);
+            enquiry.setStatus(EnquiryStatus.REPLIED);
             return repo.update(enquiry);
         }
         return false;
@@ -64,5 +65,10 @@ public class EnquiryController {
     public static void updateEnquiry(Enquiry e) {
         repo.update(e); // triggers store() in Repository
     }
+
+    public static List<Enquiry> getUnrepliedEnquiriesByProjects(List<String> projectNames) {
+        return repo.getUnrepliedByProjectNames(projectNames);
+    }
+
 
 }

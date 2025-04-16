@@ -14,9 +14,10 @@ public class ReplyController {
         Reply reply = new Reply(replyId, enquiryId, today, userId, content);
         repo.create(reply);
 
+        // Update the enquiry's status to REPLIED
         Enquiry enquiry = EnquiryController.getEnquiryById(enquiryId);
         if (enquiry != null) {
-            enquiry.setStatus(content); // reply content becomes status
+            enquiry.setStatus(Enumerations.EnquiryStatus.REPLIED);
             EnquiryController.updateEnquiry(enquiry);
         }
     }

@@ -3,6 +3,7 @@ package Enquiry;
 import Abstract.IEntity;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import Enumerations.EnquiryStatus;
 
 public class Enquiry implements IEntity {
     private String enquiryId;
@@ -10,24 +11,45 @@ public class Enquiry implements IEntity {
     private String projectName;
     private String applicantNric;
     private String message;
-    private String status; // reply or "Pending"
+    private EnquiryStatus status;
 
+    // Used when creating new enquiry directly (default to PENDING)
     public Enquiry(String enquiryId, LocalDate date, String projectName, String applicantNric, String message) {
         this.enquiryId = enquiryId;
         this.date = date;
         this.projectName = projectName;
         this.applicantNric = applicantNric;
         this.message = message;
-        this.status = "Pending";
+        this.status = EnquiryStatus.PENDING;
     }
 
+    // Used when loading from CSV or raw String (converts to enum safely)
     public Enquiry(String enquiryId, LocalDate date, String projectName, String applicantNric, String message, String status) {
         this.enquiryId = enquiryId;
         this.date = date;
         this.projectName = projectName;
         this.applicantNric = applicantNric;
         this.message = message;
-        this.status = (status == null || status.isEmpty()) ? "Pending" : status;
+
+        if (status == null || status.isBlank()) {
+            this.status = EnquiryStatus.PENDING;
+        } else {
+            try {
+                this.status = EnquiryStatus.valueOf(status.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                this.status = EnquiryStatus.PENDING;
+            }
+        }
+    }
+
+    // Used internally when EnquiryStatus is already available
+    public Enquiry(String enquiryId, LocalDate date, String projectName, String applicantNric, String message, EnquiryStatus status) {
+        this.enquiryId = enquiryId;
+        this.date = date;
+        this.projectName = projectName;
+        this.applicantNric = applicantNric;
+        this.message = message;
+        this.status = (status != null) ? status : EnquiryStatus.PENDING;
     }
 
     public String getEnquiryId() { return enquiryId; }
@@ -35,13 +57,13 @@ public class Enquiry implements IEntity {
     public String getProjectName() { return projectName; }
     public String getApplicantNric() { return applicantNric; }
     public String getMessage() { return message; }
-    public String getStatus() { return status; }
+    public EnquiryStatus getStatus() { return status; }
 
     public void setMessage(String message) { this.message = message; }
-    public void setStatus(String status) { this.status = status; }
+    public void setStatus(EnquiryStatus status) { this.status = status; }
 
     public boolean isReplied() {
-        return status != null && !status.equalsIgnoreCase("Pending");
+        return status == EnquiryStatus.REPLIED;
     }
 
     @Override
@@ -53,13 +75,7 @@ public class Enquiry implements IEntity {
     public String toCSVRow() {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String safeMsg = message.replace(",", ";");
-        String safeStatus = (status != null) ? status.replace(",", ";") : "Pending";
-        return enquiryId + "," +
-                date.format(fmt) + "," +
-                projectName + "," +
-                applicantNric + "," +
-                safeMsg + "," +
-                safeStatus;
+        return enquiryId + "," + date.format(fmt) + "," + projectName + "," + applicantNric + "," + safeMsg + "," + status.name();
     }
 
     @Override
@@ -70,7 +86,10 @@ public class Enquiry implements IEntity {
         String project = values[2];
         String nric = values[3];
         String msg = values[4].replace(";", ",");
-        String status = (values.length > 5) ? values[5].replace(";", ",") : "Pending";
+        EnquiryStatus status = (values.length > 5)
+                ? EnquiryStatus.valueOf(values[5].trim().toUpperCase())
+                : EnquiryStatus.PENDING;
+
         return new Enquiry(id, date, project, nric, msg, status);
     }
 
