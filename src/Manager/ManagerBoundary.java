@@ -11,6 +11,7 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 import User.UserBoundary;
 import Utils.SafeScanner;
+import Utils.PredicateUtils;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -633,7 +634,8 @@ public class ManagerBoundary  {
                 }
                 case 3 ->{
                     if (neighbourhoodFilter != null && flatTypeFilter != null) {
-                        Filter = neighbourhoodFilter.and(flatTypeFilter);
+                        Filter = PredicateUtils.combineFilters(neighbourhoodFilter,flatTypeFilter);
+                        ProjectController.getFilteredProjects(Filter);
                     } else {
                         System.out.println("Please set both the location filter and flat type filter before combining.");
                     }
