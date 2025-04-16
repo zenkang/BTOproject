@@ -13,10 +13,7 @@ import User.UserBoundary;
 import Utils.SafeScanner;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static Utils.RepositoryGetter.*;
@@ -24,6 +21,8 @@ import static Utils.RepositoryGetter.*;
 public class ManagerBoundary  {
     private Manager manager;
     private static Predicate<Project> Filter = null;
+    private static Predicate<Project> neighbourhoodFilter = null;
+    private static Predicate<Project> flatTypeFilter = null;
     static Scanner sc = new Scanner(System.in);
     public ManagerBoundary(Manager manager) {
         this.manager = manager;
@@ -604,31 +603,42 @@ public class ManagerBoundary  {
             System.out.println("\n=== Project Filter Menu ===");
             System.out.println("1. Location");
             System.out.println("2. Flat Type");
-            System.out.println("3. Reset Filters");
+            System.out.println("3. Combine both filters");
+            System.out.println("4. Reset Filters");
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
 
             switch (choice) {
                 case 1 ->{
-                    List<String> validNeighbourhoodOptions = Arrays.asList("bedok", "punggol");
+                    List<String> validNeighbourhoodOptions = Arrays.asList("bedok", "punggol","yishun","marine parade");
                     String neighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter location filter:", validNeighbourhoodOptions);
-                    Filter = project -> project.getNeighbourhood().equalsIgnoreCase(neighbourhood);
+                    neighbourhoodFilter = project -> project.getNeighbourhood().equalsIgnoreCase(neighbourhood);
+                    Filter = neighbourhoodFilter;
                     ProjectController.getFilteredProjects(Filter);
                 }
                 case 2 ->{
                     List<String> validRoomOptions = Arrays.asList("2-room","3-room");
                     String flatType = SafeScanner.getValidatedStringInput(sc,"Enter flat type filter(e.g.,2-Room,3-Room:)",validRoomOptions);
                     if(flatType.equals("2-room")){
-                        Filter = project -> project.getType1().equalsIgnoreCase("2-room");
+                        flatTypeFilter = project -> project.getType1().equalsIgnoreCase("2-room");
+                        Filter = flatTypeFilter;
                         ProjectController.getFilteredProjects(Filter);
                     }
                     else{
-                        Filter = project -> project.getType1().equalsIgnoreCase("3-room");
+                        flatTypeFilter = project -> project.getType1().equalsIgnoreCase("3-room");
+                        Filter = flatTypeFilter;
                         ProjectController.getFilteredProjects(Filter);
                     }
                 }
                 case 3 ->{
+                    if (neighbourhoodFilter != null && flatTypeFilter != null) {
+                        Filter = neighbourhoodFilter.and(flatTypeFilter);
+                    } else {
+                        System.out.println("Please set both the location filter and flat type filter before combining.");
+                    }
+                }
+                case 4 ->{
                     Filter = null;
                     System.out.println("Filter Reset.");
                 }
