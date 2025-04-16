@@ -74,11 +74,11 @@ public class ManagerBoundary  {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
-                case 1 -> displayProjects();
+                case 1 -> displayFilteredProjects(Filter);
                 case 2 -> createNewProject(this.manager.getName(),sc);
                 case 3 -> projectChangesMenu(sc);
                 case 4 -> deleteProject(sc);
-                case 5 -> displayFilterMenu();//ProjectFilterController.displayFilterMenu(sc);
+                case 5 -> displayFilterMenu();
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -234,7 +234,7 @@ public class ManagerBoundary  {
         while(ProjectController.getProjectByID(projectID) == null){
             System.out.println("Invalid Project ID. Please enter a valid Project ID.");
             projectID = sc.nextLine();
-        };
+        }
         Project project = ProjectController.getProjectByID(projectID);
 
         if (project.isVisibility()) {
@@ -605,7 +605,6 @@ public class ManagerBoundary  {
             System.out.println("1. Location");
             System.out.println("2. Flat Type");
             System.out.println("3. Reset Filters");
-            System.out.println("4. Display Filtered projects");
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
@@ -633,7 +632,6 @@ public class ManagerBoundary  {
                     Filter = null;
                     System.out.println("Filter Reset.");
                 }
-                case 4-> displayFilteredProjects(Filter);
                 case 0 -> {
                     System.out.println("Filter preferences updated.");
                     System.out.println("Exiting the Project Filter Menu.");
@@ -653,15 +651,6 @@ public class ManagerBoundary  {
             filteredProjects.forEach(System.out::println);
         }
     }
-    public static void displayFilteredProjects() {
-        List<Project> filteredProjects = ProjectController.getAllProjects();
-        if (filteredProjects.isEmpty()) {
-            System.out.println("No projects match your filter criteria.");
-        } else {
-            System.out.println("Filtered Projects:");
-            filteredProjects.forEach(System.out::println);
-        }
-    }
 
     public static void displayProjectsCreatedByManager(String managerName) {
         List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerName);
@@ -672,31 +661,5 @@ public class ManagerBoundary  {
             managerProjects.forEach(System.out::println);
         }
     }
-
-    /*public static List<Project> getFilteredProjects(String location, String flatType) {
-        ProjectRepository repo = getProjectRepository();
-
-        // Build a composite predicate. Start with a predicate that accepts all projects.
-        Predicate<Project> compositePredicate = p -> true;
-
-        if (location != null && !location.isEmpty()) {
-            compositePredicate = compositePredicate.and(
-                    p -> p.getNeighbourhood().equalsIgnoreCase(location)
-            );
-        }
-
-        if (flatType != null && !flatType.isEmpty()) {
-            compositePredicate = compositePredicate.and(
-                    p -> p.getType1().equalsIgnoreCase(flatType) ||
-                            p.getType2().equalsIgnoreCase(flatType)
-            );
-        }
-
-        List<Project> filteredProjects = repo.getByFilter(compositePredicate);
-
-        filteredProjects = new ArrayList<>(filteredProjects);
-        filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
-        return filteredProjects;
-    }*/
 
 }
