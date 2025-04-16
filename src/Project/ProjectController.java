@@ -2,15 +2,24 @@ package Project;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import static Utils.RepositoryGetter.getProjectRepository;
 
 
 public class ProjectController {
 
+    public static List<String> getUniqueProjectNames() {
+       return getProjectRepository().getAll()
+        .stream()
+        .map(Project::getProjectName)
+        .distinct()
+        .toList();
+    }
+
 
     public static ArrayList<Project> getAllProjects() {
-        return getProjectRepository().getAllProjects();
+        return getProjectRepository().getAll();
     }
 
 

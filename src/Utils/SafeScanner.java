@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import Project.Project;
 import Project.ProjectController;
+import static Utils.RepositoryGetter.*;
+
 
 
 /**
@@ -316,7 +317,7 @@ public class SafeScanner {
                 valid = true; // Set to true if parsing is successful
                 }
                 else{
-                    System.out.println("Error, date must be after start date.");
+                    System.out.println("Error, date must be after start date!\nPlease enter a valid date (DD/MM/YYYY): ");
                 }
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date format. Please enter a valid date (DD/MM/YYYY).");
@@ -338,6 +339,18 @@ public class SafeScanner {
         } while (project == null);
 
         return projectID;
+    }
+
+    public static String getValidApplicationID(Scanner sc, String prompt) {
+        System.out.print(prompt);
+        String applicationID;
+        do{
+            applicationID = sc.nextLine().trim();
+            if(getProjectApplicationsRepository().getByID(applicationID) == null) {
+                System.out.println("Invalid application ID. Please enter a valid application ID.");
+            }
+        }while (getProjectApplicationsRepository().getByID(applicationID) == null);
+        return applicationID;
     }
 
 }

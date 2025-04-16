@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import Enumerations.ApplicationStatus;
+import Enumerations.MaritalStatus;
 import Project.ProjectController;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
@@ -13,6 +15,8 @@ import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryBoundary;
 import Enumerations.ProjectApplicationStatus;
+
+import static Utils.RepositoryGetter.getProjectApplicationsRepository;
 
 
 public class ApplicantBoundary {
@@ -30,7 +34,7 @@ public class ApplicantBoundary {
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects");
             System.out.println("3. Apply Projects");
-            System.out.println("4. View Project Application");
+            System.out.println("4. View my Application");
             System.out.println("5. Enquiry");
             System.out.println("6. ");
             System.out.println("7. Change Password");
@@ -41,10 +45,10 @@ public class ApplicantBoundary {
             switch (choice) {
                 case 1 -> viewApplicantProfile();
                 case 2 -> ProjectFilterController.displayProjectForApplicant(applicant);
-                case 3 -> ProjectApplicationController.displayProjectApplicationMenu(applicant);
-                case 4 -> ProjectApplicationController.displayUserProjectApplication(applicant.getNric());
+                case 3 -> applyForProject(applicant);
+                case 4 -> viewApplication(applicant);
                 case 5 -> EnquiryBoundary.applicantMenu(applicant.getNric());
-                case 6 -> {}
+                case 6 -> System.out.println("blanshs");
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
@@ -59,12 +63,7 @@ public class ApplicantBoundary {
         Scanner sc = new Scanner(System.in);
         String selection;
         do {
-            System.out.println("\n=== Applicant Profile ===");
-            System.out.println("Name: " + applicant.getName());
-            System.out.println("NRIC: " + applicant.getNric());
-            System.out.println("Age: " + applicant.getAge());
-            System.out.println("MaritalStatus: " + applicant.getMaritalStatus().toString());
-            System.out.println("Password: " + applicant.getPassword());
+            Utils.PrettyPrint.prettyPrint(applicant);
 
             List<String> validOptions = Arrays.asList("y", "n");
             selection = SafeScanner.getValidatedStringInput(sc,"Would you like to update your profile?\nEnter: y/n\n",validOptions);
@@ -79,10 +78,7 @@ public class ApplicantBoundary {
         int choice;
         Scanner sc = new Scanner(System.in);
         do{
-            System.out.println("1. Update Name: " + applicant.getName());
-            System.out.println("2. Update Age: " + applicant.getAge());
-            System.out.println("3. Update Marital Status: " + applicant.getMaritalStatus().toString());
-            System.out.println("0. Back");
+            Utils.PrettyPrint.prettyUpdate(applicant);
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
 
@@ -133,6 +129,60 @@ public class ApplicantBoundary {
         }
         else{
             System.out.println("Update failed, try again later\n");
+        }
+    }
+
+
+//Applications functions
+
+    public static void applyForProject(Applicant applicant) {
+        Scanner sc = new Scanner(System.in);
+        if (!ProjectApplicationController.checkPreviousApplication(applicant.getNric())) {
+            System.out.println("You have already submitted an Application Before.");
+            return;
+        }
+        if(applicant.getAge() < 21){
+            System.out.println("You must be older than 21 to apply.");
+            return;
+        }
+        if(applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge()<35){
+            System.out.println("Single applicants have to be 35 years old and above to apply.");
+            return;
+        }
+
+        else {
+            System.out.println("\n=== Project Application ===");
+            System.out.print("Enter Project ID you want to apply for: ");
+            // TO BE UPDATED
+            // BEST TO GET FILTERED VALID PROJECT ID BASED ON APPLICANT'S ATTRIBUTE
+            //TO BE ADDED: CHECKS TO ENSURE NUM OF UNITS AVAILABLE FOR THE PROJ >1
+            String projectID = SafeScanner.getValidProjectID(sc);
+            String roomType;
+            if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
+                roomType = "2-room";
+            }
+            else {
+                List<String> validRoomTypes = Arrays.asList("2-room", "3-room");
+                roomType = SafeScanner.getValidatedStringInput(sc, "Enter a room type (2-Room or 3-Room): ", validRoomTypes);
+            }
+            if (!ProjectApplicationController.createProjectApplication(projectID,roomType, applicant.getID())){
+                System.out.println("Project application could not be created.");
+            }
+            else{
+                System.out.println("Application created successfully!");
+                ProjectApplicationController.prettyPrintProjectApplications(ProjectApplicationController.getApplicationByApplicantID(applicant.getID()));
+            }
+
+        }
+    }
+
+    public static void viewApplication(Applicant applicant) {
+        ProjectApplication application = ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
+        if (application == null) {
+            System.out.println("Application could not be found.");
+        }
+        else {
+            ProjectApplicationController.prettyPrintProjectApplications(application);
         }
     }
 
