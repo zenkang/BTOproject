@@ -48,13 +48,9 @@ public class ProjectRepository extends Repository<Project>{
         public String CSVHeader() {
             return "ID,Project Name,Neighbourhood,Type 1," +
                     "Number of Units,Selling Price,Type 2," +
-                    "Number of Units,Selling Price,Application Open Date" +
+                    "Number of Units,Selling Price,Application Open Date," +
                     "Application Closing Date,Manager,Officer Slot,Officer"+
                     "Visible";
-        }
-
-        public ArrayList<Project> getAllProjects() {
-            return this.entities;
         }
 
 

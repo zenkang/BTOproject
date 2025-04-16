@@ -1,7 +1,6 @@
 package Project;
 
 import Manager.Manager;
-import ProjectFilter.ProjectFilterBoundary;
 import ProjectFilter.ProjectFilterController;
 import Utils.SafeScanner;
 
@@ -34,11 +33,11 @@ public class ProjectBoundary {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
-                case 1 -> ProjectFilterBoundary.displayFilteredProjects();
+                case 1 -> ProjectFilterController.displayFilteredProjects();
                 case 2 -> createNewProject(manager.getName());
                 case 3 -> projectChangesMenu();
                 case 4 -> deleteProject();
-                case 5 -> ProjectFilterBoundary.displayFilterMenu();
+                case 5 -> ProjectFilterController.displayFilterMenu();
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }

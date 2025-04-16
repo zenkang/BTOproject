@@ -65,7 +65,7 @@ public class ProjectFilterBoundary {
         while (choice != 0);
     }
 
-    public static void displayProjectsForApplicant(Applicant applicant) {
+    public void displayProjectsForApplicant(Applicant applicant) {
         List<Project> filteredProjects = ProjectFilterController.getProjectsForApplicant(applicant);
         if(filteredProjects.isEmpty()){
             System.out.println("No projects are open to your user group.");

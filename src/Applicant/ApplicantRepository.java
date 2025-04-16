@@ -24,9 +24,8 @@ public class ApplicantRepository extends Repository<Applicant> {
         String[] values = row.split(",");
         int age = Integer.parseInt(values[2]);
         MaritalStatus status = MaritalStatus.valueOf(values[3].toUpperCase());
-        // Create a User with an empty password; actual password is managed in User.csv
-        User user = new User(values[1], "", Role.APPLICANT);
-        return new Applicant(values[0], age, status, user);
+        String nric = values[1];
+        return new Applicant(values[0], age, status, nric);
     }
 
     @Override

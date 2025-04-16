@@ -15,6 +15,26 @@ import static Utils.RepositoryGetter.*;
 
 public class ProjectFilterController {
 
+    public static void displayFilteredProjects(){
+        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
+        ProjectFilterBoundary.displayFilteredProjects();
+    }
+
+    public static void displayFilterMenu(){
+        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
+        ProjectFilterBoundary.displayFilterMenu();
+    }
+
+    public static void displayProjectForApplicant(Applicant applicant){
+        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
+        projectFilterBoundary.displayProjectsForApplicant(applicant);
+    }
+
+    public static void displayProjectsCreatedByManager(String managerName){
+        ProjectFilterBoundary projectFilterBoundary = new ProjectFilterBoundary();
+        ProjectFilterBoundary.displayProjectsCreatedByManager(managerName);
+    }
+
     public static List<Project> getFilteredProjects(String location, String flatType) {
         ProjectRepository repo = getProjectRepository();
 
@@ -54,9 +74,9 @@ public class ProjectFilterController {
                             project.getType2().equalsIgnoreCase("2-Room")
             );
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED) {
-            return repo.getAllProjects();
+            return repo.getAll();
         } else {
-            return repo.getAllProjects();
+            return repo.getAll();
         }
     }
 }

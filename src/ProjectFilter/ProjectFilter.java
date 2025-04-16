@@ -16,6 +16,7 @@ public class ProjectFilter {
     public String getNeighbourhoodName() {
         return neighbourhoodName;
     }
+
     public void setNeighbourhoodName(String neighbourhoodName) {
         this.neighbourhoodName = neighbourhoodName;
     }
