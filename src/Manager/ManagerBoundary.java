@@ -80,7 +80,7 @@ public class ManagerBoundary  {
                 case 2 -> createNewProject(this.manager.getName(),sc);
                 case 3 -> projectChangesMenu(sc);
                 case 4 -> deleteProject(sc);
-                case 5 -> displayFilterMenu();
+                case 5 -> displayProjectFilterMenu();
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -569,7 +569,7 @@ public class ManagerBoundary  {
         }
     }
 
-    public static void displayFilterMenu() {
+    public static void displayProjectFilterMenu() {
         int choice;
         do {
             System.out.println("\n=== Project Filter Menu ===");
@@ -620,26 +620,7 @@ public class ManagerBoundary  {
         } else {
             System.out.println("Filtered Projects:");
             for (Project project : filteredProjects) {
-                System.out.println("Project ID: "+project.getID());
-                System.out.println("Project name: " + project.getProjectName());
-                System.out.println("Neighbourhood: " + project.getNeighbourhood());
-                System.out.println("Room Type 1: "+project.getType1());
-                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-                System.out.println("Room Type 2: "+project.getType2());
-                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-                System.out.println("Application Open Date: "+project.getAppDateOpen());
-                System.out.println("Application Close Date: "+project.getAppDateClose());
-                System.out.println("Manager-in-charge: "+project.getManager());
-                System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
-                System.out.println("Officer(s) Assigned: ");
-                String[] officers = project.getOfficer();
-                for (String officer : officers) {
-                    System.out.println(officer);
-                }
-                System.out.println("Active Project: "+ project.isVisibility());
-                System.out.println("------------------------");
+                prettyPrintProjectDetails(project);
 
             }
         }
@@ -648,32 +629,12 @@ public class ManagerBoundary  {
     public static void promptProjectViewChoice(String managerName) {
         List<String> validOptions = Arrays.asList("yes", "no");
         String selection;
-        System.out.println("\n=== Prompt Project View ===");
         selection = SafeScanner.getValidatedStringInput(sc,"Would you like to view projects created by you?\nEntering no will display all projects \nEnter yes or no: ",validOptions);
         if(selection.equals("yes")) {
             List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerName);
             System.out.println("Projects created by you:");
             for (Project project : managerProjects) {
-                System.out.println("Project ID: "+project.getID());
-                System.out.println("Project name: " + project.getProjectName());
-                System.out.println("Neighbourhood: " + project.getNeighbourhood());
-                System.out.println("Room Type 1: "+project.getType1());
-                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-                System.out.println("Room Type 2: "+project.getType2());
-                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-                System.out.println("Application Open Date: "+project.getAppDateOpen());
-                System.out.println("Application Close Date: "+project.getAppDateClose());
-                System.out.println("Manager-in-charge: "+project.getManager());
-                System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
-                System.out.println("Officer(s) Assigned: ");
-                String[] officers = project.getOfficer();
-                for (String officer : officers) {
-                    System.out.println(officer);
-                }
-                System.out.println("Active Project: "+ project.isVisibility());
-                System.out.println("------------------------");
+                prettyPrintProjectDetails(project);
             }
         }
         else{
@@ -682,5 +643,33 @@ public class ManagerBoundary  {
 
 
     }
+    public static void prettyPrintProjectDetails(Project project){
+        if(project==null){
+            System.out.println("No project available.");
+            return;
+        }
+        System.out.println("Project ID: "+project.getID());
+        System.out.println("Project name: " + project.getProjectName());
+        System.out.println("Neighbourhood: " + project.getNeighbourhood());
+        System.out.println("Room Type 1: "+project.getType1());
+        System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
+        System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
+        System.out.println("Room Type 2: "+project.getType2());
+        System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
+        System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
+        System.out.println("Application Open Date: "+project.getAppDateOpen());
+        System.out.println("Application Close Date: "+project.getAppDateClose());
+        System.out.println("Manager-in-charge: "+project.getManager());
+        System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
+        System.out.println("Officer(s) Assigned: ");
+        String[] officers = project.getOfficer();
+        for (String officer : officers) {
+            System.out.println(officer);
+        }
+        System.out.println("Active Project: "+ project.isVisibility());
+        System.out.println("------------------------");
+
+    }
+
 
 }

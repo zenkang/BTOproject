@@ -4,6 +4,9 @@ import Applicant.Applicant;
 import Enumerations.ApplicationStatus;
 import Enumerations.MaritalStatus;
 import Enumerations.ProjectApplicationStatus;
+import Project.Project;
+import Project.ProjectController;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,13 +88,20 @@ public class ProjectApplicationController {
 
 
     public static void prettyPrintProjectApplications(ProjectApplication application) {
+
         if (application == null) {
             System.out.println("No Application available.");
             return;
         }
+        Project project = ProjectController.getProjectByID(application.getProjectID());
+        System.out.println("\n--------------------------\n");
+        if (project == null) {
+            System.out.println("Project details are not available.");
+        }
         System.out.println("Application ID: " + application.getID());
         System.out.println("Project ID: " + application.getProjectID());
-        System.out.println("Room Type: " + application.getRoomType());
+        assert project != null;
+        System.out.println("Project Name: " + project.getProjectName());
         System.out.println("Status: " + application.getStatus());
     }
 

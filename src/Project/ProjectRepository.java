@@ -84,14 +84,7 @@ public class ProjectRepository extends Repository<Project>{
         return this.delete(project);
     }
 
-    public boolean checkValidId(int projectId) {
-        for (Project p : entities) {
-            if(p.getID().equalsIgnoreCase(String.valueOf(projectId))) {
-                return false;
-            }
-        }
-        return true;
-    }
+
 
     public boolean checkUniqueProjectName(String projectName) {
         for (Project p : entities) {

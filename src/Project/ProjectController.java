@@ -303,15 +303,17 @@ public class ProjectController {
         return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
     }
 
+
     public static List<Project> getProjectsForApplicant(Applicant applicant) {
         ProjectRepository repo = getProjectRepository();
-        if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge()<=35) {
+        if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
             return repo.getByFilter(project ->
-                    project.getType1().equalsIgnoreCase("2-Room") ||
-                            project.getType2().equalsIgnoreCase("2-Room")
+                    (project.getType1().equalsIgnoreCase("2-Room") ||
+                            project.getType2().equalsIgnoreCase("2-Room"))
+                            && project.isVisibility()
             );
-        } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge()<21) {
-            return repo.getAll();
+        } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge() >= 21) {
+            return repo.getByFilter(project -> project.isVisibility());
         } else {
             return repo.getAll();
         }
