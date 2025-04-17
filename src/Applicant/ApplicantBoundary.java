@@ -188,7 +188,51 @@ public class ApplicantBoundary {
         if(filteredProjects.isEmpty()){
             System.out.println("No projects are open to your user group.");
         } else {
-            filteredProjects.forEach(System.out::println);
+            for(Project project:filteredProjects){
+                prettyPrintProjectDetails(applicant, project);
+            }
+        }
+    }
+    public static void prettyPrintProjectDetails(Applicant applicant, Project project) {
+        if(project==null){
+            System.out.println("No project available.");
+            return;
+        }
+        if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
+            System.out.println("Project ID: "+project.getID());
+            System.out.println("Project name: " + project.getProjectName());
+            System.out.println("Neighbourhood: " + project.getNeighbourhood());
+            if(project.getType1().equalsIgnoreCase("2-Room")){
+                System.out.println("Room Type 1: "+project.getType1());
+                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
+                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
+            }
+            else {
+                System.out.println("Room Type 2: "+project.getType2());
+                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
+                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
+            }
+            System.out.println("Application Open Date: "+project.getAppDateOpen());
+            System.out.println("Application Close Date: "+project.getAppDateClose());
+            System.out.println("Manager-in-charge: "+project.getManager());
+
+            System.out.println("------------------------");
+        }
+        else{
+            System.out.println("Project ID: "+project.getID());
+            System.out.println("Project name: " + project.getProjectName());
+            System.out.println("Neighbourhood: " + project.getNeighbourhood());
+            System.out.println("Room Type 1: "+project.getType1());
+            System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
+            System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
+            System.out.println("Room Type 2: "+project.getType2());
+            System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
+            System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
+            System.out.println("Application Open Date: "+project.getAppDateOpen());
+            System.out.println("Application Close Date: "+project.getAppDateClose());
+            System.out.println("Manager-in-charge: "+project.getManager());
+
+            System.out.println("------------------------");
         }
     }
 }
