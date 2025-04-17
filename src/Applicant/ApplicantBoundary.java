@@ -185,7 +185,7 @@ public class ApplicantBoundary {
 
     public static void displayProjectsForApplicant(Applicant applicant) {
         List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
-        if(filteredProjects.isEmpty()){
+        if(filteredProjects == null){
             System.out.println("No projects are open to your user group.");
         } else {
             for(Project project:filteredProjects){

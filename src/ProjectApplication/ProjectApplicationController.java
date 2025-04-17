@@ -100,6 +100,7 @@ public class ProjectApplicationController {
         }
         System.out.println("Application ID: " + application.getID());
         System.out.println("Project ID: " + application.getProjectID());
+        System.out.println("Room Type Applied: "+application.getRoomType());
         assert project != null;
         System.out.println("Project Name: " + project.getProjectName());
         System.out.println("Status: " + application.getStatus());
