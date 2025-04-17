@@ -144,7 +144,6 @@ public class ApplicantBoundary {
         }
         if(applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge()<35){
             System.out.println("Single applicants have to be 35 years old and above to apply.");
-            return;
         }
 
         else {
@@ -167,7 +166,7 @@ public class ApplicantBoundary {
             }
             else{
                 System.out.println("Application created successfully!");
-                ProjectApplicationController.prettyPrintProjectApplications(ProjectApplicationController.getApplicationByApplicantID(applicant.getID()));
+                prettyPrintProjectApplications(ProjectApplicationController.getApplicationByApplicantID(applicant.getID()));
             }
 
         }
@@ -179,7 +178,7 @@ public class ApplicantBoundary {
             System.out.println("Application could not be found.");
         }
         else {
-            ProjectApplicationController.prettyPrintProjectApplications(application);
+            prettyPrintProjectApplications(application);
         }
     }
 
@@ -234,5 +233,23 @@ public class ApplicantBoundary {
 
             System.out.println("------------------------");
         }
+    }
+    public static void prettyPrintProjectApplications(ProjectApplication application) {
+
+        if (application == null) {
+            System.out.println("No Application available.");
+            return;
+        }
+        Project project = ProjectController.getProjectByID(application.getProjectID());
+        System.out.println("\n--------------------------\n");
+        if (project == null) {
+            System.out.println("Project details are not available.");
+        }
+        System.out.println("Application ID: " + application.getID());
+        System.out.println("Project ID: " + application.getProjectID());
+        System.out.println("Room Type Applied: "+application.getRoomType());
+        assert project != null;
+        System.out.println("Project Name: " + project.getProjectName());
+        System.out.println("Status: " + application.getStatus());
     }
 }

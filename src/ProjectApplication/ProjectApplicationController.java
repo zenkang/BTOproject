@@ -84,27 +84,4 @@ public class ProjectApplicationController {
         return getProjectApplicationsRepository().getByFilter(app -> app.getRoomType().equalsIgnoreCase(roomType));
     }
 
-
-
-
-    public static void prettyPrintProjectApplications(ProjectApplication application) {
-
-        if (application == null) {
-            System.out.println("No Application available.");
-            return;
-        }
-        Project project = ProjectController.getProjectByID(application.getProjectID());
-        System.out.println("\n--------------------------\n");
-        if (project == null) {
-            System.out.println("Project details are not available.");
-        }
-        System.out.println("Application ID: " + application.getID());
-        System.out.println("Project ID: " + application.getProjectID());
-        System.out.println("Room Type Applied: "+application.getRoomType());
-        assert project != null;
-        System.out.println("Project Name: " + project.getProjectName());
-        System.out.println("Status: " + application.getStatus());
-    }
-
-
 }
