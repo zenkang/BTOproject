@@ -169,7 +169,7 @@ public class ApplicantBoundary {
             }
             else{
                 System.out.println("Application created successfully!");
-                ProjectApplicationController.prettyPrintProjectApplications(ProjectApplicationController.getApplicationByApplicantID(applicant.getID()));
+                prettyPrintProjectApplications(ProjectApplicationController.getApplicationByApplicantID(applicant.getID()));
             }
 
         }
@@ -181,13 +181,13 @@ public class ApplicantBoundary {
             System.out.println("Application could not be found.");
         }
         else {
-            ProjectApplicationController.prettyPrintProjectApplications(application);
+            prettyPrintProjectApplications(application);
         }
     }
 
     public static void displayProjectsForApplicant(Applicant applicant) {
         List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
-        if(filteredProjects.isEmpty()){
+        if(filteredProjects == null){
             System.out.println("No projects are open to your user group.");
         } else {
             for(Project project:filteredProjects){
@@ -236,5 +236,23 @@ public class ApplicantBoundary {
 
             System.out.println("------------------------");
         }
+    }
+    public static void prettyPrintProjectApplications(ProjectApplication application) {
+
+        if (application == null) {
+            System.out.println("No Application available.");
+            return;
+        }
+        Project project = ProjectController.getProjectByID(application.getProjectID());
+        System.out.println("\n--------------------------\n");
+        if (project == null) {
+            System.out.println("Project details are not available.");
+        }
+        System.out.println("Application ID: " + application.getID());
+        System.out.println("Project ID: " + application.getProjectID());
+        System.out.println("Room Type Applied: "+application.getRoomType());
+        assert project != null;
+        System.out.println("Project Name: " + project.getProjectName());
+        System.out.println("Status: " + application.getStatus());
     }
 }

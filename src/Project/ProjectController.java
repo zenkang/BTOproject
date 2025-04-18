@@ -34,211 +34,78 @@ public class ProjectController {
         ProjectRepository projectRepository = getProjectRepository();
         return projectRepository.getByProjectID(projectID);
     }
-    public static void updateProjectName(String projectID, String newProjectName) {
+    public static boolean updateProjectName(String projectID, String newProjectName) {
             ProjectRepository projectRepository = getProjectRepository();
             Project project = projectRepository.getByID(projectID);
-
-            if (project == null) {
-                System.out.println("No project found with the ID: " + projectID);
-                return;
-            }
-
             project.setProjectName(newProjectName);
+            return projectRepository.update(project);
 
-            boolean result = projectRepository.update(project);
-            if (result) {
-                System.out.println("Project name updated successfully.");
-            } else {
-            System.out.println("Update failed.");
-            }
-
-            }
-    public static void updateProjectNeighbourhood(String projectID, String newProjectNeighbourhood) {
+    }
+    public static boolean updateProjectNeighbourhood(String projectID, String newProjectNeighbourhood) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the ID: " + projectID);
-            return;
-        }
         project.setProjectNeighbourhood(newProjectNeighbourhood);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Neighbourhood updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectRoomType1(String projectID, String newRoomType1) {
+    public static boolean updateProjectRoomType1(String projectID, String newRoomType1) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the ID: " + projectID);
-            return;
-        }
         project.setProjectRoomType1(newRoomType1);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Room Type 1 updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectRoomType2(String projectID, String newRoomType2) {
+    public static boolean updateProjectRoomType2(String projectID, String newRoomType2) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the ID: " + projectID);
-            return;
-        }
         project.setProjectRoomType2(newRoomType2);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Room Type 2 updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectNumOfRoomType1(String projectID, int newNumOfRoomType1) {
+    public static boolean updateProjectNumOfRoomType1(String projectID, int newNumOfRoomType1) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the ID: " + projectID);
-            return;
-        }
         project.setProjectNumOfType1(newNumOfRoomType1);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Number of Room Type 1 updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectNumOfRoomType2(String projectID, int newNumOfRoomType2) {
+    public static boolean updateProjectNumOfRoomType2(String projectID, int newNumOfRoomType2) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the name: " + projectID);
-            return;
-        }
         project.setProjectNumOfType2(newNumOfRoomType2);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Number of Number of Room Type 2 updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateSellPriceOfRoomType1(String projectID, double newSellPrice){
+    public static boolean updateSellPriceOfRoomType1(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the name: " + projectID);
-            return;
-        }
         project.setSellPriceType1(newSellPrice);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Selling Price of Type 1 Rooms updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateSellPriceOfRoomType2(String projectID, double newSellPrice){
+    public static boolean updateSellPriceOfRoomType2(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the name: " + projectID);
-            return;
-        }
         project.setSellPriceType2(newSellPrice);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Selling Price of Type 2 Rooms updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectApplicationOpenDate(String projectID, LocalDate newAppOpenDate) {
+    public static boolean updateProjectApplicationOpenDate(String projectID, LocalDate newAppOpenDate) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the ID: " + projectID);
-            return;
-        }
         project.setProjectApplicationOpenData(newAppOpenDate);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Application Open Date updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectApplicationCloseDate(String projectID, LocalDate newAppCloseDate) {
+    public static boolean updateProjectApplicationCloseDate(String projectID, LocalDate newAppCloseDate) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the ID: " + projectID);
-            return;
-        }
         project.setProjectApplicationCloseDate(newAppCloseDate);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Application Closing Date updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectManager(String projectID, String newProjectManager) {
+    public static boolean updateProjectManager(String projectID, String newProjectManager) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the ID: " + projectID);
-            return;
-        }
         project.setProjectManager(newProjectManager);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Manager updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
-    public static void updateProjectNumOfOfficerSlots(String projectID, int newProjectNumOfOfficerSlots) {
+    public static boolean updateProjectNumOfOfficerSlots(String projectID, int newProjectNumOfOfficerSlots) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-
-        if (project == null) {
-            System.out.println("No project found with the name: " + projectID);
-            return;
-        }
         project.setProjectNumOfOfficers(newProjectNumOfOfficerSlots);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Number of Officer Slots updated successfully.");
-        } else {
-            System.out.println("Update failed.");
-        }
-
+        return projectRepository.update(project);
     }
     public static boolean deleteProject(String projectID) {
         ProjectRepository projectRepository = getProjectRepository();
@@ -281,21 +148,12 @@ public class ProjectController {
         return projectRepository.checkActiveProject(manager_name);
     }
 
-    public static void updateProjectVisibility(String projectID, boolean b) {
+    public static boolean updateProjectVisibility(String projectID, boolean b) {
         ProjectRepository projectRepository = getProjectRepository();
         Project project = projectRepository.getByProjectID(projectID);
-        if (project == null) {
-            System.out.println("No project found with the name: " + projectID);
-        }
         assert project != null;
         project.setVisibility(b);
-        boolean result = projectRepository.update(project);
-        if (result) {
-            System.out.println("Project Visibility updated successfully.");
-        }
-        else{
-            System.out.println("Update failed.");
-        }
+        return projectRepository.update(project);
     }
 
     public static List<Project> getProjectsCreatedByManager(String managerName) {
@@ -315,7 +173,7 @@ public class ProjectController {
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge() >= 21) {
             return repo.getByFilter(project -> project.isVisibility());
         } else {
-            return repo.getAll();
+            return null;
         }
     }
 
