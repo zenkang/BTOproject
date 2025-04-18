@@ -1,11 +1,8 @@
 package Applicant;
 
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
-import Enumerations.ApplicationStatus;
 import Enumerations.MaritalStatus;
 import Project.Project;
 import Project.ProjectController;
@@ -51,8 +48,10 @@ public class ApplicantBoundary {
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0) ;
-        sc.close();
+        while (choice != 0 && choice !=7) ;
+        if (choice == 0){
+            sc.close();
+        }
     }
 
 
@@ -135,7 +134,7 @@ public class ApplicantBoundary {
     public static void applyForProject(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
         if (!ProjectApplicationController.checkPreviousApplication(applicant.getNric())) {
-            System.out.println("You have already submitted an Application Before.");
+            System.out.println("You have a Pending/Successful Application");
             return;
         }
         if(applicant.getAge() < 21){
@@ -144,15 +143,21 @@ public class ApplicantBoundary {
         }
         if(applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge()<35){
             System.out.println("Single applicants have to be 35 years old and above to apply.");
+            return;
+        }
+        if(ProjectController.getProjectsForApplicant(applicant).isEmpty()) {
+            System.out.println("No Projects available for applications at the moment.");
         }
 
         else {
             System.out.println("\n=== Project Application ===");
-            System.out.print("Enter Project ID you want to apply for: ");
+            System.out.println("Valid Projects:");
+            List<String> ValidprojIDs = ProjectController.getProjectIDsForApplicant(applicant);
+            ValidprojIDs.forEach(item -> System.out.println("ID: " + item));
             // TO BE UPDATED
             // BEST TO GET FILTERED VALID PROJECT ID BASED ON APPLICANT'S ATTRIBUTE
             //TO BE ADDED: CHECKS TO ENSURE NUM OF UNITS AVAILABLE FOR THE PROJ >1
-            String projectID = SafeScanner.getValidProjectID(sc);
+            String projectID = SafeScanner.getValidatedStringInput(sc,"Enter Project ID you want to apply for: ",ValidprojIDs);
             String roomType;
             if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
                 roomType = "2-room";
@@ -161,95 +166,57 @@ public class ApplicantBoundary {
                 List<String> validRoomTypes = Arrays.asList("2-room", "3-room");
                 roomType = SafeScanner.getValidatedStringInput(sc, "Enter a room type (2-Room or 3-Room): ", validRoomTypes);
             }
-            if (!ProjectApplicationController.createProjectApplication(projectID,roomType, applicant.getID())){
+            if (!ProjectApplicationController.createProjectApplication(projectID.toUpperCase(),roomType, applicant.getID())){
                 System.out.println("Project application could not be created.");
             }
             else{
                 System.out.println("Application created successfully!");
-                prettyPrintProjectApplications(ProjectApplicationController.getApplicationByApplicantID(applicant.getID()));
             }
 
         }
     }
 
     public static void viewApplication(Applicant applicant) {
-        ProjectApplication application = ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
-        if (application == null) {
+        List<ProjectApplication> application = ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
+        if (application.isEmpty()){
             System.out.println("Application could not be found.");
         }
         else {
-            prettyPrintProjectApplications(application);
+            application.forEach(
+                    ProjectApplicationController::prettyPrintProjectApplications
+            );
         }
     }
 
     public static void displayProjectsForApplicant(Applicant applicant) {
+        // 1) now returns a list
+        List<ProjectApplication> applications =
+                ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
+
+        // 2) collect all the project‑IDs this applicant has already applied to
+        Set<String> appliedIds = new HashSet<>();
+        if (!applications.isEmpty()) {
+            System.out.println("\nYou have applied to the following project"
+                    + (applications.size() > 1 ? "s:" : ":"));
+            for (ProjectApplication app : applications) {
+                appliedIds.add(app.getProjectID());
+                Project p = ProjectController.getProjectByID(app.getProjectID());
+                ProjectController.prettyPrintApplicantProject(applicant, p);
+            }
+        }
+
+        // 3) fetch the whole “open” list, then skip anything in appliedIds
         List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
-        if(filteredProjects == null){
+        if (filteredProjects.isEmpty()) {
             System.out.println("No projects are open to your user group.");
         } else {
-            for(Project project:filteredProjects){
-                prettyPrintProjectDetails(applicant, project);
+            System.out.println("========= Projects =========");
+            for (Project proj : filteredProjects) {
+                ProjectController.prettyPrintApplicantProject(applicant, proj);
             }
         }
     }
-    public static void prettyPrintProjectDetails(Applicant applicant, Project project) {
-        if(project==null){
-            System.out.println("No project available.");
-            return;
-        }
-        if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
-            System.out.println("Project ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            if(project.getType1().equalsIgnoreCase("2-Room")){
-                System.out.println("Room Type 1: "+project.getType1());
-                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            }
-            else {
-                System.out.println("Room Type 2: "+project.getType2());
-                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            }
-            System.out.println("Application Open Date: "+project.getAppDateOpen());
-            System.out.println("Application Close Date: "+project.getAppDateClose());
-            System.out.println("Manager-in-charge: "+project.getManager());
 
-            System.out.println("------------------------");
-        }
-        else{
-            System.out.println("Project ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            System.out.println("Room Type 1: "+project.getType1());
-            System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-            System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            System.out.println("Room Type 2: "+project.getType2());
-            System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-            System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            System.out.println("Application Open Date: "+project.getAppDateOpen());
-            System.out.println("Application Close Date: "+project.getAppDateClose());
-            System.out.println("Manager-in-charge: "+project.getManager());
 
-            System.out.println("------------------------");
-        }
-    }
-    public static void prettyPrintProjectApplications(ProjectApplication application) {
 
-        if (application == null) {
-            System.out.println("No Application available.");
-            return;
-        }
-        Project project = ProjectController.getProjectByID(application.getProjectID());
-        System.out.println("\n--------------------------\n");
-        if (project == null) {
-            System.out.println("Project details are not available.");
-        }
-        System.out.println("Application ID: " + application.getID());
-        System.out.println("Project ID: " + application.getProjectID());
-        System.out.println("Room Type Applied: "+application.getRoomType());
-        assert project != null;
-        System.out.println("Project Name: " + project.getProjectName());
-        System.out.println("Status: " + application.getStatus());
-    }
 }

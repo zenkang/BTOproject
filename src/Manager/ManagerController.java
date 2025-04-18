@@ -38,4 +38,12 @@ public class ManagerController {
         }
         return getManagerRepository().update(manager);
     }
+    public static String getNameById(String id){
+        Manager man = getManagerRepository().getByID(id);
+        if (man == null){
+            System.out.println("Manager not found");
+            return null;
+        }
+        return man.getName();
+    }
 }

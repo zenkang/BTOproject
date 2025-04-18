@@ -52,7 +52,7 @@ public class EnquiryManagerBoundary {
     }
 
     private static void replyToOwnProjectEnquiries(Manager manager) {
-        List<Project> myProjects = ProjectController.getProjectsManagedBy(manager.getName());
+        List<Project> myProjects = ProjectController.getProjectsCreatedByManager(manager.getName());
         List<String> myProjectNames = myProjects.stream()
                 .map(Project::getProjectName)
                 .collect(Collectors.toList());

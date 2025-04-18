@@ -4,6 +4,7 @@ import Applicant.Applicant;
 import Enumerations.ApplicationStatus;
 import Enumerations.MaritalStatus;
 import Enumerations.ProjectApplicationStatus;
+import Manager.Manager;
 import Project.Project;
 import Project.ProjectController;
 
@@ -15,11 +16,18 @@ import static Utils.RepositoryGetter.getProjectApplicationsRepository;
 
 public class ProjectApplicationController {
 
-    public static ArrayList<ProjectApplication> getAllProjectApplications() {
-        return getProjectApplicationsRepository().getAllProjectApplications();
+    public static ArrayList<ProjectApplication> getAllProjectApplications(Manager manager) {
+        List<String> ProjectIDs = ProjectController.getProjectIDsManagedBy(manager.getID());
+        ArrayList<ProjectApplication> projectApplications = getProjectApplicationsRepository().getAllProjectApplications();
+        // keep only those whose projectID is in ProjectIDs
+        projectApplications.removeIf(app ->
+                !ProjectIDs.contains(app.getProjectID())
+        );
+        return projectApplications;
     }
-    public static void displayAllProjectApplications(){
-        ArrayList<ProjectApplication> projectApplications = getAllProjectApplications();
+
+    public static void displayAllProjectApplications(Manager manager) {
+        ArrayList<ProjectApplication> projectApplications = getAllProjectApplications(manager);
         if (projectApplications.isEmpty()) {
             System.out.println("No Applications Available.");
         } else {
@@ -35,13 +43,8 @@ public class ProjectApplicationController {
     }
 
 
-    public static ProjectApplication getApplicationByApplicantID(String applicantID) {
-        for (ProjectApplication app : getProjectApplicationsRepository().getAllProjectApplications()) {
-            if (app.getApplicantID().equalsIgnoreCase(applicantID)) {
-                return app;
-            }
-        }
-        return null;
+    public static List<ProjectApplication> getApplicationByApplicantID(String applicantID) {
+        return getProjectApplicationsRepository().getByFilter(application -> applicantID.equalsIgnoreCase(application.getApplicantID()));
     }
 
     public static boolean createProjectApplication(String projectID,String roomType, String applicantID) {
@@ -66,14 +69,32 @@ public class ProjectApplicationController {
         ProjectApplicationRepository applicationRepository = getProjectApplicationsRepository();
         for (ProjectApplication existing : applicationRepository.getAllProjectApplications()) {
             if (existing.getApplicantID().equalsIgnoreCase(applicantID)) {
+                if (existing.getStatus() == ApplicationStatus.UNSUCCESSFUL) {
+                    continue;
+                }
                 return false;
             }
         }
         return true;
     }
 
-    public static List<ProjectApplication> getApplicationsByStatus(ApplicationStatus status) {
-        return getProjectApplicationsRepository().getByFilter(app -> app.getStatus().equals(status));
+    public static int getNumPendingApplications(Manager manager) {
+        List<ProjectApplication> list = getApplicationsByStatus(manager, ApplicationStatus.PENDING);
+        return list.size();
+    }
+
+    public static List<String> getPendingApplicationIDs(Manager manager) {
+        List<ProjectApplication> list = getApplicationsByStatus(manager, ApplicationStatus.PENDING);
+        return list.stream()
+                .map(ProjectApplication::getID)
+                .toList();
+    }
+
+    public static List<ProjectApplication> getApplicationsByStatus(Manager manager, ApplicationStatus status) {
+        ArrayList<ProjectApplication> projectApplications = getAllProjectApplications(manager);
+        return projectApplications.stream()
+                .filter(app -> app.getStatus().equals(status))
+                .toList();
     }
 
     public static List<ProjectApplication> getApplicationsByProjectID(String projectID) {
@@ -82,6 +103,24 @@ public class ProjectApplicationController {
 
     public static List<ProjectApplication> getApplicationsByRoomType(String roomType) {
         return getProjectApplicationsRepository().getByFilter(app -> app.getRoomType().equalsIgnoreCase(roomType));
+    }
+
+    public static void prettyPrintProjectApplications(ProjectApplication application) {
+        if (application == null) {
+            System.out.println("No Application available.");
+            return;
+        }
+        Project project = ProjectController.getProjectByID(application.getProjectID());
+        System.out.println("\n======== Project Application ========\n");
+        if (project == null) {
+            System.out.println("Project details are not available.");
+        }
+        System.out.println("Application ID: " + application.getID());
+        assert project != null;
+        System.out.println("Project Name: " + project.getProjectName());
+        System.out.println("Project ID: " + application.getProjectID());
+        System.out.println("Room Type Applied: "+application.getRoomType());
+        System.out.println("Status: " + application.getStatus());
     }
 
 }
