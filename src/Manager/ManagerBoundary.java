@@ -44,10 +44,10 @@ public class ManagerBoundary {
             System.out.println("\n=== Manager Menu ===");
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects Menu");
-            System.out.println("3. View project applications");
+            System.out.println("3. View Project applications");
             System.out.println("4. View Project Registration Menu");
             System.out.println("5. View Enquiry Menu");
-            System.out.println("6. Change Password");
+            System.out.println("7. Change Password");
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
@@ -58,7 +58,7 @@ public class ManagerBoundary {
                 case 3 -> viewApplicantApplications();
                 case 4 -> System.out.println("TBC");
                 case 5 -> EnquiryManagerBoundary.managerMenu(manager);
-                case 6 -> changePassword();
+                case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
