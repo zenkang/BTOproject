@@ -40,7 +40,7 @@ public class ManagerBoundary  {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
 
             switch (choice) {
-                case 1 -> viewApplicantProfile();
+                case 1 -> viewProfile();
                 case 2 -> ProjectBoundary.displayProjectMenu();
                 case 3 -> viewApplicantApplications();
                 case 4 -> System.out.println("TBC");
@@ -50,10 +50,12 @@ public class ManagerBoundary  {
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0) ;
-        sc.close();
+        while (choice != 0 && choice != 7) ;
+        if(choice == 0){
+            sc.close();
+        }
     }
-    public void viewApplicantProfile() {
+    private void viewProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
         do {
@@ -62,13 +64,13 @@ public class ManagerBoundary  {
             List<String> validOptions = Arrays.asList("y", "n");
             selection = SafeScanner.getValidatedStringInput(sc,"Would you like to update your profile?\nEnter: y/n\n",validOptions);
             if (selection.equals("y")) {
-                updateApplicantProfile();
+                updateProfile();
             }
         }while(!selection.equals("n"));
 
     }
 
-    public void updateApplicantProfile() {
+    private void updateProfile() {
         int choice;
         Scanner sc = new Scanner(System.in);
         do{
@@ -132,9 +134,10 @@ public class ManagerBoundary  {
         int choice;
         Scanner sc = new Scanner(System.in);
         do {
+            int numPending = ProjectApplicationController.getNumPendingApplications();
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
-            System.out.println("2. View pending Applications");
+            System.out.println("2. View pending Applications " + ((numPending==0)? "" : "("+numPending+")" ));
             System.out.println("3. View Filtered applications");
             System.out.println("4. Update Filters");
             System.out.println("0. Back");
@@ -145,7 +148,12 @@ public class ManagerBoundary  {
                 case 1 -> ProjectApplicationController.displayAllProjectApplications();
                 case 2 -> {
                             List<ProjectApplication> list = ProjectApplicationController.getApplicationsByStatus(ApplicationStatus.PENDING);
+                            if(list.isEmpty()){
+                                System.out.println("No pending applications found.");
+                            }
+                            else{
                             list.forEach(System.out::println);
+                            }
                 }
                 case 3 -> System.out.println("TBC");
                 case 4 -> System.out.println("TBC");

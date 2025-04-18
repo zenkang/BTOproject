@@ -74,9 +74,9 @@ public class ProjectFilterController {
                             project.getType2().equalsIgnoreCase("2-Room")
             );
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED) {
-            return repo.getAllProjects();
+            return repo.getAll();
         } else {
-            return repo.getAllProjects();
+            return repo.getAll();
         }
     }
 }
