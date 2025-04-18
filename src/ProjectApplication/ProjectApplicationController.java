@@ -72,6 +72,11 @@ public class ProjectApplicationController {
         return true;
     }
 
+    public static int getNumPendingApplications() {
+        List<ProjectApplication> list = getProjectApplicationsRepository().getByFilter(application -> application.getStatus().equals(ApplicationStatus.PENDING));
+        return list.size();
+    }
+
     public static List<ProjectApplication> getApplicationsByStatus(ApplicationStatus status) {
         return getProjectApplicationsRepository().getByFilter(app -> app.getStatus().equals(status));
     }

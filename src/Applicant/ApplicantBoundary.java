@@ -51,8 +51,10 @@ public class ApplicantBoundary {
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0) ;
-        sc.close();
+        while (choice != 0 && choice !=7) ;
+        if (choice == 0){
+            sc.close();
+        }
     }
 
 
