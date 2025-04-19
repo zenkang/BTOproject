@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class LoginBoundary {
     public static User login(){
-        User user = null;
+        User user;
         Scanner sc = new Scanner(System.in);
         do{
             System.out.println("Enter NRIC: ");

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import Project.Project;
 import Project.ProjectController;
 import static Utils.RepositoryGetter.*;
@@ -128,6 +129,9 @@ public class SafeScanner {
     public static String getValidatedStringInput(Scanner scanner, String prompt, List<String> validInputs) {
         String input = "";
         boolean valid = false;
+        List<String> lowerList = validInputs.stream()
+                .map(String::toLowerCase)
+                .toList();
 
         while (!valid) {
             System.out.print(prompt);
@@ -135,7 +139,7 @@ public class SafeScanner {
 
             if (input.isEmpty()) {
                 System.out.println("Invalid input. Please enter a non-empty string.");
-            } else if (!validInputs.contains(input)) {
+            } else if (!lowerList.contains(input)) {
                 System.out.println("Invalid input. Accepted values are: " + validInputs);
             } else if (input.contains(",")) {
                 System.out.println("Invalid input. Commas are not allowed.");

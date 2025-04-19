@@ -1,7 +1,7 @@
 package Utils;
 import Applicant.ApplicantRepository;
 import Enquiry.EnquiryRepository;
-import Enquiry.ReplyRepository;
+import Reply.ReplyRepository;
 import Manager.ManagerRepository;
 import Project.ProjectRepository;
 import ProjectApplication.ProjectApplicationRepository;

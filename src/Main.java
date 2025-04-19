@@ -4,9 +4,11 @@ import User.User;
 import User.UserBoundary;
 import Login.LoginBoundary;
 import Utils.SessionManager;
+import static Utils.RepositoryGetter.*;
 
 public class Main {
     public static void main(String[] args) {
+        getUsersRepository().display();
         do {
             SessionManager.passwordChanged = false;
             User user = LoginBoundary.login();
@@ -16,7 +18,7 @@ public class Main {
             System.out.println(user);
             UserBoundary.route(user);
         }while (SessionManager.passwordChanged);
-            System.out.println("end");
+        System.out.println("end");
 
     }
 }

@@ -1,16 +1,10 @@
 package Project;
 
 import Abstract.Repository;
-import Applicant.Applicant;
-import Enumerations.Role;
-import Project.Project;
 import Utils.CsvUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
-import static Utils.RepositoryGetter.*;
 
 public class ProjectRepository extends Repository<Project>{
     private static ProjectRepository instance;
@@ -39,6 +33,9 @@ public class ProjectRepository extends Repository<Project>{
             LocalDate closeDate = LocalDate.parse(CsvUtils.formatDate(values[10]), formatter);
             String[] officer = values[13].split(",");
             boolean visible = Boolean.parseBoolean(values[14].trim());
+            if (LocalDate.now().isAfter(closeDate)) {
+                visible = false;
+            }
             return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                     sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
                     openDate,closeDate,values[11],noOfficersSlots,
@@ -50,7 +47,7 @@ public class ProjectRepository extends Repository<Project>{
             return "ID,Project Name,Neighbourhood,Type 1," +
                     "Number of Units,Selling Price,Type 2," +
                     "Number of Units,Selling Price,Application Open Date," +
-                    "Application Closing Date,Manager,Officer Slot,Officer,"+
+                    "Application Closing Date,ManagerID,Officer Slot,Officer,"+
                     "Visible";
         }
 
@@ -60,51 +57,6 @@ public class ProjectRepository extends Repository<Project>{
                 System.out.println(p);
             }
         }
-    public Project getByProjectName(String projectName) {
-        for (Project p : entities) {
-            if (p.getProjectName().equalsIgnoreCase(projectName)) {
-                return p;
-            }
-        }
-        return null;
-    }
-    public Project getByProjectID(String projectID) {
-        for (Project p : entities) {
-            if (p.getID().equalsIgnoreCase(projectID)) {
-                return p;
-            }
-        }
-        return null;
-    }
-    public boolean deleteProjectByID(String projectID) {
-        Project project = this.getByID(projectID);
-        if(project == null) {
-            return false;
-        }
-        return this.delete(project);
-    }
-
-
-
-    public boolean checkUniqueProjectName(String projectName) {
-        for (Project p : entities) {
-            if(p.getProjectName().equalsIgnoreCase(projectName)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean checkActiveProject(String managerName) {
-        for (Project p : entities) {
-            if(p.getManager().equalsIgnoreCase(managerName) && p.isVisibility()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
 }
 
 

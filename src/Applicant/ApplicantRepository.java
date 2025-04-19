@@ -34,23 +34,7 @@ public class ApplicantRepository extends Repository<Applicant> {
     }
 
 
-    //What is this for? --Jarrel
-    public boolean CreateApplicant(String name, String nric, int age, String Status, String password) {
-        if(!CsvUtils.isValidMaritalStatus(Status)) {
-            System.out.println("Invalid Marital Status");
-            return false;
-        }
-        MaritalStatus maritalStatus = MaritalStatus.valueOf(Status.toUpperCase());
-        Applicant app = new Applicant(name,nric,age,maritalStatus,password);
-        return this.create(app);
-    }
 
-    //What is this for? --Jarrel
-    public boolean deleteApplicantByNRIC(String nric) {
-        Applicant app = this.getByID(nric);
-        if(app == null) {
-            return false;
-        }
-        return this.delete(app);
-    }
+
+
 }

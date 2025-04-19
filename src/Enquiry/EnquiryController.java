@@ -2,11 +2,10 @@ package Enquiry;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import Abstract.Repository;
-import Enumerations.EnquiryStatus;
+
 import Project.Project;
 import Project.ProjectController;
 import Utils.RepositoryGetter;
@@ -35,26 +34,6 @@ public class EnquiryController {
         return RepositoryGetter.getEnquiryRepository().getByFilter(e -> e.getApplicantNric().equals(applicantNric));
     }
 
-    public static List<Enquiry> getEnquiriesByProject(String projectId) {
-        return RepositoryGetter.getEnquiryRepository().getByFilter(e -> e.getProjectName().equals(projectId));
-    }
-
-    public static boolean replyToEnquiry(String enquiryId, String reply) {
-        Enquiry enquiry = getEnquiryById(enquiryId);
-        if (enquiry != null) {
-            enquiry.setStatus(EnquiryStatus.REPLIED);
-            return RepositoryGetter.getEnquiryRepository().update(enquiry);
-        }
-        return false;
-    }
-
-    public static void updateEnquiryMessage(String enquiryId, String newMessage) {
-        Enquiry enquiry = getEnquiryById(enquiryId);
-        if (enquiry != null) {
-            enquiry.setMessage(newMessage);
-            RepositoryGetter.getEnquiryRepository().update(enquiry);
-        }
-    }
 
     public static void deleteEnquiry(String enquiryId) {
         Enquiry e = getEnquiryById(enquiryId);
@@ -71,12 +50,18 @@ public class EnquiryController {
         RepositoryGetter.getEnquiryRepository().update(e); // triggers store() in Repository
     }
 
-    public static List<Enquiry> getUnrepliedEnquiriesByProjects(String manager_name) {
-        List<Project> myProjects = ProjectController.getProjectsManagedBy(manager_name);
-        List<String> myProjectNames = myProjects.stream()
+    public static List<Enquiry> getUnrepliedEnquiriesByProjects(String managerId) {
+        List<String> projectsIds = ProjectController.getProjectIDsManagedBy(managerId);
+        List<Project> projects = ProjectController.getProjectsByIDs(projectsIds);
+         List<String> projectNames = projects.stream()
                 .map(Project::getProjectName)
                 .collect(Collectors.toList());
-        return RepositoryGetter.getEnquiryRepository().getUnrepliedByProjectNames(myProjectNames);
+        return RepositoryGetter.getEnquiryRepository().getByFilter(e ->
+                projectNames.stream().anyMatch(
+                        name -> name.equalsIgnoreCase(e.getProjectName().trim())
+                ) && !e.isReplied()
+        );
+
     }
 
 
