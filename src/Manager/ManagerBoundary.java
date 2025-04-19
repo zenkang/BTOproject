@@ -44,7 +44,7 @@ public class ManagerBoundary {
             System.out.println("\n=== Manager Menu ===");
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects Menu");
-            System.out.println("3. View Project applications");
+            System.out.println("3. View Project Applications");
             System.out.println("4. View Project Registration Menu");
             System.out.println("5. View Enquiry Menu");
             System.out.println("7. Change Password");

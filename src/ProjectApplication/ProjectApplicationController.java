@@ -32,6 +32,21 @@ public class ProjectApplicationController {
     }
 
     public static boolean updateApplicationStatus(ProjectApplication projectApplication, ApplicationStatus applicationStatus) {
+        if(projectApplication.getStatus() == ApplicationStatus.PENDING && applicationStatus == ApplicationStatus.SUCCESSFUL) {
+            String roomType = projectApplication.getRoomType();
+            String projectID = projectApplication.getProjectID();
+            int unit;
+            if(ProjectController.getProjectByID(projectID).getType1().equalsIgnoreCase(roomType)){
+                unit = ProjectController.getProjectByID(projectID).getNoOfUnitsType1();
+                unit = unit - 1;
+                ProjectController.updateProjectNumOfRoomType1(projectID, unit);
+            }
+            else if(ProjectController.getProjectByID(projectID).getType2().equalsIgnoreCase(roomType)){
+                unit = ProjectController.getProjectByID(projectID).getNoOfUnitsType2();
+                unit = unit - 1;
+                ProjectController.updateProjectNumOfRoomType2(projectID, unit);
+            }
+        }
         projectApplication.setStatus(applicationStatus);
         return getProjectApplicationsRepository().update(projectApplication);
     }
