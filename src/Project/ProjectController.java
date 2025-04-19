@@ -109,9 +109,6 @@ public class ProjectController {
         Project project = getProjectRepository().getByID(projectID);
         return getProjectRepository().delete(project);
     }
-    public static boolean createProject(Project newProject){
-        return getProjectRepository().create(newProject);
-    }
 
     public static boolean createProject(String projectName,
                                         String neighbourhood,

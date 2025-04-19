@@ -1,4 +1,7 @@
-package Enquiry;
+package Reply;
+
+import Enquiry.Enquiry;
+import Enquiry.EnquiryController;
 
 import java.time.LocalDate;
 import java.util.List;

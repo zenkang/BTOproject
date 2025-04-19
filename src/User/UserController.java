@@ -35,7 +35,7 @@ public class UserController {
                 if(manager != null) {
                     ManagerBoundary view = new ManagerBoundary(manager);
                     System.out.println("\nWelcome " + manager.getName());
-                    view.displayMenu();
+                    view.displayManagerMenu();
                 }
                 else{
                     System.out.println("Manager creation failed");
