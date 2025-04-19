@@ -51,8 +51,10 @@ public class ApplicantBoundary {
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0) ;
-        sc.close();
+        while (choice != 0 && choice !=7) ;
+        if (choice == 0){
+            sc.close();
+        }
     }
 
 
@@ -144,6 +146,7 @@ public class ApplicantBoundary {
         }
         if(applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge()<35){
             System.out.println("Single applicants have to be 35 years old and above to apply.");
+            return;
         }
 
         else {

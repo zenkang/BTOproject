@@ -1,5 +1,6 @@
 package Manager;
 
+
 import Applicant.ApplicantController;
 import Enquiry.EnquiryApplicantBoundary;
 import Enquiry.EnquiryManagerBoundary;
@@ -43,27 +44,29 @@ public class ManagerBoundary {
             System.out.println("\n=== Manager Menu ===");
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects Menu");
-            System.out.println("3. View project applications");
+            System.out.println("3. View Project applications");
             System.out.println("4. View Project Registration Menu");
             System.out.println("5. View Enquiry Menu");
-            System.out.println("6. Change Password");
+            System.out.println("7. Change Password");
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
 
             switch (choice) {
-                case 1 -> viewApplicantProfile();
+                case 1 -> viewProfile();
                 case 2 -> displayProjectMenu();
                 case 3 -> viewApplicantApplications();
                 case 4 -> System.out.println("TBC");
                 case 5 -> EnquiryManagerBoundary.managerMenu(manager);
-                case 6 -> changePassword();
+                case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0);
-        sc.close();
+        while (choice != 0 && choice != 7) ;
+        if(choice == 0){
+            sc.close();
+        }
     }
 
     public void displayProjectMenu() {
@@ -82,7 +85,7 @@ public class ManagerBoundary {
 
             switch (choice) {
                 case 1 -> promptProjectViewChoice(this.manager.getName()) ;
-                case 2 -> createNewProject(this.manager.getName(), sc);
+                case 2 -> createNewProject(this.manager.getName(),sc);
                 case 3 -> projectChangesMenu(sc);
                 case 4 -> deleteProject(sc);
                 case 5 -> displayProjectFilterMenu();
@@ -92,6 +95,7 @@ public class ManagerBoundary {
         }
         while (choice != 0);
     }
+
 
     public static void createNewProject(String manager_name, Scanner sc) {
         int noOfUnitsType2, noOfUnitsType1;
@@ -211,6 +215,7 @@ public class ManagerBoundary {
             projectID = sc.nextLine();
         }
         Project project = ProjectController.getProjectByID(projectID);
+
         if (project.isVisibility()) {
             System.out.println("Is the Project Visible?: Yes");
             choice = SafeScanner.getValidatedStringInput(sc, "Would you like to set it to No?\nEnter: y/n\n", validOptions);
@@ -503,7 +508,8 @@ public class ManagerBoundary {
         }
     }
 
-    public void viewApplicantProfile() {
+
+    private void viewProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
         do {
@@ -512,13 +518,13 @@ public class ManagerBoundary {
             List<String> validOptions = Arrays.asList("y", "n");
             selection = SafeScanner.getValidatedStringInput(sc, "Would you like to update your profile?\nEnter: y/n\n", validOptions);
             if (selection.equals("y")) {
-                updateApplicantProfile();
+                updateProfile();
             }
         } while (!selection.equals("n"));
 
     }
 
-    public void updateApplicantProfile() {
+    private void updateProfile() {
         int choice;
         Scanner sc = new Scanner(System.in);
         do {
@@ -579,9 +585,10 @@ public class ManagerBoundary {
         int choice;
         Scanner sc = new Scanner(System.in);
         do {
+            int numPending = ProjectApplicationController.getNumPendingApplications();
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
-            System.out.println("2. View pending Applications");
+            System.out.println("2. View pending Applications " + ((numPending==0)? "" : "("+numPending+")" ));
             System.out.println("3. View Filtered applications");
             System.out.println("4. Update Filters");
             System.out.println("0. Back");
@@ -591,8 +598,13 @@ public class ManagerBoundary {
             switch (choice) {
                 case 1 -> ProjectApplicationController.displayAllProjectApplications();
                 case 2 -> {
-                    List<ProjectApplication> list = ProjectApplicationController.getApplicationsByStatus(ApplicationStatus.PENDING);
-                    list.forEach(System.out::println);
+                            List<ProjectApplication> list = ProjectApplicationController.getApplicationsByStatus(ApplicationStatus.PENDING);
+                            if(list.isEmpty()){
+                                System.out.println("No pending applications found.");
+                            }
+                            else{
+                            list.forEach(System.out::println);
+                            }
                 }
                 case 3 -> System.out.println("TBC");
                 case 4 -> System.out.println("TBC");
@@ -711,12 +723,13 @@ public class ManagerBoundary {
             for (Project project : managerProjects) {
                 prettyPrintProjectDetails(project);
             }
-        } else {
+        }
+        else{
             displayFilteredProjects(Filter);
         }
 
-    }
 
+    }
     public static void prettyPrintProjectDetails(Project project){
         if(project==null){
             System.out.println("No project available.");
@@ -744,5 +757,6 @@ public class ManagerBoundary {
         System.out.println("------------------------");
 
     }
+
 
 }

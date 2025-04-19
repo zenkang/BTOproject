@@ -18,6 +18,8 @@ public class ProjectApplicationController {
     public static ArrayList<ProjectApplication> getAllProjectApplications() {
         return getProjectApplicationsRepository().getAllProjectApplications();
     }
+
+    //Manager boundary will not use this function anymore as only view applications handled by manager
     public static void displayAllProjectApplications(){
         ArrayList<ProjectApplication> projectApplications = getAllProjectApplications();
         if (projectApplications.isEmpty()) {
@@ -45,7 +47,7 @@ public class ProjectApplicationController {
     }
 
     public static boolean createProjectApplication(String projectID,String roomType, String applicantID) {
-        String appID = getProjectApplicationsRepository().generateId();
+        String appID = getProjectApplicationsRepository().generateId("APP");
         ProjectApplication application = new ProjectApplication(
                 appID,
                 projectID,
@@ -72,6 +74,11 @@ public class ProjectApplicationController {
         return true;
     }
 
+    public static int getNumPendingApplications() {
+        List<ProjectApplication> list = getProjectApplicationsRepository().getByFilter(application -> application.getStatus().equals(ApplicationStatus.PENDING));
+        return list.size();
+    }
+
     public static List<ProjectApplication> getApplicationsByStatus(ApplicationStatus status) {
         return getProjectApplicationsRepository().getByFilter(app -> app.getStatus().equals(status));
     }
@@ -83,5 +90,8 @@ public class ProjectApplicationController {
     public static List<ProjectApplication> getApplicationsByRoomType(String roomType) {
         return getProjectApplicationsRepository().getByFilter(app -> app.getRoomType().equalsIgnoreCase(roomType));
     }
+
+
+
 
 }

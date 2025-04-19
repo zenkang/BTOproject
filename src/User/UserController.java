@@ -6,6 +6,7 @@ import Manager.ManagerController;
 import Applicant.Applicant;
 import Applicant.ApplicantBoundary;
 import Applicant.ApplicantController;
+import Utils.SessionManager;
 
 import static Utils.RepositoryGetter.*;
 
@@ -47,10 +48,16 @@ public class UserController {
 
         }
     }
-    public static boolean changePassword(User user, String newPassword) {
+    public static boolean changePassword(User user, String newPassword){
         UsersRepository usersRepository = getUsersRepository();
         user.setPassword(newPassword);
-        return usersRepository.update(user);
+        if(!usersRepository.update(user)){
+            return false;
+        }
+        else{
+            SessionManager.passwordChanged = true;
+            return true;
+        }
     }
 
 

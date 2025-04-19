@@ -36,4 +36,7 @@ public class EnquiryRepository extends Repository<Enquiry> {
         );
     }
 
+
+
+
 }

@@ -23,9 +23,7 @@ public class ProjectController {
         .toList();
     }
 
-    public static ArrayList<Project> getAllProjects() {
-        return getProjectRepository().getAll();
-    }
+
     public static Project getProjectByName(String projectName) {
         ProjectRepository projectRepository = getProjectRepository();
         return projectRepository.getByProjectName(projectName);
@@ -111,10 +109,7 @@ public class ProjectController {
         ProjectRepository projectRepository = getProjectRepository();
         return projectRepository.deleteProjectByID(projectID);
     }
-    public static boolean createProject(Project newProject){
-        ProjectRepository repository = getProjectRepository();
-        return repository.create(newProject);
-    }
+
 
     public static boolean createProject(String projectName,
                                         String neighbourhood,
@@ -131,7 +126,7 @@ public class ProjectController {
                                         String[] officers,
                                         boolean visible){
         ProjectRepository repository = getProjectRepository();
-        String newID = repository.generateId();
+        String newID = repository.generateId("PR");
         Project newProject = new Project(newID,projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
                 appDateOpen, appDateClose, manager_name, noOfficersSlots, officers,visible);
         return repository.create(newProject);
