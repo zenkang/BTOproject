@@ -18,6 +18,7 @@ public class UserBoundary {
         System.out.println("Old password: "+user.getPassword());
         String NewPassword = SafeScanner.getStrongPassword(sc,"Enter new Password:\n");
         if(UserController.changePassword(user,NewPassword)){
+            System.out.println("Password changed!");
             System.out.println("Password changed Successfully!\nPlease proceed to login again.");
         }
         else{

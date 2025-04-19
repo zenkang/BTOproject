@@ -17,9 +17,10 @@ public class Project implements IEntity {
     private double sellPriceType2;
     private LocalDate appDateOpen;
     private LocalDate appDateClose;
-    private String manager;
+    private String managerID;
     private int noOfficersSlots;
     private String[] officer;
+    private boolean visibility;
 
     public boolean isVisibility() {
         return visibility;
@@ -29,10 +30,9 @@ public class Project implements IEntity {
         this.visibility = visibility;
     }
 
-    private boolean visibility;
-    public Project(String ID,String projectName, String neighbourhood, String type1, int noOfUnitsType1,
+    public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
-                    LocalDate appDateOpen, LocalDate appDateClose, String manager,int noOfficersSlots,
+                   LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
                    String[] officer, boolean visible) {
         this.projectID = ID;
         this.projectName = projectName;
@@ -45,7 +45,7 @@ public class Project implements IEntity {
         this.sellPriceType2=getSellPriceType2;
         this.appDateOpen=appDateOpen;
         this.appDateClose=appDateClose;
-        this.manager=manager;
+        this.managerID = managerID;
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
         this.visibility=visible;
@@ -82,8 +82,8 @@ public class Project implements IEntity {
     }
     public LocalDate getAppDateClose(){
         return appDateClose;}
-    public String getManager() {
-        return manager;
+    public String getManagerID() {
+        return managerID;
     }
     public int getNoOfficersSlots() {
         return noOfficersSlots;
@@ -106,7 +106,7 @@ public class Project implements IEntity {
                 String.valueOf(sellPriceType2),
                 CsvUtils.getFmtDate(appDateOpen),
                 CsvUtils.getFmtDate(appDateClose),
-                manager,
+                managerID,
                 String.valueOf(noOfficersSlots),
                 String.join(",", officer),
                 String.valueOf(visibility)
@@ -125,6 +125,9 @@ public class Project implements IEntity {
         LocalDate closeDate = LocalDate.parse(values[10], formatter);
         String[] officer = values[13].split(",");
         boolean visible = Boolean.parseBoolean(values[14].trim());
+        if (LocalDate.now().isAfter(appDateClose)) {
+            visible = false;
+        }
         return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                 sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
                 openDate,closeDate,values[11],noOfficersSlots,
@@ -145,7 +148,7 @@ public class Project implements IEntity {
                 ", Selling Price of Type 2: " + sellPriceType2 +
                 ", Application Opening Date: " + CsvUtils.getFmtDate(appDateOpen) + '\'' +
                 ", Application Closing Date: " +  CsvUtils.getFmtDate(appDateClose) + '\'' +
-                ", Manager: " + manager + '\'' +
+                ", Manager: " + managerID + '\'' +
                 ", Number of Officer Slots: " + noOfficersSlots +
                 ", Officer/s: " + String.join(",", officer)
                 ;
@@ -184,7 +187,7 @@ public class Project implements IEntity {
         this.appDateClose = closeDate;
     }
     public void setProjectManager(String manager){
-        this.manager = manager;
+        this.managerID = manager;
     }
     public void setProjectNumOfOfficers(int numOfOfficers){
         this.noOfficersSlots = numOfOfficers;

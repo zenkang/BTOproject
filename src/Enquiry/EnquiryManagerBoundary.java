@@ -4,7 +4,6 @@ import Manager.Manager;
 import Project.Project;
 import Project.ProjectController;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -48,14 +47,17 @@ public class EnquiryManagerBoundary {
 
         System.out.println("\n--- All Enquiries ---");
         for (Enquiry e : enquiries) {
-            printPrettyEquiry(e);
+            System.out.println(e);
         }
     }
 
     private static void replyToOwnProjectEnquiries(Manager manager) {
+        List<Project> myProjects = ProjectController.getProjectsCreatedByManager(manager.getName());
+        List<String> myProjectNames = myProjects.stream()
+                .map(Project::getProjectName)
+                .collect(Collectors.toList());
 
-
-        List<Enquiry> replyable = EnquiryController.getUnrepliedEnquiriesByProjects(manager.getName());
+        List<Enquiry> replyable = EnquiryController.getUnrepliedEnquiriesByProjects(myProjectNames);
 
         if (replyable.isEmpty()) {
             System.out.println("No pending enquiries to reply to.");
@@ -82,7 +84,7 @@ public class EnquiryManagerBoundary {
             return;
         }
 
-        if (choice < 0 || choice > replyable.size()) {
+        if (choice < 1 || choice > replyable.size()) {
             System.out.println("Invalid choice.");
             return;
         }
@@ -90,17 +92,9 @@ public class EnquiryManagerBoundary {
         Enquiry selected = replyable.get(choice - 1);
         System.out.print("Enter your reply: ");
         String replyContent = sc.nextLine();
-        ReplyController.addReply(selected.getEnquiryId(), manager.getNric(), replyContent);
-        System.out.println("Reply submitted and enquiry status updated.");
-    }
-    public static void printPrettyEquiry(Enquiry enquiry) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        System.out.println("Enquiry ID: " + enquiry.getEnquiryId());
-        System.out.println("Date: " + enquiry.getDate().format(dateFormatter));
-        System.out.println("Project: " + enquiry.getProjectName());
-        System.out.println("From: "+ enquiry.getApplicantNric());
-        System.out.println("Status: "+enquiry.getStatus());
-        System.out.println("----------------------\n");
+        ReplyController.addReply(selected.getEnquiryId(), manager.getNric(), replyContent);
+
+        System.out.println("Reply submitted and enquiry status updated.");
     }
 }

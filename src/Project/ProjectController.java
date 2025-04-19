@@ -2,13 +2,14 @@ package Project;
 
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
+import ProjectApplication.ProjectApplication;
+import ProjectApplication.ProjectApplicationController;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import static Utils.RepositoryGetter.getProjectRepository;
 
@@ -23,14 +24,21 @@ public class ProjectController {
         .toList();
     }
 
+    public static ArrayList<Project> getAllProjects() {
+        return getProjectRepository().getAll();
+    }
 
     public static Project getProjectByName(String projectName) {
-        ProjectRepository projectRepository = getProjectRepository();
-        return projectRepository.getByProjectName(projectName);
+        ArrayList<Project> p = getProjectRepository().getAll();
+        for (Project p1 : p) {
+            if (p1.getProjectName().equalsIgnoreCase(projectName)) {
+                return p1;
+            }
+        }
+        return null;
     }
     public static Project getProjectByID(String projectID) {
-        ProjectRepository projectRepository = getProjectRepository();
-        return projectRepository.getByProjectID(projectID);
+        return getProjectRepository().getByID(projectID);
     }
     public static boolean updateProjectName(String projectID, String newProjectName) {
             ProjectRepository projectRepository = getProjectRepository();
@@ -47,69 +55,63 @@ public class ProjectController {
     }
     public static boolean updateProjectRoomType1(String projectID, String newRoomType1) {
         ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = projectRepository.getByID(projectID);
         project.setProjectRoomType1(newRoomType1);
         return projectRepository.update(project);
     }
     public static boolean updateProjectRoomType2(String projectID, String newRoomType2) {
         ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = projectRepository.getByID(projectID);
         project.setProjectRoomType2(newRoomType2);
         return projectRepository.update(project);
     }
     public static boolean updateProjectNumOfRoomType1(String projectID, int newNumOfRoomType1) {
         ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = projectRepository.getByID(projectID);
         project.setProjectNumOfType1(newNumOfRoomType1);
         return projectRepository.update(project);
     }
     public static boolean updateProjectNumOfRoomType2(String projectID, int newNumOfRoomType2) {
-        ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = getProjectRepository().getByID(projectID);
         project.setProjectNumOfType2(newNumOfRoomType2);
-        return projectRepository.update(project);
+        return getProjectRepository().update(project);
     }
     public static boolean updateSellPriceOfRoomType1(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = projectRepository.getByID(projectID);
         project.setSellPriceType1(newSellPrice);
         return projectRepository.update(project);
     }
     public static boolean updateSellPriceOfRoomType2(String projectID, double newSellPrice){
         ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = projectRepository.getByID(projectID);
         project.setSellPriceType2(newSellPrice);
         return projectRepository.update(project);
     }
     public static boolean updateProjectApplicationOpenDate(String projectID, LocalDate newAppOpenDate) {
         ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = projectRepository.getByID(projectID);
         project.setProjectApplicationOpenData(newAppOpenDate);
         return projectRepository.update(project);
     }
     public static boolean updateProjectApplicationCloseDate(String projectID, LocalDate newAppCloseDate) {
         ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = projectRepository.getByID(projectID);
         project.setProjectApplicationCloseDate(newAppCloseDate);
         return projectRepository.update(project);
     }
     public static boolean updateProjectManager(String projectID, String newProjectManager) {
-        ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
+        Project project = getProjectRepository().getByID(projectID);
         project.setProjectManager(newProjectManager);
-        return projectRepository.update(project);
-    }
-    public static boolean updateProjectNumOfOfficerSlots(String projectID, int newProjectNumOfOfficerSlots) {
-        ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
-        project.setProjectNumOfOfficers(newProjectNumOfOfficerSlots);
-        return projectRepository.update(project);
+        return getProjectRepository().update(project);
     }
     public static boolean deleteProject(String projectID) {
-        ProjectRepository projectRepository = getProjectRepository();
-        return projectRepository.deleteProjectByID(projectID);
+        Project project = getProjectRepository().getByID(projectID);
+        return getProjectRepository().delete(project);
     }
-
+    public static boolean createProject(Project newProject){
+        return getProjectRepository().create(newProject);
+    }
 
     public static boolean createProject(String projectName,
                                         String neighbourhood,
@@ -121,55 +123,78 @@ public class ProjectController {
                                         double sellPriceType2,
                                         LocalDate appDateOpen,
                                         LocalDate appDateClose,
-                                        String manager_name,
+                                        String managerID,
                                         int noOfficersSlots,
                                         String[] officers,
                                         boolean visible){
         ProjectRepository repository = getProjectRepository();
-        String newID = repository.generateId("PR");
+        String newID = repository.generateId();
         Project newProject = new Project(newID,projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
-                appDateOpen, appDateClose, manager_name, noOfficersSlots, officers,visible);
+                appDateOpen, appDateClose, managerID, noOfficersSlots, officers,visible);
         return repository.create(newProject);
     }
 
 
     public static boolean checkUniqueProjectName(String projectName) {
-        ProjectRepository projectRepository = getProjectRepository();
-        return projectRepository.checkUniqueProjectName(projectName);
+        List<Project> p = getProjectRepository().getByFilter(project -> project.getProjectName().equalsIgnoreCase(projectName));
+        return p.isEmpty();
     }
 
-    public static boolean checkActiveProject(String manager_name) {
-        ProjectRepository projectRepository = getProjectRepository();
-        return projectRepository.checkActiveProject(manager_name);
+    public static boolean checkActiveProject(String managerID) {
+        List<Project> p = getProjectRepository().getByFilter(project -> (project.getManagerID().equalsIgnoreCase(managerID))&&project.isVisibility());
+        return p.isEmpty();
     }
 
-    public static boolean updateProjectVisibility(String projectID, boolean b) {
-        ProjectRepository projectRepository = getProjectRepository();
-        Project project = projectRepository.getByProjectID(projectID);
-        assert project != null;
+    public static boolean updateProjectVisibility(Project project, boolean b) {
         project.setVisibility(b);
-        return projectRepository.update(project);
+        return getProjectRepository().update(project);
     }
 
-    public static List<Project> getProjectsCreatedByManager(String managerName) {
+    public static List<Project> getProjectsCreatedByManager(String managerID) {
         ProjectRepository repo = getProjectRepository();
-        return repo.getByFilter(project -> project.getManager().equalsIgnoreCase(managerName));
+        return repo.getByFilter(project -> project.getManagerID().equalsIgnoreCase(managerID));
     }
 
 
     public static List<Project> getProjectsForApplicant(Applicant applicant) {
         ProjectRepository repo = getProjectRepository();
+        List<Project> list;
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
-            return repo.getByFilter(project ->
+            list = repo.getByFilter(project ->
                     (project.getType1().equalsIgnoreCase("2-Room") ||
                             project.getType2().equalsIgnoreCase("2-Room"))
                             && project.isVisibility()
             );
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge() >= 21) {
-            return repo.getByFilter(project -> project.isVisibility());
+            list = repo.getByFilter(project -> project.isVisibility());
         } else {
-            return null;
+            return Collections.emptyList();
         }
+        List<ProjectApplication> applications =
+                ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
+        if(applications.isEmpty()){
+            return list;
+        }
+
+        // 2) collect all the project‑IDs this applicant has already applied to
+        Set<String> appliedIds = new HashSet<>();
+        for (ProjectApplication app : applications) {
+            appliedIds.add(app.getProjectID());
+        }
+        // remove all projects whose ID is in appliedIds
+        return list.stream()
+                .filter(p -> !appliedIds.contains(p.getID()))
+                .collect(Collectors.toList());
+
+    }
+
+    public static List<String> getProjectIDsForApplicant(Applicant applicant) {
+        List<Project> projects = getProjectsForApplicant(applicant);
+        assert projects != null;
+        return projects.stream()
+                .map(Project::getID)
+                .distinct()
+                .toList();
     }
 
     public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
@@ -187,11 +212,14 @@ public class ProjectController {
         return filteredProjects;
     }
 
-    public static List<Project> getProjectsManagedBy(String managerName) {
+    public static List<String> getProjectIDsManagedBy(String managerID) {
         return getProjectRepository().getAll().stream()
-                .filter(project -> project.getManager().equalsIgnoreCase(managerName))
+                .filter(p -> p.getManagerID().equalsIgnoreCase(managerID))
+                .map(Project::getID)
                 .toList();
     }
+
+
 
 }
 

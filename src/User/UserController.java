@@ -6,9 +6,9 @@ import Manager.ManagerController;
 import Applicant.Applicant;
 import Applicant.ApplicantBoundary;
 import Applicant.ApplicantController;
-import Utils.SessionManager;
 
 import static Utils.RepositoryGetter.*;
+import Utils.SessionManager;
 
 public class UserController {
 
@@ -48,7 +48,7 @@ public class UserController {
 
         }
     }
-    public static boolean changePassword(User user, String newPassword){
+    public static boolean changePassword(User user, String newPassword) {
         UsersRepository usersRepository = getUsersRepository();
         user.setPassword(newPassword);
         if(!usersRepository.update(user)){

@@ -1,8 +1,6 @@
 package Manager;
 
-
 import Applicant.ApplicantController;
-import Enquiry.EnquiryApplicantBoundary;
 import Enquiry.EnquiryManagerBoundary;
 import Enumerations.ApplicationStatus;
 import Project.Project;
@@ -15,7 +13,6 @@ import User.UserBoundary;
 import Utils.SafeScanner;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -44,10 +41,10 @@ public class ManagerBoundary {
             System.out.println("\n=== Manager Menu ===");
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects Menu");
-            System.out.println("3. View Project applications");
+            System.out.println("3. View project applications");
             System.out.println("4. View Project Registration Menu");
             System.out.println("5. View Enquiry Menu");
-            System.out.println("7. Change Password");
+            System.out.println("6. Change Password");
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
@@ -58,13 +55,13 @@ public class ManagerBoundary {
                 case 3 -> viewApplicantApplications();
                 case 4 -> System.out.println("TBC");
                 case 5 -> EnquiryManagerBoundary.managerMenu(manager);
-                case 7 -> changePassword();
+                case 6 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0 && choice != 7) ;
-        if(choice == 0){
+        while (choice != 0 && choice !=7) ;
+        if (choice == 0){
             sc.close();
         }
     }
@@ -84,8 +81,8 @@ public class ManagerBoundary {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
-                case 1 -> promptProjectViewChoice(this.manager.getName()) ;
-                case 2 -> createNewProject(this.manager.getName(),sc);
+                case 1 -> promptProjectViewChoice(this.manager.getID()) ;
+                case 2 -> createNewProject(this.manager.getID(), sc);
                 case 3 -> projectChangesMenu(sc);
                 case 4 -> deleteProject(sc);
                 case 5 -> displayProjectFilterMenu();
@@ -96,11 +93,10 @@ public class ManagerBoundary {
         while (choice != 0);
     }
 
-
-    public static void createNewProject(String manager_name, Scanner sc) {
+    public static void createNewProject(String managerID, Scanner sc) {
         int noOfUnitsType2, noOfUnitsType1;
         double sellPriceType2, sellPriceType1;
-        boolean canCreateNewProject = ProjectController.checkActiveProject(manager_name);
+        boolean canCreateNewProject = ProjectController.checkActiveProject(managerID);
         if (canCreateNewProject) {
             System.out.println("\n=== Project Creator ===");
 
@@ -150,11 +146,11 @@ public class ManagerBoundary {
             LocalDate currentDate = LocalDate.now();
 
             boolean visible;
-            visible = !currentDate.isBefore(dateOpen) && !currentDate.isAfter(dateClose);
+            visible = !currentDate.isBefore(dateOpen) && !currentDate.isAfter(dateClose) && (noOfUnitsType2>0 || noOfUnitsType1>0);
 
             // Create a new project instance
             // Delegate the creation process to the ProjectController
-            if (ProjectController.createProject(projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2, dateOpen, dateClose, manager_name, noOfficersSlots, officers, visible)) {
+            if (ProjectController.createProject(projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2, dateOpen, dateClose, managerID, noOfficersSlots, officers, visible)) {
                 System.out.println("Project created successfully.");
             } else {
                 System.out.println("Failed to create project. It might already exist.");
@@ -179,11 +175,10 @@ public class ManagerBoundary {
             System.out.println("6. Update Application Opening Date");
             System.out.println("7. Update Application Closing Date");
             System.out.println("8. Update Manager in charge");
-            System.out.println("9. Update Maximum HDB Officer Slots");
-            System.out.println("10. Update Visibility");
+            System.out.println("9. Update Visibility");
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 10);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 9);
 
             switch (choice) {
                 case 1 -> updateProjectName(sc);
@@ -194,8 +189,7 @@ public class ManagerBoundary {
                 case 6 -> updateProjectApplicationOpen(sc);
                 case 7 -> updateProjectApplicationClose(sc);
                 case 8 -> updateManagerInCharge(sc);
-                case 9 -> updateNumberOfOfficers(sc);
-                case 10 -> updateProjectVisibility(sc);
+                case 9 -> updateProjectVisibility(sc);
                 case 0 -> System.out.println("Exiting........");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -204,41 +198,47 @@ public class ManagerBoundary {
     }
 
     private static void updateProjectVisibility(Scanner sc) {
-
         String projectID;
         String choice;
-        List<String> validOptions = Arrays.asList("y", "n");
+        List<String> validOptions = Arrays.asList("true", "false");
         System.out.println("Please enter the Project ID:");
-        projectID = sc.nextLine();
-        while (ProjectController.getProjectByID(projectID) == null) {
-            System.out.println("Invalid Project ID. Please enter a valid Project ID.");
-            projectID = sc.nextLine();
-        }
+        projectID = SafeScanner.getValidProjectID(sc);
         Project project = ProjectController.getProjectByID(projectID);
-
-        if (project.isVisibility()) {
-            System.out.println("Is the Project Visible?: Yes");
-            choice = SafeScanner.getValidatedStringInput(sc, "Would you like to set it to No?\nEnter: y/n\n", validOptions);
-            if (choice.equals("y")) {
-                if(ProjectController.updateProjectVisibility(projectID, false)){
-                    System.out.println("Project Visibility updated successfully.");
-                }
-                else{
-                    System.out.println("Update failed.");
-                }
+        System.out.println(project.getProjectName()+ " visibility: " + ((project.isVisibility())? "True (Visible)" : "False (Not Visible)"));
+        choice = SafeScanner.getValidatedStringInput(sc,"\nEnter new visibility: true(visible) or false(not visible)",validOptions);
+        if(project.isVisibility()) {
+            if (choice.equalsIgnoreCase("true")) {
+                System.out.println("Project visibility updated successfully.");
+                return;
             }
-        } else {
-            System.out.println("Is the Project Visible?: No");
-            choice = SafeScanner.getValidatedStringInput(sc, "Would you like to set it to Yes?\nEnter: y/n\n", validOptions);
-            if (choice.equals("y")) {
-                if(ProjectController.updateProjectVisibility(projectID, true)){
-                    System.out.println("Project Visibility updated successfully.");
-                }
-                else{
-                    System.out.println("Update failed.");
+            else if(choice.equalsIgnoreCase("false")){
+                if(ProjectController.updateProjectVisibility(project,false)){
+                    System.out.println("Project visibility updated successfully.");
+                    return;
                 }
             }
         }
+        else{
+            if (choice.equalsIgnoreCase("true")){
+                if(LocalDate.now().isAfter(project.getAppDateClose())){
+                    System.out.println("Warning: Project has been closed, adjust application closing date to toggle visibility on");
+                    System.out.println("Today's date: "+ LocalDate.now());
+                    LocalDate newCloseDate = SafeScanner.getValidDateAfterDate(sc, project.getAppDateOpen(), "Please enter the New Application Closing Date in DD/MM/YYYY format: ");
+                    if(ProjectController.updateProjectApplicationCloseDate(projectID, newCloseDate)){
+                        System.out.println("Project Application Closing Date updated successfully.");
+                    }
+                }
+                if(ProjectController.updateProjectVisibility(project,true)){
+                    System.out.println("Project visibility updated successfully.");
+                    return;
+                }
+            }
+            else{
+                System.out.println("Project visibility updated successfully.");
+                return;
+            }
+        }
+        System.out.println("update visibility failed");
     }
 
     public static void deleteProject(Scanner sc) {
@@ -474,7 +474,7 @@ public class ManagerBoundary {
             projectID = sc.nextLine();
         }
         Project project = ProjectController.getProjectByID(projectID);
-        System.out.println("The Current Manager is : " + project.getManager());
+        System.out.println("The Current Manager is : " + project.getManagerID());
         System.out.println("Please enter the New Manager:");
         newManager = sc.nextLine();
         if(ProjectController.updateProjectManager(projectID, newManager)){
@@ -485,31 +485,8 @@ public class ManagerBoundary {
         }
     }
 
-    //If exist 4 officer slot and have all 4 officer in the slot, what will happen if you decrease to 3?
-    public static void updateNumberOfOfficers(Scanner sc) {
-        String projectID;
-        int newNumberOfOfficers;
-        System.out.println("Please enter the Project ID:");
-        projectID = sc.nextLine();
-        while (ProjectController.getProjectByID(projectID) == null) {
-            System.out.println("Invalid Project ID. Please enter a valid Project ID.");
-            projectID = sc.nextLine();
-        }
-        Project project = ProjectController.getProjectByID(projectID);
-        System.out.println("The Current Number of Officers Slots is : " + project.getNoOfficersSlots());
-        System.out.println("Please enter the New Number of Officer Slots:");
-        newNumberOfOfficers = sc.nextInt();
-        sc.nextLine();
-        if(ProjectController.updateProjectNumOfOfficerSlots(projectID, newNumberOfOfficers)){
-            System.out.println("Project Number of Officer Slots updated successfully.");
-        }
-        else{
-            System.out.println("Update failed.");
-        }
-    }
 
-
-    private void viewProfile() {
+    public void viewProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
         do {
@@ -524,7 +501,7 @@ public class ManagerBoundary {
 
     }
 
-    private void updateProfile() {
+    public void updateProfile() {
         int choice;
         Scanner sc = new Scanner(System.in);
         do {
@@ -585,7 +562,7 @@ public class ManagerBoundary {
         int choice;
         Scanner sc = new Scanner(System.in);
         do {
-            int numPending = ProjectApplicationController.getNumPendingApplications();
+            int numPending = ProjectApplicationController.getNumPendingApplications(manager);
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
             System.out.println("2. View pending Applications " + ((numPending==0)? "" : "("+numPending+")" ));
@@ -596,26 +573,27 @@ public class ManagerBoundary {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
 
             switch (choice) {
-                case 1 -> ProjectApplicationController.displayAllProjectApplications();
+                case 1 -> ProjectApplicationController.displayAllProjectApplications(manager);
                 case 2 -> {
-                            List<ProjectApplication> list = ProjectApplicationController.getApplicationsByStatus(ApplicationStatus.PENDING);
-                            if(list.isEmpty()){
-                                System.out.println("No pending applications found.");
-                            }
-                            else{
-                            list.forEach(System.out::println);
-                            }
+                    List<ProjectApplication> list = ProjectApplicationController.getApplicationsByStatus(manager, ApplicationStatus.PENDING);
+                    if(list.isEmpty()){
+                        System.out.println("No pending applications found.");
+                    }
+                    else{
+                        list.forEach(System.out::println);
+                    }
                 }
                 case 3 -> System.out.println("TBC");
                 case 4 -> System.out.println("TBC");
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-            if (choice != 0 && !getProjectApplicationsRepository().isEmpty()) {
+            if (choice == 2 && numPending > 0) {
                 List<String> validOptions = Arrays.asList("y", "n");
-                String selection = SafeScanner.getValidatedStringInput(sc, "Update application status?\nEnter: y/n\n", validOptions);
+                String selection = SafeScanner.getValidatedStringInput(sc, "Approve application?\nEnter: y/n\n", validOptions);
                 if (selection.equals("y")) {
-                    String applicationID = SafeScanner.getValidApplicationID(sc, "Enter the application ID: ");
+                    List<String> validIDs = ProjectApplicationController.getPendingApplicationIDs(manager);
+                    String applicationID = SafeScanner.getValidatedStringInput(sc, "Enter application ID: ", validIDs);
                     updateApplicationStatus(applicationID);
                 }
             }
@@ -629,18 +607,21 @@ public class ManagerBoundary {
         Applicant applicant = ApplicantController.getApplicantById(application.getApplicantID());
         Utils.PrettyPrint.prettyPrint(applicant);
 
-        List<String> validOptions = Arrays.asList("p", "s", "u", "b", "P", "S", "U", "B");
-        String selection = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (p : Pending, s : Successful, u : Unsuccessful, b : Booked) \n", validOptions);
+        List<String> validOptions = Arrays.asList("s", "u");
+        String selection = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (s : Successful, u : Unsuccessful) \n", validOptions);
         ApplicationStatus status = null;
         switch (selection.toLowerCase()) {
-            case "p" -> status = ApplicationStatus.PENDING;
             case "s" -> status = ApplicationStatus.SUCCESSFUL;
             case "u" -> status = ApplicationStatus.UNSUCCESSFUL;
-            case "b" -> status = ApplicationStatus.BOOKED;
             default -> System.out.println("Invalid choice. Please select a valid option.");
         }
         if (ProjectApplicationController.updateApplicationStatus(application, status)) {
-            System.out.println("Application status updated!");
+            if (status == ApplicationStatus.SUCCESSFUL) {
+                System.out.println("Application Approved!\n");
+            }
+            else if (status == ApplicationStatus.UNSUCCESSFUL) {
+                System.out.println("Application Rejected!\n");
+            }
         } else {
             System.out.println("Update failed, try again later\n");
         }
@@ -723,13 +704,12 @@ public class ManagerBoundary {
             for (Project project : managerProjects) {
                 prettyPrintProjectDetails(project);
             }
-        }
-        else{
+        } else {
             displayFilteredProjects(Filter);
         }
 
-
     }
+
     public static void prettyPrintProjectDetails(Project project){
         if(project==null){
             System.out.println("No project available.");
@@ -746,7 +726,7 @@ public class ManagerBoundary {
         System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
         System.out.println("Application Open Date: "+project.getAppDateOpen());
         System.out.println("Application Close Date: "+project.getAppDateClose());
-        System.out.println("Manager-in-charge: "+project.getManager());
+        System.out.println("Manager-in-charge: "+project.getManagerID());
         System.out.println("Number of Officer Slot(s): "+project.getNoOfficersSlots());
         System.out.println("Officer(s) Assigned: ");
         String[] officers = project.getOfficer();
@@ -757,6 +737,5 @@ public class ManagerBoundary {
         System.out.println("------------------------");
 
     }
-
 
 }

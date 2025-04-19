@@ -1,7 +1,5 @@
 package Abstract;
 
-import Enquiry.Reply;
-
 import java.io.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -160,11 +158,8 @@ public abstract class Repository <T extends IEntity>{
      *
      * @return The last ID as a string.
      */
-    public String generateId(String defaultprefix) {
+    public String generateId() {
         String lastId = this.getLastId();
-        if(lastId.equals("0")||lastId.isEmpty()){
-            return String.format("%s%03d", defaultprefix, 1);
-        }
         int i;
         for (i = 0; i < lastId.length(); i++) {
             if (Character.isDigit(lastId.charAt(i))) {
@@ -184,6 +179,5 @@ public abstract class Repository <T extends IEntity>{
     public ArrayList<T> getAll() {
         return this.entities;
     }
-
 
 }

@@ -1,49 +1,44 @@
 package Enquiry;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import Abstract.Repository;
 import Enumerations.EnquiryStatus;
-import Project.Project;
-import Project.ProjectController;
-import Utils.RepositoryGetter;
 
-import static Utils.RepositoryGetter.getEnquiryRepository;
 public class EnquiryController {
+    private static final String FILE_PATH = "src/data/EnquiryList.csv";
+    private static final EnquiryRepository repo = EnquiryRepository.getInstance(FILE_PATH);
 
+    public static void loadFromCSV() {
+        // Triggering getInstance already loads the data via Repository constructor
+        System.out.println("Enquiries loaded: " + repo.getAll().size());
+    }
 
+    public static void saveToCSV() {
+        repo.store();
+        System.out.println("Enquiries saved to CSV.");
+    }
 
-
+    public static void addEnquiry(Enquiry e) {
+        repo.create(e);
+    }
 
     public static List<Enquiry> getAllEnquiries() {
-        return RepositoryGetter.getEnquiryRepository().getAll();
+        return repo.getAll();
     }
-
-    public static void addEnquiry(LocalDate today, String projectName, String nric, String message) {
-        Repository repository = getEnquiryRepository();
-        String id = repository.generateId("EN");
-        Enquiry e = new Enquiry(id, today, projectName, nric, message);
-        RepositoryGetter.getEnquiryRepository().create(e);
-    }
-
-
 
     public static List<Enquiry> getEnquiriesByApplicant(String applicantNric) {
-        return RepositoryGetter.getEnquiryRepository().getByFilter(e -> e.getApplicantNric().equals(applicantNric));
+        return repo.getByFilter(e -> e.getApplicantNric().equals(applicantNric));
     }
 
     public static List<Enquiry> getEnquiriesByProject(String projectId) {
-        return RepositoryGetter.getEnquiryRepository().getByFilter(e -> e.getProjectName().equals(projectId));
+        return repo.getByFilter(e -> e.getProjectName().equals(projectId));
     }
 
     public static boolean replyToEnquiry(String enquiryId, String reply) {
         Enquiry enquiry = getEnquiryById(enquiryId);
         if (enquiry != null) {
             enquiry.setStatus(EnquiryStatus.REPLIED);
-            return RepositoryGetter.getEnquiryRepository().update(enquiry);
+            return repo.update(enquiry);
         }
         return false;
     }
@@ -52,31 +47,27 @@ public class EnquiryController {
         Enquiry enquiry = getEnquiryById(enquiryId);
         if (enquiry != null) {
             enquiry.setMessage(newMessage);
-            RepositoryGetter.getEnquiryRepository().update(enquiry);
+            repo.update(enquiry);
         }
     }
 
     public static void deleteEnquiry(String enquiryId) {
         Enquiry e = getEnquiryById(enquiryId);
         if (e != null) {
-            RepositoryGetter.getEnquiryRepository().delete(e);
+            repo.delete(e);
         }
     }
 
     public static Enquiry getEnquiryById(String enquiryId) {
-        return RepositoryGetter.getEnquiryRepository().getByID(enquiryId);
+        return repo.getByID(enquiryId);
     }
 
     public static void updateEnquiry(Enquiry e) {
-        RepositoryGetter.getEnquiryRepository().update(e); // triggers store() in Repository
+        repo.update(e); // triggers store() in Repository
     }
 
-    public static List<Enquiry> getUnrepliedEnquiriesByProjects(String manager_name) {
-        List<Project> myProjects = ProjectController.getProjectsManagedBy(manager_name);
-        List<String> myProjectNames = myProjects.stream()
-                .map(Project::getProjectName)
-                .collect(Collectors.toList());
-        return RepositoryGetter.getEnquiryRepository().getUnrepliedByProjectNames(myProjectNames);
+    public static List<Enquiry> getUnrepliedEnquiriesByProjects(List<String> projectNames) {
+        return repo.getUnrepliedByProjectNames(projectNames);
     }
 
 

@@ -1,7 +1,5 @@
 package Utils;
 import Applicant.ApplicantRepository;
-import Enquiry.EnquiryRepository;
-import Enquiry.ReplyRepository;
 import Manager.ManagerRepository;
 import Project.ProjectRepository;
 import ProjectApplication.ProjectApplicationRepository;
@@ -22,12 +20,6 @@ public class RepositoryGetter {
     }
     public static ProjectApplicationRepository getProjectApplicationsRepository() {
         return ProjectApplicationRepository.getInstance("./src/data/ProjectApplication.csv");
-    }
-    public static EnquiryRepository getEnquiryRepository() {
-        return EnquiryRepository.getInstance("./src/data/EnquiryList.csv");
-    }
-    public static ReplyRepository getReplyRepository() {
-        return ReplyRepository.getInstance("./src/data/ReplyList.csv");
     }
 
 }

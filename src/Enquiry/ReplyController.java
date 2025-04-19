@@ -1,20 +1,17 @@
 package Enquiry;
 
-import Utils.RepositoryGetter;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public class ReplyController {
-
-
+    private static final String FILE_PATH = "src/data/ReplyList.csv";
+    private static final ReplyRepository repo = ReplyRepository.getInstance(FILE_PATH);
 
     public static void addReply(String enquiryId, String userId, String content) {
-        ReplyRepository repo = RepositoryGetter.getReplyRepository();
+        String replyId = UUID.randomUUID().toString().substring(0, 8);
         LocalDate today = LocalDate.now();
-        String id = repo.generateId("RE");
-        Reply reply = new Reply(id, enquiryId, today, userId, content);
+        Reply reply = new Reply(replyId, enquiryId, today, userId, content);
         repo.create(reply);
 
         // Update the enquiry's status to REPLIED
@@ -26,14 +23,14 @@ public class ReplyController {
     }
 
     public static List<Reply> getRepliesByEnquiry(String enquiryId) {
-        return RepositoryGetter.getReplyRepository().getByFilter(r -> r.getEnquiryId().equals(enquiryId));
+        return repo.getByFilter(r -> r.getEnquiryId().equalsIgnoreCase(enquiryId));
     }
 
     public static List<Reply> getRepliesByResponder(String userId) {
-        return RepositoryGetter.getReplyRepository().getByFilter(r -> r.getOfficerOrManagerId().equalsIgnoreCase(userId));
+        return repo.getByFilter(r -> r.getOfficerOrManagerId().equalsIgnoreCase(userId));
     }
 
     public static void displayAllReplies() {
-        RepositoryGetter.getReplyRepository().display();
+        repo.display();
     }
 }
