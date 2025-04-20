@@ -3,7 +3,6 @@ package Manager;
 import Abstract.IEntity;
 import Abstract.IUserProfile;
 import Enumerations.MaritalStatus;
-import Enumerations.Role;
 import User.User;
 import Utils.CsvUtils;
 

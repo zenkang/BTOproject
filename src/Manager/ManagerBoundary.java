@@ -4,6 +4,8 @@ package Manager;
 import Applicant.ApplicantController;
 import Enquiry.Enquiry;
 import Enumerations.ApplicationStatus;
+import Officer.Officer;
+import Officer.OfficerController;
 import Project.Project;
 import Project.ProjectController;
 import Applicant.Applicant;
@@ -50,6 +52,7 @@ public class ManagerBoundary {
             System.out.println("3. View Project Applications");
             System.out.println("4. View Project Registration Menu");
             System.out.println("5. View Enquiry Menu");
+            System.out.println("6. Generate Report");
             System.out.println("7. Change Password");
             System.out.println("0. Exit");
 
@@ -60,8 +63,8 @@ public class ManagerBoundary {
                 case 2 -> displayProjectMenu();
                 case 3 -> viewApplicantApplications();
                 case 4 -> System.out.println("TBC");
-                case 5 -> managerEnquiryMenu(manager);
-                case 6 -> changePassword();
+                case 5 -> managerEnquiryMenu(sc,manager);
+                case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -596,7 +599,13 @@ public class ManagerBoundary {
         Scanner sc = new Scanner(System.in);
         ProjectApplication application = getProjectApplicationsRepository().getByID(applicationID);
         Applicant applicant = ApplicantController.getApplicantById(application.getApplicantID());
-        Utils.PrettyPrint.prettyPrint(applicant);
+        if(applicant == null) {
+           Officer officer = OfficerController.getApplicantById(application.getApplicantID());
+            Utils.PrettyPrint.prettyPrint(officer);
+        }
+        else {
+            Utils.PrettyPrint.prettyPrint(applicant);
+        }
 
         List<String> validOptions = Arrays.asList("s", "u");
         String selection = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (s : Successful, u : Unsuccessful) \n", validOptions);
@@ -730,27 +739,24 @@ public class ManagerBoundary {
 
     }
 
-    public static void managerEnquiryMenu(Manager manager) {
+    public static void managerEnquiryMenu(Scanner sc, Manager manager) {
         int choice;
         do {
             System.out.println("\n--- Enquiry Menu (Manager) ---");
             System.out.println("1. View All Enquiries");
             System.out.println("2. Reply to Enquiries for Your Projects");
             System.out.println("0. Back");
-            System.out.print("Enter option: ");
 
             choice = SafeScanner.getValidatedIntInput(sc,"Enter your choice: ",0,2);
 
             switch (choice) {
                 case 1 -> viewAllEnquiries();
                 case 2 -> replyToOwnProjectEnquiries(manager);
-                case 0 -> displayManagerMenu();
+                case 0 -> System.out.println("Going Back....");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        } while (choice != 0 && choice !=2);
-        if(choice == 0){
-            sc.close();
-    }
+        } while (choice != 0);
+
 
 }
 

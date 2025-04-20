@@ -65,4 +65,13 @@ public class EnquiryController {
     }
 
 
+
+    public static List<Enquiry> getEnquiriesForHandledProject(String id) {
+        List<String> projectNames = ProjectController.getProjectNamesHandledByOfficer(id);
+        return RepositoryGetter.getEnquiryRepository().getByFilter(
+                e -> projectNames.stream().anyMatch(
+                        name -> name.equalsIgnoreCase(e.getProjectName().trim())
+                )&& !e.isReplied()
+        );
+    }
 }

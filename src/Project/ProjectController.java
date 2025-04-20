@@ -2,6 +2,7 @@ package Project;
 
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
+import Officer.Officer;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 
@@ -176,9 +177,48 @@ public class ProjectController {
                 .collect(Collectors.toList());
 
     }
+    public static List<Project> getProjectsForApplicant(Officer officer) {
+        ProjectRepository repo = getProjectRepository();
+        List<Project> list;
+        if (officer.getMaritalStatus() == MaritalStatus.SINGLE && officer.getAge() >= 35) {
+            list = repo.getByFilter(project ->
+                    (project.getType1().equalsIgnoreCase("2-Room") ||
+                            project.getType2().equalsIgnoreCase("2-Room"))
+                            && project.isVisibility()
+            );
+        } else if (officer.getMaritalStatus() == MaritalStatus.MARRIED && officer.getAge() >= 21) {
+            list = repo.getByFilter(project -> project.isVisibility());
+        } else {
+            return Collections.emptyList();
+        }
+        List<ProjectApplication> applications =
+                ProjectApplicationController.getApplicationByApplicantID(officer.getID());
+        if(applications.isEmpty()){
+            return list;
+        }
+
+        // 2) collect all the project‑IDs this applicant has already applied to
+        Set<String> appliedIds = new HashSet<>();
+        for (ProjectApplication app : applications) {
+            appliedIds.add(app.getProjectID());
+        }
+        // remove all projects whose ID is in appliedIds
+        return list.stream()
+                .filter(p -> !appliedIds.contains(p.getID()))
+                .collect(Collectors.toList());
+
+    }
 
     public static List<String> getProjectIDsForApplicant(Applicant applicant) {
         List<Project> projects = getProjectsForApplicant(applicant);
+        assert projects != null;
+        return projects.stream()
+                .map(Project::getID)
+                .distinct()
+                .toList();
+    }
+    public static List<String> getProjectIDsForApplicant(Officer officer) {
+        List<Project> projects = getProjectsForApplicant(officer);
         assert projects != null;
         return projects.stream()
                 .map(Project::getID)
@@ -215,6 +255,25 @@ public class ProjectController {
     }
 
 
+    public static boolean isHandlingProject(String id, String projectID) {
+        ProjectRepository repo = getProjectRepository();
+        List<Project> list;
+        list = repo.getByFilter(project -> project.getID().equalsIgnoreCase(projectID)
+        && Arrays.asList(project.getOfficer()).contains(id));
+        return !list.isEmpty();
+    }
+
+    public static List<String> getProjectNamesHandledByOfficer(String id) {
+        return getProjectRepository().getAll().stream()
+                .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
+                .map(Project::getProjectName)
+                .toList();
+    }
+    public static List<Project> getProjectsHandledByOfficer(String id) {
+        return getProjectRepository().getAll().stream()
+                .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
+                .toList();
+    }
 }
 
 
