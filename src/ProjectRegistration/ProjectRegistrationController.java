@@ -8,7 +8,9 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 import static Utils.RepositoryGetter.getProjectApplicationsRepository;
@@ -26,11 +28,11 @@ public class ProjectRegistrationController {
                 p.getAppDateOpen().isBefore(newProject.getAppDateClose()) &&
                 p.getAppDateClose().isAfter(newProject.getAppDateOpen()) &&
                 p.isVisibility());
-        return (isOverlapping && projectApplications.isEmpty());
+        return isOverlapping && projectApplications.isEmpty();
     }
 
     public static boolean createProjectRegistration(String project_id, String id) {
-        String regID = getProjectApplicationsRepository().generateId("REG");
+        String regID = getProjectRegistrationRepository().generateId("REG");
         String project_name = ProjectController.getProjectByID(project_id).getProjectName();
         ProjectRegistration projectRegistration = new ProjectRegistration(
                 regID,
@@ -46,5 +48,25 @@ public class ProjectRegistrationController {
     public static List<ProjectRegistration> getProjectRegistrationByOfficerId(String id) {
         return getProjectRegistrationRepository().getByFilter(projectRegistration
                 -> projectRegistration.getOfficerId().equalsIgnoreCase(id));
+    }
+
+    public static List<ProjectRegistration> getHandledProjectRegistration(String id) {
+        List<Project> projects = ProjectController.getProjectsCreatedByManager(id);
+        List<String> projectNames = projects.stream().map(Project::getID).toList();
+        return getProjectRegistrationRepository().getAll()
+                .stream()
+                .filter(p -> projectNames.contains(p.getProjectID()))
+                .toList();
+    }
+
+    public static boolean updateProjectRegistration(String registerID, RegistrationStatus status) {
+        ProjectRegistration projectRegistration = getProjectRegistrationRepository().getByID(registerID);
+        projectRegistration.setStatus(status);
+
+        return getProjectRegistrationRepository().update(projectRegistration);
+
+    }
+    public static ProjectRegistration getProjectRegistrationByID(String id) {
+        return getProjectRegistrationRepository().getByID(id);
     }
 }

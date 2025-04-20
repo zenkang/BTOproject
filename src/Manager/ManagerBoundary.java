@@ -4,6 +4,7 @@ package Manager;
 import Applicant.ApplicantController;
 import Enquiry.Enquiry;
 import Enumerations.ApplicationStatus;
+import Enumerations.RegistrationStatus;
 import Officer.Officer;
 import Officer.OfficerController;
 import Project.Project;
@@ -12,6 +13,7 @@ import Applicant.Applicant;
 
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
+import ProjectRegistration.ProjectRegistration;
 import Reply.ReplyController;
 import User.UserBoundary;
 import Enquiry.EnquiryController;
@@ -24,6 +26,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import ProjectRegistration.ProjectRegistrationController;
 
 import Utils.PredicateUtils;
 
@@ -62,7 +66,7 @@ public class ManagerBoundary {
                 case 1 -> viewProfile();
                 case 2 -> displayProjectMenu();
                 case 3 -> viewApplicantApplications();
-                case 4 -> System.out.println("TBC");
+                case 4 -> viewProjectRegistrationMenu();
                 case 5 -> managerEnquiryMenu(sc, manager);
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
@@ -73,6 +77,8 @@ public class ManagerBoundary {
             sc.close();
         }
     }
+
+
 
     public static void displayProjectMenu() {
         int choice;
@@ -807,5 +813,88 @@ public class ManagerBoundary {
         ReplyController.addReply(selected.getEnquiryId(), manager.getNric(), replyContent);
 
         System.out.println("Reply submitted and enquiry status updated.");
+    }
+
+
+    private static void viewProjectRegistrationMenu() {
+        int choice;
+        Scanner sc = new Scanner(System.in);
+        do {
+            System.out.println("\n--- View Project Registration Menu ---");
+            System.out.println("1. View handled Project Registration");
+            System.out.println("2. Approve/Reject Project Registration");
+            System.out.println("0. Back");
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
+            switch (choice) {
+                case 1 -> displayAllHandledProjectRegistration(manager.getID());
+                case 2 -> ApproveOrRejectProjectRegistration(manager.getID());
+                case 0 -> System.out.println("Going Back....");
+                default -> System.out.println("Invalid choice. Please select a valid option.");
+            }
+        }while(choice !=0);
+
+    }
+
+    private static void ApproveOrRejectProjectRegistration(String id) {
+        System.out.println("\n--- Approve or Reject Project Registration ---");
+        List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getHandledProjectRegistration(id);
+        if (projectRegistrations.isEmpty()) {
+            System.out.println("No handling project registrations available.");
+        }
+        else{
+            for (ProjectRegistration p : projectRegistrations) {
+                System.out.println("Registration ID: " + p.getRegistrationID());
+                System.out.println("Project Name: " + p.getProjectName());
+                System.out.println("Officer ID: " + p.getOfficerId());
+                System.out.println("Status: " + p.getStatus());
+            }
+        }
+        List<String> validRegisterIds = projectRegistrations.stream().map(ProjectRegistration::getRegistrationID).toList();
+        String registerID = SafeScanner.getValidatedStringInput(sc,"Enter Registration ID you want to approve or reject for: ",validRegisterIds);
+        List<String> validOptions = Arrays.asList("a", "r");
+        String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
+        RegistrationStatus status = null;
+        switch (choice.toLowerCase()) {
+            case "a" -> status = RegistrationStatus.APPROVED;
+            case "r" -> status = RegistrationStatus.REJECTED;
+            default -> System.out.println("Invalid choice. Please select a valid option.");
+            }
+            if(ProjectRegistrationController.updateProjectRegistration(registerID,status)){
+                if(status == RegistrationStatus.APPROVED){
+                    ProjectController.updateOfficer(registerID);
+                    System.out.println("Project registration approval is successful");
+                }
+                else{
+                    System.out.println("Project registration reject is successful");
+                }
+
+            }
+            else{
+                if(status == RegistrationStatus.APPROVED){
+                    System.out.println("Project registration approval is unsuccessful");
+                }
+                else{
+                    System.out.println("Project registration reject is unsuccessful");
+                }
+
+            }
+
+
+
+    }
+
+    private static void displayAllHandledProjectRegistration(String id) {
+        List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getHandledProjectRegistration(id);
+        if (projectRegistrations.isEmpty()) {
+            System.out.println("No handling project registrations available.");
+        }
+        else{
+            for (ProjectRegistration p : projectRegistrations) {
+                System.out.println("Registration ID: " + p.getRegistrationID());
+                System.out.println("Project Name: " + p.getProjectName());
+                System.out.println("Officer ID: " + p.getOfficerId());
+                System.out.println("Status: " + p.getStatus());
+            }
+        }
     }
 }

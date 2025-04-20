@@ -5,6 +5,8 @@ import Enumerations.MaritalStatus;
 import Officer.Officer;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
+import ProjectRegistration.ProjectRegistration;
+import ProjectRegistration.ProjectRegistrationController;
 
 import java.time.LocalDate;
 
@@ -273,6 +275,16 @@ public class ProjectController {
         return getProjectRepository().getAll().stream()
                 .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
                 .toList();
+    }
+
+    public static void updateOfficer(String registerID) {
+        ProjectRegistration registration = ProjectRegistrationController.getProjectRegistrationByID(registerID);
+        String officerID = registration.getOfficerId();
+        Project project = getProjectRepository().getByID(registration.getProjectID());
+        List<String> officerList = new ArrayList<>(Arrays.asList(project.getOfficer()));
+        officerList.add(officerID);
+        project.setOfficer(officerList.toArray(new String[0]));
+        getProjectRepository().update(project);
     }
 }
 
