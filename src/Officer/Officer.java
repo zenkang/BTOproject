@@ -4,7 +4,7 @@ import Abstract.IEntity;
 import Abstract.IUserProfile;
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
-import Enumerations.Role;
+
 import User.User;
 import Utils.CsvUtils;
 
@@ -21,13 +21,7 @@ public class Officer implements IEntity, IUserProfile {
         this.maritalStatus = maritalStatus;
     }
 
-    // Optional: Retain the old constructor for compatibility if needed
-    public Officer(String name, String nric, int age, MaritalStatus maritalStatus, String password) {
-        this.name = name;
-        this.userProfile = new User(nric, password, Role.OFFICER);
-        this.age = age;
-        this.maritalStatus = maritalStatus;
-    }
+
 
     @Override
     public String toCSVRow() {

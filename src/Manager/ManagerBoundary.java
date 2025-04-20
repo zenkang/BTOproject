@@ -26,8 +26,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import Utils.PredicateUtils;
-import static Utils.RepositoryGetter.*;
 
+import static Utils.RepositoryGetter.*;
 
 
 public class ManagerBoundary {
@@ -63,13 +63,12 @@ public class ManagerBoundary {
                 case 2 -> displayProjectMenu();
                 case 3 -> viewApplicantApplications();
                 case 4 -> System.out.println("TBC");
-                case 5 -> managerEnquiryMenu(sc,manager);
+                case 5 -> managerEnquiryMenu(sc, manager);
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0 && choice != 7);
+        } while (choice != 0 && choice != 7);
         if (choice == 0) {
             sc.close();
         }
@@ -98,8 +97,7 @@ public class ManagerBoundary {
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     public static void createNewProject(String managerID, Scanner sc) {
@@ -202,8 +200,7 @@ public class ManagerBoundary {
                 case 0 -> System.out.println("Exiting........");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     private static void updateProjectVisibility(Scanner sc) {
@@ -591,19 +588,17 @@ public class ManagerBoundary {
                     updateApplicationStatus(applicationID);
                 }
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     private static void updateApplicationStatus(String applicationID) {
         Scanner sc = new Scanner(System.in);
         ProjectApplication application = getProjectApplicationsRepository().getByID(applicationID);
         Applicant applicant = ApplicantController.getApplicantById(application.getApplicantID());
-        if(applicant == null) {
-           Officer officer = OfficerController.getApplicantById(application.getApplicantID());
+        if (applicant == null) {
+            Officer officer = OfficerController.getApplicantById(application.getApplicantID());
             Utils.PrettyPrint.prettyPrint(officer);
-        }
-        else {
+        } else {
             Utils.PrettyPrint.prettyPrint(applicant);
         }
 
@@ -677,8 +672,7 @@ public class ManagerBoundary {
                 }
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     public static void displayFilteredProjects(Predicate<Project> Filter) {
@@ -704,8 +698,7 @@ public class ManagerBoundary {
             for (Project project : managerProjects) {
                 prettyPrintProjectDetails(project);
             }
-        }
-        else{
+        } else {
             displayFilteredProjects(Filter);
         }
 
@@ -747,7 +740,7 @@ public class ManagerBoundary {
             System.out.println("2. Reply to Enquiries for Your Projects");
             System.out.println("0. Back");
 
-            choice = SafeScanner.getValidatedIntInput(sc,"Enter your choice: ",0,2);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
 
             switch (choice) {
                 case 1 -> viewAllEnquiries();
@@ -758,7 +751,7 @@ public class ManagerBoundary {
         } while (choice != 0);
 
 
-}
+    }
 
     private static void viewAllEnquiries() {
         List<Enquiry> enquiries = EnquiryController.getAllEnquiries();

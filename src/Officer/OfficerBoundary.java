@@ -11,6 +11,8 @@ import Enumerations.MaritalStatus;
 import Manager.ManagerController;
 import Project.Project;
 import ProjectApplication.ProjectApplication;
+import ProjectRegistration.ProjectRegistration;
+import ProjectRegistration.ProjectRegistrationController;
 import Reply.Reply;
 import Reply.ReplyController;
 import User.UserBoundary;
@@ -56,8 +58,8 @@ public class OfficerBoundary {
                 case 3 -> viewHandledProjects(officer);
                 case 4 -> applyForProject(officer);
                 case 5 -> viewApplication(officer);
-                case 6 -> System.out.println("test");
-                case 7 -> System.out.println("test");
+                case 6 -> registerToHandleProject(officer,sc);
+                case 7 -> viewRegistrationStatus(officer,sc);
                 case 8 -> viewApplicantApplications(officer);
                 case 9 -> generateBookingReceipt(officer,sc);
                 case 10 -> officerEnquiryMenu(officer);
@@ -66,13 +68,55 @@ public class OfficerBoundary {
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0 && choice !=7) ;
+        while (choice != 0 && choice !=11) ;
         if (choice == 0){
             sc.close();
         }
     }
 
+    private void viewRegistrationStatus(Officer officer, Scanner sc) {
+        List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getProjectRegistrationByOfficerId(officer.getID());
+        System.out.println("\n=== Registration Status ===");
+        if(!projectRegistrations.isEmpty()){
+            for (ProjectRegistration projectRegistration : projectRegistrations) {
+                System.out.println("Registration ID: " + projectRegistration.getRegistrationID());
+                System.out.println("Project Name: " + projectRegistration.getProjectName());
+                System.out.println("Officer ID: " + projectRegistration.getOfficerId());
+                System.out.println("Status: " + projectRegistration.getStatus());
+            }
+        }
+        else {
+            System.out.println("You did not register for any project.");
+        }
+    }
 
+    private void registerToHandleProject(Officer officer,Scanner sc) {
+
+        List<Project> projects = ProjectController.getFilteredProjects(project -> project.isVisibility());
+        if(!projects.isEmpty()){
+            System.out.println("\n=== Projects ===");
+            for (Project project : projects) {
+                prettyPrintProject(project);
+            }
+        }
+        else{
+            System.out.println("No projects can be registered.");
+        }
+        List<String> validprojIDs = projects.stream().map(Project::getID).distinct().toList();
+        String projectID = SafeScanner.getValidatedStringInput(sc,"Enter Project ID you want to apply for: ",validprojIDs);
+        boolean canRegister = ProjectRegistrationController.canRegisterForProject(officer.getID(),projectID);
+        if(canRegister){
+            if(!ProjectRegistrationController.createProjectRegistration(projectID.toUpperCase(),officer.getID())){
+                System.out.println("Registration could not be created.");
+            }
+            else{
+                System.out.println("Registration successful.");
+            }
+        }
+        else{
+            System.out.println("You are not allowed to register a project.");
+        }
+    }
 
 
     public void viewOfficerProfile() {
@@ -549,7 +593,7 @@ public class OfficerBoundary {
         }
 
         ProjectApplication application = list.get(choice - 1);
-        ProjectApplicationController.generateReceipt(officer.getID(),officer.getName(),application);
+        ProjectApplicationController.generateReceipt(officer.getName(),application);
     }
     //pretty print
     public static void prettyPrintProjectApplications(ProjectApplication application) {
@@ -617,7 +661,16 @@ public class OfficerBoundary {
         System.out.println("Reply: "+reply.getReplyContent());
         System.out.println("----------------------\n");
     }
-
+    public static void prettyPrintProject(Project project) {
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: "+project.getID());
+        System.out.println("Project name: " + project.getProjectName());
+        System.out.println("Neighbourhood: " + project.getNeighbourhood());
+        System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
+        System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
+        System.out.println("------------------------");
+    }
 
 
 
