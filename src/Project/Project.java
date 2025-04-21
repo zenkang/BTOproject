@@ -108,7 +108,7 @@ public class Project implements IEntity {
                 CsvUtils.getFmtDate(appDateClose),
                 managerID,
                 String.valueOf(noOfficersSlots),
-                String.join(",", officer),
+                String.join(";", officer),
                 String.valueOf(visibility)
         );
     }
@@ -123,7 +123,7 @@ public class Project implements IEntity {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate openDate = LocalDate.parse(values[9], formatter);
         LocalDate closeDate = LocalDate.parse(values[10], formatter);
-        String[] officer = values[13].split(",");
+        String[] officer = values[13].split(";");
         boolean visible = Boolean.parseBoolean(values[14].trim());
         if (LocalDate.now().isAfter(appDateClose)) {
             visible = false;
@@ -193,5 +193,8 @@ public class Project implements IEntity {
         this.noOfficersSlots = numOfOfficers;
     }
 
+    public void setOfficer(String[] array) {
+        this.officer = array;
+    }
 }
 

@@ -14,12 +14,12 @@ public abstract class Repository <T extends IEntity>{
     public Repository(String filePath){
         this.filePath = filePath;
         boolean result = this.load();
-        if (result) {
+        /*if (result) {
             System.out.println(filePath+" loaded successfully");
         }
         else {
             System.out.println(filePath+" could not be loaded");
-        }
+        }*/
     }
 
     public abstract T fromCSVRow(String row);

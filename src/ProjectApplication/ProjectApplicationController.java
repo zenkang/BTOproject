@@ -67,9 +67,6 @@ public class ProjectApplicationController {
     }
 
 
-
-
-
     public static boolean checkPreviousApplication(String applicantID){
         ProjectApplicationRepository applicationRepository = getProjectApplicationsRepository();
         for (ProjectApplication existing : applicationRepository.getAllProjectApplications()) {
@@ -156,7 +153,7 @@ public class ProjectApplicationController {
                 .filter(app -> app.getStatus().equals(applicationStatus)).toList();
     }
 
-    public static void generateReceipt(String id, String name, ProjectApplication application) {
+    public static void generateReceipt(String name, ProjectApplication application) {
         Project project = getProjectRepository().getByID(application.getProjectID());
         Applicant applicant = getApplicantRepository().getByID(application.getApplicantID());
         if (project == null || applicant == null) {
@@ -191,7 +188,6 @@ public class ProjectApplicationController {
                 project.getNeighbourhood(),
                 application.getRoomType(),
                 name,
-                id,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
         );
 

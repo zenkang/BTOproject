@@ -22,13 +22,7 @@ public class Applicant implements IEntity, IUserProfile {
         this.maritalStatus = maritalStatus;
     }
 
-    // Optional: Retain the old constructor for compatibility if needed
-    public Applicant(String name, String nric, int age, MaritalStatus maritalStatus, String password) {
-        this.name = name;
-        this.userProfile = new User(nric, password, Role.APPLICANT);
-        this.age = age;
-        this.maritalStatus = maritalStatus;
-    }
+
 
     @Override
     public String toCSVRow() {

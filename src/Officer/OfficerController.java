@@ -1,7 +1,7 @@
 package Officer;
 
 
-import Applicant.Applicant;
+
 import Enumerations.MaritalStatus;
 import User.User;
 

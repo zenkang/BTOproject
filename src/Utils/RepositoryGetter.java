@@ -2,6 +2,7 @@ package Utils;
 import Applicant.ApplicantRepository;
 import Enquiry.EnquiryRepository;
 import Officer.OfficerRepository;
+import ProjectRegistration.ProjectRegistrationRepository;
 import Reply.ReplyRepository;
 import Manager.ManagerRepository;
 import Project.ProjectRepository;
@@ -32,6 +33,9 @@ public class RepositoryGetter {
     }
     public static ReplyRepository getReplyRepository() {
         return ReplyRepository.getInstance("./src/data/ReplyList.csv");
+    }
+    public static ProjectRegistrationRepository getProjectRegistrationRepository() {
+        return ProjectRegistrationRepository.getInstance("./src/data/ProjectRegistration.csv");
     }
 
 }
