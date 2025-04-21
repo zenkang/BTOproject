@@ -173,6 +173,18 @@ public class ApplicantBoundary {
                 List<String> validRoomTypes = Arrays.asList("2-room", "3-room");
                 roomType = SafeScanner.getValidatedStringInput(sc, "Enter a room type (2-Room or 3-Room): ", validRoomTypes);
             }
+
+            // checks that at least 1 unit avail for each type
+            Project availUnits = ProjectController.getProjectByID(projectID);
+            if (roomType.equalsIgnoreCase("2-room") && availUnits.getNoOfUnitsType1() < 1) {
+                System.out.println("No 2-room units available for this project.");
+                return;
+            } else if (roomType.equalsIgnoreCase("3-room") && availUnits.getNoOfUnitsType2() < 1) {
+                System.out.println("No 3-room units available for this project.");
+                return;
+            }
+
+
             if (!ProjectApplicationController.createProjectApplication(projectID.toUpperCase(),roomType, applicant.getID())){
                 System.out.println("Project application could not be created.");
             }
