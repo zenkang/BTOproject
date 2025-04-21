@@ -163,7 +163,7 @@ public class ProjectController {
             return Collections.emptyList();
         }
         List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
+                ProjectApplicationController.getApplicationsByApplicantID(applicant.getID());
         if(applications.isEmpty()){
             return list;
         }
@@ -194,7 +194,7 @@ public class ProjectController {
             return Collections.emptyList();
         }
         List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationByApplicantID(officer.getID());
+                ProjectApplicationController.getApplicationsByApplicantID(officer.getID());
         if(applications.isEmpty()){
             return list;
         }

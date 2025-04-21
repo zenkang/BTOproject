@@ -18,7 +18,7 @@ import static Utils.RepositoryGetter.getProjectRegistrationRepository;
 
 public class ProjectRegistrationController {
     public static boolean canRegisterForProject(String officer_id, String project_id) {
-        List<ProjectApplication> projectApplications = ProjectApplicationController.getApplicationByApplicantID(officer_id);
+        List<ProjectApplication> projectApplications = ProjectApplicationController.getApplicationsByApplicantID(officer_id);
         projectApplications = projectApplications.stream()
                 .filter(p -> p.getProjectID().equalsIgnoreCase(project_id)).toList();
 

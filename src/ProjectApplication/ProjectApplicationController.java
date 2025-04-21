@@ -49,8 +49,15 @@ public class ProjectApplicationController {
         return getProjectApplicationsRepository().update(projectApplication);
     }
 
-
-    public static List<ProjectApplication> getApplicationByApplicantID(String applicantID) {
+    public static ProjectApplication getApplicationByApplicantID(String applicantID) {
+        for (ProjectApplication app : getProjectApplicationsRepository().getAllProjectApplications()) {
+            if (app.getApplicantID().equalsIgnoreCase(applicantID)) {
+                return app;
+            }
+        }
+        return null;
+    }
+    public static List<ProjectApplication> getApplicationsByApplicantID(String applicantID) {
         return getProjectApplicationsRepository().getByFilter(application -> applicantID.equalsIgnoreCase(application.getApplicantID()));
     }
 
@@ -154,6 +161,12 @@ public class ProjectApplicationController {
         return  getProjectApplicationsRepository().getAll().stream()
                 .filter(app -> handledProjectIds.contains(app.getProjectID()))
                 .filter(app -> app.getStatus().equals(applicationStatus)).toList();
+    }
+    public static boolean withdrawApplication(String applicantID) {
+        ProjectApplication application = getApplicationByApplicantID(applicantID);
+        if (application == null) return false;
+        application.setStatus(ApplicationStatus.UNSUCCESSFUL);  // ✅ Now correct
+        return getProjectApplicationsRepository().update(application);
     }
 
     public static void generateReceipt(String name, ProjectApplication application) {

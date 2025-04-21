@@ -196,7 +196,7 @@ public class OfficerBoundary {
     //Project
     private static void displayProjectsForOfficer(Officer officer)  {
         List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationByApplicantID(officer.getID());
+                ProjectApplicationController.getApplicationsByApplicantID(officer.getID());
 
         // 2) collect all the project‑IDs this applicant has already applied to
         Set<String> appliedIds = new HashSet<>();
@@ -289,7 +289,7 @@ public class OfficerBoundary {
 
     //Project Application
     public static void viewApplication(Officer officer) {
-        List<ProjectApplication> application = ProjectApplicationController.getApplicationByApplicantID(officer.getID());
+        List<ProjectApplication> application = ProjectApplicationController.getApplicationsByApplicantID(officer.getID());
         if (application.isEmpty()){
             System.out.println("Application could not be found.");
         }
