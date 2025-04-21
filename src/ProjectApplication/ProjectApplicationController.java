@@ -1,24 +1,17 @@
 package ProjectApplication;
 
-
 import Applicant.Applicant;
 import Enumerations.ApplicationStatus;
-
-import Manager.Manager;
+import Enumerations.MaritalStatus;
+import Enumerations.ProjectApplicationStatus;
 import Project.Project;
 import Project.ProjectController;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static Utils.RepositoryGetter.*;
+import static Utils.RepositoryGetter.getProjectApplicationsRepository;
+
 
 public class ProjectApplicationController {
 
@@ -124,6 +117,20 @@ public class ProjectApplicationController {
         return getProjectApplicationsRepository().getByFilter(app -> app.getRoomType().equalsIgnoreCase(roomType));
     }
 
+    public static ProjectApplication getCurrentApplicationByApplicantID(String applicantID) {
+        List<ProjectApplication> list = getProjectApplicationsRepository().getByFilter(
+                application -> applicantID.equalsIgnoreCase(application.getApplicantID()) &&
+                        application.getStatus() != ApplicationStatus.UNSUCCESSFUL
+        );
+
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        return list.get(0); // returns the first active application (e.g., PENDING or BOOKED)
+    }
+
+
     public static int getNumSusApplications(String id) {
         List<Project> handledProjects = getProjectRepository().getByFilter(p -> Arrays.asList(p.getOfficer()).contains(id));
         List<String> handledProjectIds = handledProjects.stream()
@@ -163,9 +170,13 @@ public class ProjectApplicationController {
                 .filter(app -> app.getStatus().equals(applicationStatus)).toList();
     }
     public static boolean withdrawApplication(String applicantID) {
-        ProjectApplication application = getApplicationByApplicantID(applicantID);
-        if (application == null) return false;
-        application.setStatus(ApplicationStatus.UNSUCCESSFUL);  // ✅ Now correct
+        ProjectApplication application = getCurrentApplicationByApplicantID(applicantID);
+
+        if (application == null) {
+            return false;
+        }
+
+        application.setStatus(ApplicationStatus.UNSUCCESSFUL);
         return getProjectApplicationsRepository().update(application);
     }
 

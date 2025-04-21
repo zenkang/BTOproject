@@ -411,13 +411,10 @@ public class ApplicantBoundary {
     }
 
     private void withdrawApplication(Applicant applicant) {
-        ProjectApplication application = ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
+        ProjectApplication application = ProjectApplicationController.getCurrentApplicationByApplicantID(applicant.getID());
+
         if (application == null) {
             System.out.println("No application to withdraw.");
-            return;
-        }
-        if (application.getStatus() == ApplicationStatus.UNSUCCESSFUL) {
-            System.out.println("The application has already been withdrawn.");
             return;
         }
 
@@ -436,5 +433,6 @@ public class ApplicantBoundary {
             }
         }
     }
+
 
 }
