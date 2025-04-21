@@ -261,7 +261,7 @@ public class ApplicantBoundary {
             System.out.println("No application to withdraw.");
             return;
         }
-        if (application.getStatus() == ApplicationStatus.WITHDRAWN) {
+        if (application.getStatus() == ApplicationStatus.UNSUCCESSFUL) {
             System.out.println("The application has already been withdrawn.");
             return;
         }

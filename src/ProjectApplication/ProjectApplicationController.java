@@ -94,7 +94,7 @@ public class ProjectApplicationController {
     public static boolean withdrawApplication(String applicantID) {
         ProjectApplication application = getApplicationByApplicantID(applicantID);
         if (application == null) return false;
-        application.setStatus(ApplicationStatus.WITHDRAWN);
+        application.setStatus(ApplicationStatus.UNSUCCESSFUL);  // ✅ Now correct
         return getProjectApplicationsRepository().update(application);
     }
 
