@@ -9,11 +9,12 @@ import ProjectApplication.ProjectApplicationController;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
-
-
+import static Utils.RepositoryGetter.getProjectApplicationsRepository;
 import static Utils.RepositoryGetter.getProjectRegistrationRepository;
 
 public class ProjectRegistrationController {

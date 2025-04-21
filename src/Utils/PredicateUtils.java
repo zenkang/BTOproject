@@ -1,5 +1,6 @@
 package Utils;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -13,7 +14,11 @@ public class PredicateUtils {
      */
 
     public static <T> Predicate<T> combineFilters(Predicate<T>... predicates) {
-        return Stream.of(predicates).reduce(x -> true, Predicate::and);
-
+        if (predicates == null) {
+            return x -> true;
+        }
+        return Stream.of(predicates)
+                .filter(Objects::nonNull)
+                .reduce(x -> true, Predicate::and);
     }
 }

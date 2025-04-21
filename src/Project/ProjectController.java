@@ -153,12 +153,12 @@ public class ProjectController {
         List<Project> list;
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
             list = repo.getByFilter(project ->
-                    (project.getType1().equalsIgnoreCase("2-Room") ||
-                            project.getType2().equalsIgnoreCase("2-Room"))
+                    ((project.getType1().equalsIgnoreCase("2-Room") && project.getNoOfUnitsType1()>0)||
+                            (project.getType2().equalsIgnoreCase("2-Room") && project.getNoOfUnitsType2()>0))
                             && project.isVisibility()
             );
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge() >= 21) {
-            list = repo.getByFilter(project -> project.isVisibility());
+            list = repo.getByFilter(project -> project.isVisibility()&& (project.getNoOfUnitsType2()> 0 || project.getNoOfUnitsType1()> 0));
         } else {
             return Collections.emptyList();
         }
@@ -179,6 +179,7 @@ public class ProjectController {
                 .collect(Collectors.toList());
 
     }
+
     public static List<Project> getProjectsForApplicant(Officer officer) {
         ProjectRepository repo = getProjectRepository();
         List<Project> list;
@@ -186,10 +187,10 @@ public class ProjectController {
             list = repo.getByFilter(project ->
                     (project.getType1().equalsIgnoreCase("2-Room") ||
                             project.getType2().equalsIgnoreCase("2-Room"))
-                            && project.isVisibility()
+                            && project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0
             );
         } else if (officer.getMaritalStatus() == MaritalStatus.MARRIED && officer.getAge() >= 21) {
-            list = repo.getByFilter(project -> project.isVisibility());
+            list = repo.getByFilter(project -> project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0);
         } else {
             return Collections.emptyList();
         }
