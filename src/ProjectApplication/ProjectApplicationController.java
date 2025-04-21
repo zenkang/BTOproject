@@ -91,13 +91,30 @@ public class ProjectApplicationController {
         return getProjectApplicationsRepository().getByFilter(app -> app.getRoomType().equalsIgnoreCase(roomType));
     }
 
-    public static boolean withdrawApplication(String applicantID) {
-        ProjectApplication application = getApplicationByApplicantID(applicantID);
-        if (application == null) return false;
-        application.setStatus(ApplicationStatus.UNSUCCESSFUL);  // ✅ Now correct
-        return getProjectApplicationsRepository().update(application);
+    public static ProjectApplication getCurrentApplicationByApplicantID(String applicantID) {
+        List<ProjectApplication> list = getProjectApplicationsRepository().getByFilter(
+                application -> applicantID.equalsIgnoreCase(application.getApplicantID()) &&
+                        application.getStatus() != ApplicationStatus.UNSUCCESSFUL
+        );
+
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        return list.get(0); // returns the first active application (e.g., PENDING or BOOKED)
     }
 
+
+    public static boolean withdrawApplication(String applicantID) {
+        ProjectApplication application = getCurrentApplicationByApplicantID(applicantID);
+
+        if (application == null) {
+            return false;
+        }
+
+        application.setStatus(ApplicationStatus.UNSUCCESSFUL);
+        return getProjectApplicationsRepository().update(application);
+    }
 
 
 }
