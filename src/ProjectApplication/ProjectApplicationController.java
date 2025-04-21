@@ -67,9 +67,6 @@ public class ProjectApplicationController {
     }
 
 
-
-
-
     public static boolean checkPreviousApplication(String applicantID){
         ProjectApplicationRepository applicationRepository = getProjectApplicationsRepository();
         for (ProjectApplication existing : applicationRepository.getAllProjectApplications()) {

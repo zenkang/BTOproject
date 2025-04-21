@@ -152,13 +152,14 @@ public class ProjectController {
         ProjectRepository repo = getProjectRepository();
         List<Project> list;
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
+
             list = repo.getByFilter(project ->
-                    (project.getType1().equalsIgnoreCase("2-Room") ||
-                            project.getType2().equalsIgnoreCase("2-Room"))
-                            && project.isVisibility() && project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0
+                    ((project.getType1().equalsIgnoreCase("2-Room") && project.getNoOfUnitsType1()>0)||
+                            (project.getType2().equalsIgnoreCase("2-Room") && project.getNoOfUnitsType2()>0))
+                            && project.isVisibility()
             );
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge() >= 21) {
-            list = repo.getByFilter(project -> project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0);
+            list = repo.getByFilter(project -> project.isVisibility()&& (project.getNoOfUnitsType2()> 0 || project.getNoOfUnitsType1()> 0));
         } else {
             return Collections.emptyList();
         }
@@ -285,6 +286,8 @@ public class ProjectController {
         project.setOfficer(officerList.toArray(new String[0]));
         getProjectRepository().update(project);
     }
+
+
 }
 
 

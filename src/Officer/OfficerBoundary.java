@@ -486,7 +486,7 @@ public class OfficerBoundary {
             int numSus = ProjectApplicationController.getNumSusApplications(officer.getID());
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
-            System.out.println("2. View Sucessful Applications " + ((numSus == 0) ? "" : "(" + numSus + ")"));
+            System.out.println("2. View Successful Applications " + ((numSus == 0) ? "" : "(" + numSus + ")"));
             System.out.println("3. View Filtered applications");
             System.out.println("4. Update Filters");
             System.out.println("0. Back");

@@ -39,6 +39,9 @@ public class ManagerBoundary {
     private static Predicate<Project> Filter = null;
     private static Predicate<Project> neighbourhoodFilter = null;
     private static Predicate<Project> flatTypeFilter = null;
+    private static Predicate<Project>availOfRoomType1Filter = null;
+    private static Predicate<Project>availOfRoomType2Filter = null;
+    private static Predicate<Project>bothRoomFilter = null;
     static Scanner sc = new Scanner(System.in);
 
     public ManagerBoundary(Manager manager) {
@@ -633,11 +636,12 @@ public class ManagerBoundary {
             System.out.println("\n=== Project Filter Menu ===");
             System.out.println("1. Neighbourhood");
             System.out.println("2. Flat Type");
-            System.out.println("3. Combine both filters");
-            System.out.println("4. Reset Filters");
+            System.out.println("3. Available Flats");
+            System.out.println("4. Combine Filters");
+            System.out.println("5. Reset Filters");
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
 
             switch (choice) {
                 case 1 -> {
@@ -660,15 +664,29 @@ public class ManagerBoundary {
                         ProjectController.getFilteredProjects(Filter);
                     }
                 }
-                case 3 -> {
-                    if (neighbourhoodFilter != null && flatTypeFilter != null) {
-                        Filter = PredicateUtils.combineFilters(neighbourhoodFilter, flatTypeFilter);
+                case 3->{
+                    List<String> validRoomOptions = Arrays.asList("2-room", "3-room","Both");
+                    String flatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type availability filter(e.g.,2-Room,3-Room,Both:)", validRoomOptions);
+                    if (flatType.equals("2-room")) {
+                        availOfRoomType1Filter = project -> project.getNoOfUnitsType1() > 0;
+                        Filter = availOfRoomType1Filter;
                         ProjectController.getFilteredProjects(Filter);
-                    } else {
-                        System.out.println("Please set both the location filter and flat type filter before combining.");
+                    } else if(flatType.equals("3-room")) {
+                        availOfRoomType2Filter = project -> project.getNoOfUnitsType2() > 0;
+                        Filter = availOfRoomType2Filter;
+                        ProjectController.getFilteredProjects(Filter);
+                    }
+                    else{
+                        availOfRoomType1Filter = project -> project.getNoOfUnitsType1() > 0;
+                        availOfRoomType2Filter = project -> project.getNoOfUnitsType2() > 0;
+                        bothRoomFilter =PredicateUtils.combineFilters(availOfRoomType1Filter,availOfRoomType2Filter);
                     }
                 }
                 case 4 -> {
+                    Filter = PredicateUtils.combineFilters(neighbourhoodFilter, flatTypeFilter,availOfRoomType1Filter,availOfRoomType2Filter,bothRoomFilter);
+                    ProjectController.getFilteredProjects(Filter);
+                }
+                case 5 -> {
                     Filter = null;
                     System.out.println("Filter Reset.");
                 }
@@ -841,44 +859,42 @@ public class ManagerBoundary {
         if (projectRegistrations.isEmpty()) {
             System.out.println("No handling project registrations available.");
         }
-        else{
+        else {
             for (ProjectRegistration p : projectRegistrations) {
                 System.out.println("Registration ID: " + p.getRegistrationID());
                 System.out.println("Project Name: " + p.getProjectName());
                 System.out.println("Officer ID: " + p.getOfficerId());
                 System.out.println("Status: " + p.getStatus());
             }
-        }
-        List<String> validRegisterIds = projectRegistrations.stream().map(ProjectRegistration::getRegistrationID).toList();
-        String registerID = SafeScanner.getValidatedStringInput(sc,"Enter Registration ID you want to approve or reject for: ",validRegisterIds);
-        List<String> validOptions = Arrays.asList("a", "r");
-        String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
-        RegistrationStatus status = null;
-        switch (choice.toLowerCase()) {
-            case "a" -> status = RegistrationStatus.APPROVED;
-            case "r" -> status = RegistrationStatus.REJECTED;
-            default -> System.out.println("Invalid choice. Please select a valid option.");
+
+            List<String> validRegisterIds = projectRegistrations.stream().map(ProjectRegistration::getRegistrationID).toList();
+            String registerID = SafeScanner.getValidatedStringInput(sc, "Enter Registration ID you want to approve or reject for: ", validRegisterIds);
+            List<String> validOptions = Arrays.asList("a", "r");
+            String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
+            RegistrationStatus status = null;
+            switch (choice.toLowerCase()) {
+                case "a" -> status = RegistrationStatus.APPROVED;
+                case "r" -> status = RegistrationStatus.REJECTED;
+                default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-            if(ProjectRegistrationController.updateProjectRegistration(registerID,status)){
-                if(status == RegistrationStatus.APPROVED){
+            if (ProjectRegistrationController.updateProjectRegistration(registerID, status)) {
+                if (status == RegistrationStatus.APPROVED) {
                     ProjectController.updateOfficer(registerID);
                     System.out.println("Project registration approval is successful");
-                }
-                else{
+                } else {
                     System.out.println("Project registration reject is successful");
                 }
 
             }
-            else{
-                if(status == RegistrationStatus.APPROVED){
+            else {
+                if (status == RegistrationStatus.APPROVED) {
                     System.out.println("Project registration approval is unsuccessful");
-                }
-                else{
+                } else {
                     System.out.println("Project registration reject is unsuccessful");
                 }
 
             }
-
+        }
 
 
     }
