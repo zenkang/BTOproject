@@ -23,24 +23,7 @@ public class Enquiry implements IEntity {
         this.status = EnquiryStatus.PENDING;
     }
 
-    // Used when loading from CSV or raw String (converts to enum safely)
-    public Enquiry(String enquiryId, LocalDate date, String projectName, String applicantNric, String message, String status) {
-        this.enquiryId = enquiryId;
-        this.date = date;
-        this.projectName = projectName;
-        this.applicantNric = applicantNric;
-        this.message = message;
 
-        if (status == null || status.isBlank()) {
-            this.status = EnquiryStatus.PENDING;
-        } else {
-            try {
-                this.status = EnquiryStatus.valueOf(status.trim().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                this.status = EnquiryStatus.PENDING;
-            }
-        }
-    }
 
     // Used internally when EnquiryStatus is already available
     public Enquiry(String enquiryId, LocalDate date, String projectName, String applicantNric, String message, EnquiryStatus status) {

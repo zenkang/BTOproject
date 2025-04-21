@@ -1,21 +1,20 @@
-package Applicant;
+package Officer;
 
 import Abstract.IEntity;
 import Abstract.IUserProfile;
-import Enumerations.Role;
-import User.User;
+import Applicant.Applicant;
 import Enumerations.MaritalStatus;
+
+import User.User;
 import Utils.CsvUtils;
 
-public class Applicant implements IEntity, IUserProfile {
+public class Officer implements IEntity, IUserProfile {
     private User userProfile;
     private String name;
     private int age;
     private MaritalStatus maritalStatus;
     private String Nric;
-
-    // Constructor using a User object (password managed in User.csv)
-    public Applicant(String name, int age, MaritalStatus maritalStatus, String Nric) {
+    public Officer(String name, int age, MaritalStatus maritalStatus, String Nric) {
         this.name = name;
         this.Nric = Nric;
         this.age = age;

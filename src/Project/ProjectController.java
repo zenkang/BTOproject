@@ -2,11 +2,14 @@ package Project;
 
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
+import Officer.Officer;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
+import ProjectRegistration.ProjectRegistration;
+import ProjectRegistration.ProjectRegistrationController;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,17 +19,9 @@ import static Utils.RepositoryGetter.getProjectRepository;
 
 public class ProjectController {
 
-    public static List<String> getUniqueProjectNames() {
-       return getProjectRepository().getAll()
-        .stream()
-        .map(Project::getProjectName)
-        .distinct()
-        .toList();
-    }
 
-    public static ArrayList<Project> getAllProjects() {
-        return getProjectRepository().getAll();
-    }
+
+
 
     public static Project getProjectByName(String projectName) {
         ArrayList<Project> p = getProjectRepository().getAll();
@@ -125,7 +120,7 @@ public class ProjectController {
                                         String[] officers,
                                         boolean visible){
         ProjectRepository repository = getProjectRepository();
-        String newID = repository.generateId();
+        String newID = repository.generateId("PR");
         Project newProject = new Project(newID,projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
                 appDateOpen, appDateClose, managerID, noOfficersSlots, officers,visible);
         return repository.create(newProject);
@@ -160,10 +155,10 @@ public class ProjectController {
             list = repo.getByFilter(project ->
                     (project.getType1().equalsIgnoreCase("2-Room") ||
                             project.getType2().equalsIgnoreCase("2-Room"))
-                            && project.isVisibility()
+                            && project.isVisibility() && project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0
             );
         } else if (applicant.getMaritalStatus() == MaritalStatus.MARRIED && applicant.getAge() >= 21) {
-            list = repo.getByFilter(project -> project.isVisibility());
+            list = repo.getByFilter(project -> project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0);
         } else {
             return Collections.emptyList();
         }
@@ -184,9 +179,48 @@ public class ProjectController {
                 .collect(Collectors.toList());
 
     }
+    public static List<Project> getProjectsForApplicant(Officer officer) {
+        ProjectRepository repo = getProjectRepository();
+        List<Project> list;
+        if (officer.getMaritalStatus() == MaritalStatus.SINGLE && officer.getAge() >= 35) {
+            list = repo.getByFilter(project ->
+                    (project.getType1().equalsIgnoreCase("2-Room") ||
+                            project.getType2().equalsIgnoreCase("2-Room"))
+                            && project.isVisibility()
+            );
+        } else if (officer.getMaritalStatus() == MaritalStatus.MARRIED && officer.getAge() >= 21) {
+            list = repo.getByFilter(project -> project.isVisibility());
+        } else {
+            return Collections.emptyList();
+        }
+        List<ProjectApplication> applications =
+                ProjectApplicationController.getApplicationByApplicantID(officer.getID());
+        if(applications.isEmpty()){
+            return list;
+        }
+
+        // 2) collect all the project‑IDs this applicant has already applied to
+        Set<String> appliedIds = new HashSet<>();
+        for (ProjectApplication app : applications) {
+            appliedIds.add(app.getProjectID());
+        }
+        // remove all projects whose ID is in appliedIds
+        return list.stream()
+                .filter(p -> !appliedIds.contains(p.getID()))
+                .collect(Collectors.toList());
+
+    }
 
     public static List<String> getProjectIDsForApplicant(Applicant applicant) {
         List<Project> projects = getProjectsForApplicant(applicant);
+        assert projects != null;
+        return projects.stream()
+                .map(Project::getID)
+                .distinct()
+                .toList();
+    }
+    public static List<String> getProjectIDsForApplicant(Officer officer) {
+        List<Project> projects = getProjectsForApplicant(officer);
         assert projects != null;
         return projects.stream()
                 .map(Project::getID)
@@ -215,9 +249,42 @@ public class ProjectController {
                 .map(Project::getID)
                 .toList();
     }
+    public static List<Project> getProjectsByIDs(List<String> projectIds) {
+        return projectIds.stream()
+                .map(ProjectController::getProjectByID)
+                .filter(Objects::nonNull) // Skip any IDs that don't return a project
+                .collect(Collectors.toList());
+    }
 
 
+    public static boolean isHandlingProject(String id, String projectID) {
+        ProjectRepository repo = getProjectRepository();
+        List<Project> list;
+        list = repo.getByFilter(project -> project.getID().equalsIgnoreCase(projectID)
+        && Arrays.asList(project.getOfficer()).contains(id));
+        return !list.isEmpty();
+    }
 
+    public static List<String> getProjectNamesHandledByOfficer(String id) {
+        return getProjectRepository().getAll().stream()
+                .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
+                .map(Project::getProjectName)
+                .toList();
+    }
+    public static List<Project> getProjectsHandledByOfficer(String id) {
+        return getProjectRepository().getAll().stream()
+                .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
+                .toList();
+    }
+    public static void updateOfficer(String registerID) {
+        ProjectRegistration registration = ProjectRegistrationController.getProjectRegistrationByID(registerID);
+        String officerID = registration.getOfficerId();
+        Project project = getProjectRepository().getByID(registration.getProjectID());
+        List<String> officerList = new ArrayList<>(Arrays.asList(project.getOfficer()));
+        officerList.add(officerID);
+        project.setOfficer(officerList.toArray(new String[0]));
+        getProjectRepository().update(project);
+    }
 }
 
 

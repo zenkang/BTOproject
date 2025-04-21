@@ -25,4 +25,5 @@ public class ReplyRepository extends Repository<Reply> {
     public Reply fromCSVRow(String row) {
         return (Reply) new Reply("", "", null, "", "").fromCSVRow(row);
     }
+
 }

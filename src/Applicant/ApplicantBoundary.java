@@ -13,6 +13,8 @@ import Project.Project;
 import Project.ProjectController;
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
+import Reply.Reply;
+import Reply.ReplyController;
 import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryController;
@@ -34,7 +36,7 @@ public class ApplicantBoundary {
             System.out.println("2. View Projects");
             System.out.println("3. Apply Projects");
             System.out.println("4. View my Application");
-            System.out.println("5. Enquiry");
+            System.out.println("5. View Enquiry Menu");
             System.out.println("6. ");
             System.out.println("7. Change Password");
             System.out.println("0. Exit");
@@ -139,7 +141,7 @@ public class ApplicantBoundary {
     public static void applyForProject(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
         if (!ProjectApplicationController.checkPreviousApplication(applicant.getNric())) {
-            System.out.println("You have a Pending/Successful Application");
+            System.out.println("You have already submitted an Application Before.");
             return;
         }
         if(applicant.getAge() < 21){
@@ -280,21 +282,28 @@ public class ApplicantBoundary {
 
     public static void applicantEnquiryMenu(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("\n--- Enquiry Menu (Applicant) ---");
-        System.out.println("1. Submit new enquiry");
-        System.out.println("2. View my enquiries");
-        System.out.println("3. Edit an existing enquiry");
-        System.out.println("4. Delete an enquiry");
+        int choice;
 
-        int choice = SafeScanner.getValidatedIntInput(sc, "Enter option: ", 1, 4);
+        do {
+            System.out.println("\n--- Enquiry Menu (Applicant) ---");
+            System.out.println("1. Submit new enquiry");
+            System.out.println("2. View my enquiries");
+            System.out.println("3. Edit an existing enquiry");
+            System.out.println("4. Delete an enquiry");
+            System.out.println("5. View replies");
+            System.out.println("0. Exit");
+            choice  = SafeScanner.getValidatedIntInput(sc, "Enter option: ", 0, 5);
 
-        switch (choice) {
-            case 1 -> submitEnquiry(applicant.getNric());
-            case 2 -> viewEnquiries(applicant.getNric());
-            case 3 -> editEnquiry(applicant.getNric());
-            case 4 -> deleteEnquiry(applicant.getNric());
-            default -> System.out.println("Invalid option.");
-        }
+            switch (choice) {
+                case 1 -> submitEnquiry(applicant.getNric());
+                case 2 -> viewEnquiries(applicant.getNric());
+                case 3 -> editEnquiry(applicant.getNric());
+                case 4 -> deleteEnquiry(applicant.getNric());
+                case 5 -> viewRepliedEnquiry(sc);
+                case 0 -> System.out.println("Exiting...");
+                default -> System.out.println("Invalid option.");
+            }
+        }while(choice !=0);
     }
 
     public static void submitEnquiry(String nric) {
@@ -302,16 +311,31 @@ public class ApplicantBoundary {
         String projectName = SafeScanner.getValidProjectName(sc);
         System.out.print("Enter your message: ");
         String message = sc.nextLine();
-
-        String id = UUID.randomUUID().toString().substring(0, 8);
         LocalDate today = LocalDate.now();
-
-        Enquiry enquiry = new Enquiry(id, today, projectName, nric, message);
-        EnquiryController.addEnquiry(enquiry);
+        EnquiryController.addEnquiry(today,projectName,nric,message);
 
         System.out.println("Enquiry submitted!");
     }
+    private static void viewRepliedEnquiry(Scanner sc) {
+        System.out.println("\n--- View Replied Enquiry ---");
+        System.out.println("Enter enquiry id: ");
+        String enquiryId = sc.nextLine();
+        while(ReplyController.getRepliesByEnquiry(enquiryId) == null) {
+            System.out.println("Invalid Enquiry. Please enter a valid Enquiry ID.");
+            enquiryId = sc.nextLine();
+        }
+        List <Reply> replies = ReplyController.getRepliesByEnquiry(enquiryId);
+        if(replies.isEmpty()) {
+            System.out.println("There are no replies for this enquiry.");
+        }
+        else{
+            for(Reply reply : replies) {
+                printPrettyReply(reply);
+            }
+        }
 
+
+    }
     public static void viewEnquiries(String nric) {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
@@ -374,6 +398,15 @@ public class ApplicantBoundary {
         EnquiryController.deleteEnquiry(enquiry.getEnquiryId());
 
         System.out.println("Enquiry deleted successfully!");
+    }
+    public static void printPrettyReply(Reply reply) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Reply ID: " + reply.getReplyId());
+        System.out.println("Enquiry ID: " + reply.getEnquiryId());
+        System.out.println("Date: " + reply.getDate().format(dateFormatter));
+        System.out.println("Officer / Manager ID: "+reply.getOfficerOrManagerId());
+        System.out.println("Reply: "+reply.getReplyContent());
+        System.out.println("----------------------\n");
     }
 
 }

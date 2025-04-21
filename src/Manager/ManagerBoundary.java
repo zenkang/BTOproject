@@ -1,29 +1,37 @@
 package Manager;
 
+
 import Applicant.ApplicantController;
 import Enquiry.Enquiry;
 import Enumerations.ApplicationStatus;
+import Enumerations.RegistrationStatus;
+import Officer.Officer;
+import Officer.OfficerController;
 import Project.Project;
 import Project.ProjectController;
 import Applicant.Applicant;
 
 import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
+import ProjectRegistration.ProjectRegistration;
 import Reply.ReplyController;
 import User.UserBoundary;
 import Enquiry.EnquiryController;
 import Utils.SafeScanner;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import Utils.PredicateUtils;
-import static Utils.RepositoryGetter.*;
+import ProjectRegistration.ProjectRegistrationController;
 
+import Utils.PredicateUtils;
+
+import static Utils.RepositoryGetter.*;
 
 
 public class ManagerBoundary {
@@ -45,10 +53,11 @@ public class ManagerBoundary {
             System.out.println("\n=== Manager Menu ===");
             System.out.println("1. View/update my profile");
             System.out.println("2. View Projects Menu");
-            System.out.println("3. View project applications");
+            System.out.println("3. View Project Applications");
             System.out.println("4. View Project Registration Menu");
             System.out.println("5. View Enquiry Menu");
-            System.out.println("6. Change Password");
+            System.out.println("6. Generate Report");
+            System.out.println("7. Change Password");
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
@@ -57,18 +66,19 @@ public class ManagerBoundary {
                 case 1 -> viewProfile();
                 case 2 -> displayProjectMenu();
                 case 3 -> viewApplicantApplications();
-                case 4 -> System.out.println("TBC");
-                case 5 -> managerEnquiryMenu(manager);
-                case 6 -> changePassword();
+                case 4 -> viewProjectRegistrationMenu();
+                case 5 -> managerEnquiryMenu(sc, manager);
+                case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0 && choice != 7);
+        } while (choice != 0 && choice != 7);
         if (choice == 0) {
             sc.close();
         }
     }
+
+
 
     public static void displayProjectMenu() {
         int choice;
@@ -93,8 +103,7 @@ public class ManagerBoundary {
                 case 0 -> System.out.println("Exiting the Project Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     public static void createNewProject(String managerID, Scanner sc) {
@@ -197,8 +206,7 @@ public class ManagerBoundary {
                 case 0 -> System.out.println("Exiting........");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     private static void updateProjectVisibility(Scanner sc) {
@@ -586,15 +594,19 @@ public class ManagerBoundary {
                     updateApplicationStatus(applicationID);
                 }
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     private static void updateApplicationStatus(String applicationID) {
         Scanner sc = new Scanner(System.in);
         ProjectApplication application = getProjectApplicationsRepository().getByID(applicationID);
         Applicant applicant = ApplicantController.getApplicantById(application.getApplicantID());
-        Utils.PrettyPrint.prettyPrint(applicant);
+        if (applicant == null) {
+            Officer officer = OfficerController.getApplicantById(application.getApplicantID());
+            Utils.PrettyPrint.prettyPrint(officer);
+        } else {
+            Utils.PrettyPrint.prettyPrint(applicant);
+        }
 
         List<String> validOptions = Arrays.asList("s", "u");
         String selection = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (s : Successful, u : Unsuccessful) \n", validOptions);
@@ -666,8 +678,7 @@ public class ManagerBoundary {
                 }
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        }
-        while (choice != 0);
+        } while (choice != 0);
     }
 
     public static void displayFilteredProjects(Predicate<Project> Filter) {
@@ -727,29 +738,26 @@ public class ManagerBoundary {
 
     }
 
-    public static void managerEnquiryMenu(Manager manager) {
+    public static void managerEnquiryMenu(Scanner sc, Manager manager) {
         int choice;
         do {
             System.out.println("\n--- Enquiry Menu (Manager) ---");
             System.out.println("1. View All Enquiries");
             System.out.println("2. Reply to Enquiries for Your Projects");
             System.out.println("0. Back");
-            System.out.print("Enter option: ");
 
-            choice = SafeScanner.getValidatedIntInput(sc,"Enter your choice: ",0,2);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
 
             switch (choice) {
                 case 1 -> viewAllEnquiries();
                 case 2 -> replyToOwnProjectEnquiries(manager);
-                case 0 -> displayManagerMenu();
+                case 0 -> System.out.println("Going Back....");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        } while (choice != 0 && choice !=2);
-        if(choice == 0){
-            sc.close();
-    }
+        } while (choice != 0);
 
-}
+
+    }
 
     private static void viewAllEnquiries() {
         List<Enquiry> enquiries = EnquiryController.getAllEnquiries();
@@ -765,12 +773,8 @@ public class ManagerBoundary {
     }
 
     private static void replyToOwnProjectEnquiries(Manager manager) {
-        List<Project> myProjects = ProjectController.getProjectsCreatedByManager(manager.getName());
-        List<String> myProjectNames = myProjects.stream()
-                .map(Project::getProjectName)
-                .collect(Collectors.toList());
 
-        List<Enquiry> replyable = EnquiryController.getUnrepliedEnquiriesByProjects(myProjectNames);
+        List<Enquiry> replyable = EnquiryController.getUnrepliedEnquiriesByProjects(manager.getID());
 
         if (replyable.isEmpty()) {
             System.out.println("No pending enquiries to reply to.");
@@ -809,5 +813,88 @@ public class ManagerBoundary {
         ReplyController.addReply(selected.getEnquiryId(), manager.getNric(), replyContent);
 
         System.out.println("Reply submitted and enquiry status updated.");
+    }
+
+
+    private static void viewProjectRegistrationMenu() {
+        int choice;
+        Scanner sc = new Scanner(System.in);
+        do {
+            System.out.println("\n--- View Project Registration Menu ---");
+            System.out.println("1. View handled Project Registration");
+            System.out.println("2. Approve/Reject Project Registration");
+            System.out.println("0. Back");
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
+            switch (choice) {
+                case 1 -> displayAllHandledProjectRegistration(manager.getID());
+                case 2 -> ApproveOrRejectProjectRegistration(manager.getID());
+                case 0 -> System.out.println("Going Back....");
+                default -> System.out.println("Invalid choice. Please select a valid option.");
+            }
+        }while(choice !=0);
+
+    }
+
+    private static void ApproveOrRejectProjectRegistration(String id) {
+        System.out.println("\n--- Approve or Reject Project Registration ---");
+        List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getHandledProjectRegistration(id);
+        if (projectRegistrations.isEmpty()) {
+            System.out.println("No handling project registrations available.");
+        }
+        else{
+            for (ProjectRegistration p : projectRegistrations) {
+                System.out.println("Registration ID: " + p.getRegistrationID());
+                System.out.println("Project Name: " + p.getProjectName());
+                System.out.println("Officer ID: " + p.getOfficerId());
+                System.out.println("Status: " + p.getStatus());
+            }
+        }
+        List<String> validRegisterIds = projectRegistrations.stream().map(ProjectRegistration::getRegistrationID).toList();
+        String registerID = SafeScanner.getValidatedStringInput(sc,"Enter Registration ID you want to approve or reject for: ",validRegisterIds);
+        List<String> validOptions = Arrays.asList("a", "r");
+        String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
+        RegistrationStatus status = null;
+        switch (choice.toLowerCase()) {
+            case "a" -> status = RegistrationStatus.APPROVED;
+            case "r" -> status = RegistrationStatus.REJECTED;
+            default -> System.out.println("Invalid choice. Please select a valid option.");
+            }
+            if(ProjectRegistrationController.updateProjectRegistration(registerID,status)){
+                if(status == RegistrationStatus.APPROVED){
+                    ProjectController.updateOfficer(registerID);
+                    System.out.println("Project registration approval is successful");
+                }
+                else{
+                    System.out.println("Project registration reject is successful");
+                }
+
+            }
+            else{
+                if(status == RegistrationStatus.APPROVED){
+                    System.out.println("Project registration approval is unsuccessful");
+                }
+                else{
+                    System.out.println("Project registration reject is unsuccessful");
+                }
+
+            }
+
+
+
+    }
+
+    private static void displayAllHandledProjectRegistration(String id) {
+        List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getHandledProjectRegistration(id);
+        if (projectRegistrations.isEmpty()) {
+            System.out.println("No handling project registrations available.");
+        }
+        else{
+            for (ProjectRegistration p : projectRegistrations) {
+                System.out.println("Registration ID: " + p.getRegistrationID());
+                System.out.println("Project Name: " + p.getProjectName());
+                System.out.println("Officer ID: " + p.getOfficerId());
+                System.out.println("Status: " + p.getStatus());
+            }
+        }
     }
 }

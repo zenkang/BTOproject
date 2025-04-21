@@ -6,7 +6,11 @@ import Manager.ManagerController;
 import Applicant.Applicant;
 import Applicant.ApplicantBoundary;
 import Applicant.ApplicantController;
+import Officer.Officer;
+import Utils.SessionManager;
 
+import Officer.OfficerBoundary;
+import Officer.OfficerController;
 import static Utils.RepositoryGetter.*;
 import Utils.SessionManager;
 
@@ -28,6 +32,15 @@ public class UserController {
             }
             case OFFICER ->{
                 // create the officer and show the menu
+                Officer officer = OfficerController.createOfficer(user);
+                if(officer!=null){
+                    OfficerBoundary view = new OfficerBoundary(officer);
+                    System.out.println("\nWelcome " + officer.getName());
+                    view.displayMenu();
+                }
+                else{
+                    System.out.println("Officer creation failed");
+                }
             }
             case MANAGER ->{
                 // create the manager and show the menu
@@ -48,7 +61,7 @@ public class UserController {
 
         }
     }
-    public static boolean changePassword(User user, String newPassword) {
+    public static boolean changePassword(User user, String newPassword){
         UsersRepository usersRepository = getUsersRepository();
         user.setPassword(newPassword);
         if(!usersRepository.update(user)){

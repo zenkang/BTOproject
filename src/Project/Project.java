@@ -193,5 +193,8 @@ public class Project implements IEntity {
         this.noOfficersSlots = numOfOfficers;
     }
 
+    public void setOfficer(String[] array) {
+        this.officer = array;
+    }
 }
 

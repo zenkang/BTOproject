@@ -28,12 +28,10 @@ public class EnquiryRepository extends Repository<Enquiry> {
         return "EnquiryID,Date,ProjectName,ApplicantID,Question,Status";
     }
 
-    public List<Enquiry> getUnrepliedByProjectNames(List<String> projectNames) {
-        return this.getByFilter(e ->
-                projectNames.stream().anyMatch(
-                        name -> name.trim().equalsIgnoreCase(e.getProjectName().trim())
-                ) && !e.isReplied()
-        );
-    }
+
+
+
+
+
 
 }
