@@ -105,7 +105,8 @@ public class OfficerBoundary {
         List<String> validprojIDs = projects.stream().map(Project::getID).distinct().toList();
         String projectID = SafeScanner.getValidatedStringInput(sc,"Enter Project ID you want to apply for: ",validprojIDs);
         boolean canRegister = ProjectRegistrationController.canRegisterForProject(officer.getID(),projectID);
-        if(canRegister){
+        boolean hasRegistered = ProjectRegistrationController.hasRegisteredForProject(officer.getID(),projectID);
+        if(canRegister && !hasRegistered){
             if(!ProjectRegistrationController.createProjectRegistration(projectID.toUpperCase(),officer.getID())){
                 System.out.println("Registration could not be created.");
             }

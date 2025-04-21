@@ -94,6 +94,7 @@ public class Project implements IEntity {
 
     @Override
     public String toCSVRow() {
+        String officersString = String.join(";", this.officer);
         return String.join(",",
                 projectID,
                 projectName,
@@ -108,7 +109,7 @@ public class Project implements IEntity {
                 CsvUtils.getFmtDate(appDateClose),
                 managerID,
                 String.valueOf(noOfficersSlots),
-                String.join(",", officer),
+                officersString,
                 String.valueOf(visibility)
         );
     }

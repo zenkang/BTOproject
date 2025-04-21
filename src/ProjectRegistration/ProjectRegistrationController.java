@@ -8,12 +8,12 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 
-import static Utils.RepositoryGetter.getProjectApplicationsRepository;
+
+
 import static Utils.RepositoryGetter.getProjectRegistrationRepository;
 
 public class ProjectRegistrationController {
@@ -68,5 +68,17 @@ public class ProjectRegistrationController {
     }
     public static ProjectRegistration getProjectRegistrationByID(String id) {
         return getProjectRegistrationRepository().getByID(id);
+    }
+
+    public static boolean hasRegisteredForProject(String id, String projectID) {
+        List<ProjectRegistration> projectRegistration = getProjectRegistrationRepository().getByFilter(
+                p -> p.status.equals(RegistrationStatus.PENDING) &&
+                        p.getOfficerId().equalsIgnoreCase(id) &&
+                        p.getProjectID().equalsIgnoreCase(projectID));
+        if(projectRegistration.isEmpty()){
+            return false;
+        }
+        return true;
+
     }
 }
