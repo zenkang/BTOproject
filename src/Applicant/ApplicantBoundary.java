@@ -33,7 +33,7 @@ public class ApplicantBoundary {
             System.out.println("3. Apply Projects");
             System.out.println("4. View my Application");
             System.out.println("5. Enquiry");
-            System.out.println("6. ");
+            System.out.println("6. Withdraw Application");
             System.out.println("7. Change Password");
             System.out.println("0. Exit");
 
@@ -45,7 +45,7 @@ public class ApplicantBoundary {
                 case 3 -> applyForProject(applicant);
                 case 4 -> viewApplication(applicant);
                 case 5 -> EnquiryApplicantBoundary.applicantMenu(applicant);
-                case 6 -> System.out.println("blanshs");
+                case 6 -> withdrawApplication(applicant);
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
@@ -255,4 +255,31 @@ public class ApplicantBoundary {
         System.out.println("Project Name: " + project.getProjectName());
         System.out.println("Status: " + application.getStatus());
     }
+    private void withdrawApplication(Applicant applicant) {
+        ProjectApplication application = ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
+        if (application == null) {
+            System.out.println("No application to withdraw.");
+            return;
+        }
+        if (application.getStatus() == ApplicationStatus.WITHDRAWN) {
+            System.out.println("The application has already been withdrawn.");
+            return;
+        }
+
+        Scanner sc = new Scanner(System.in);
+        String confirm = SafeScanner.getValidatedStringInput(
+                sc, "Are you sure you want to withdraw your application? (y/n): ",
+                List.of("y", "n")
+        );
+
+        if (confirm.equalsIgnoreCase("y")) {
+            boolean success = ProjectApplicationController.withdrawApplication(applicant.getID());
+            if (success) {
+                System.out.println("Application withdrawn successfully.");
+            } else {
+                System.out.println("Failed to withdraw the application.");
+            }
+        }
+    }
+
 }

@@ -91,6 +91,12 @@ public class ProjectApplicationController {
         return getProjectApplicationsRepository().getByFilter(app -> app.getRoomType().equalsIgnoreCase(roomType));
     }
 
+    public static boolean withdrawApplication(String applicantID) {
+        ProjectApplication application = getApplicationByApplicantID(applicantID);
+        if (application == null) return false;
+        application.setStatus(ApplicationStatus.WITHDRAWN);
+        return getProjectApplicationsRepository().update(application);
+    }
 
 
 
