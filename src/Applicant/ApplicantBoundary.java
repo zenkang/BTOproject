@@ -163,7 +163,6 @@ public class ApplicantBoundary {
             ValidprojIDs.forEach(item -> System.out.println("ID: " + item));
             // TO BE UPDATED
             // BEST TO GET FILTERED VALID PROJECT ID BASED ON APPLICANT'S ATTRIBUTE
-            //TO BE ADDED: CHECKS TO ENSURE NUM OF UNITS AVAILABLE FOR THE PROJ >1
             String projectID = SafeScanner.getValidatedStringInput(sc,"Enter Project ID you want to apply for: ",ValidprojIDs);
             String roomType;
             if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
@@ -174,7 +173,7 @@ public class ApplicantBoundary {
                 roomType = SafeScanner.getValidatedStringInput(sc, "Enter a room type (2-Room or 3-Room): ", validRoomTypes);
             }
 
-            // checks that at least 1 unit avail for each type
+            // checks that at least 1 unit available for each type
             Project availUnits = ProjectController.getProjectByID(projectID);
             if (roomType.equalsIgnoreCase("2-room") && availUnits.getNoOfUnitsType1() < 1) {
                 System.out.println("No 2-room units available for this project.");
@@ -183,7 +182,6 @@ public class ApplicantBoundary {
                 System.out.println("No 3-room units available for this project.");
                 return;
             }
-
 
             if (!ProjectApplicationController.createProjectApplication(projectID.toUpperCase(),roomType, applicant.getID())){
                 System.out.println("Project application could not be created.");
@@ -311,7 +309,7 @@ public class ApplicantBoundary {
                 case 2 -> viewEnquiries(applicant.getNric());
                 case 3 -> editEnquiry(applicant.getNric());
                 case 4 -> deleteEnquiry(applicant.getNric());
-                case 5 -> viewRepliedEnquiry(sc);
+                case 5 -> viewRepliedEnquiry(applicant, sc);
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid option.");
             }
@@ -328,26 +326,55 @@ public class ApplicantBoundary {
 
         System.out.println("Enquiry submitted!");
     }
-    private static void viewRepliedEnquiry(Scanner sc) {
+    private static void viewRepliedEnquiry(Applicant applicant, Scanner sc) {
         System.out.println("\n--- View Replied Enquiry ---");
-        System.out.println("Enter enquiry id: ");
-        String enquiryId = sc.nextLine();
-        while(ReplyController.getRepliesByEnquiry(enquiryId) == null) {
-            System.out.println("Invalid Enquiry. Please enter a valid Enquiry ID.");
-            enquiryId = sc.nextLine();
-        }
-        List <Reply> replies = ReplyController.getRepliesByEnquiry(enquiryId);
-        if(replies.isEmpty()) {
-            System.out.println("There are no replies for this enquiry.");
-        }
-        else{
-            for(Reply reply : replies) {
-                printPrettyReply(reply);
-            }
+
+        // Get only enquiries by the applicant
+        List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(applicant.getNric());
+
+        // Filter those that have replies
+        List<Enquiry> repliedEnquiries = enquiries.stream()
+                .filter(e -> {
+                    List<Reply> replies = ReplyController.getRepliesByEnquiry(e.getEnquiryId());
+                    return replies != null && !replies.isEmpty();
+                })
+                .collect(Collectors.toList());
+
+        if (repliedEnquiries.isEmpty()) {
+            System.out.println("You have no replied enquiries.");
+            return;
         }
 
+        // Display replied enquiry IDs and their messages
+        System.out.println("Replied Enquiries:");
+        for (Enquiry e : repliedEnquiries) {
+            System.out.println("Enquiry ID: " + e.getEnquiryId() + " | Message: " + e.getMessage());
+        }
 
+        // Get valid enquiry IDs in lowercase for case-insensitive match
+        List<String> validIds = repliedEnquiries.stream()
+                .map(e -> e.getEnquiryId().toLowerCase())
+                .toList();
+
+        // Get validated input
+        String enquiryIdInput = SafeScanner.getValidatedStringInput(sc,
+                "\nEnter Enquiry ID to view replies: ", validIds);
+
+        // Match and normalize to actual case
+        String finalEnquiryId = repliedEnquiries.stream()
+                .filter(e -> e.getEnquiryId().equalsIgnoreCase(enquiryIdInput))
+                .map(Enquiry::getEnquiryId)
+                .findFirst()
+                .orElse(enquiryIdInput); // fallback (shouldn't happen)
+
+        // Print replies
+        List<Reply> replies = ReplyController.getRepliesByEnquiry(finalEnquiryId);
+        for (Reply reply : replies) {
+            printPrettyReply(reply);
+        }
     }
+
+
     public static void viewEnquiries(String nric) {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
