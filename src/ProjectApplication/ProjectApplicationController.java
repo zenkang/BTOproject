@@ -1,5 +1,6 @@
 package ProjectApplication;
 
+
 import Applicant.Applicant;
 import Enumerations.ApplicationStatus;
 import Enumerations.MaritalStatus;
@@ -19,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static Utils.RepositoryGetter.*;
-
 
 public class ProjectApplicationController {
 

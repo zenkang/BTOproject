@@ -74,4 +74,14 @@ public class EnquiryController {
                 )&& !e.isReplied()
         );
     }
+
+    //pulls all enquiries (replied and unreplied)
+    public static List<Enquiry> getAllEnquiriesForHandledProjects(String officerId) {
+        List<String> projectNames = ProjectController.getProjectNamesHandledByOfficer(officerId);
+        return RepositoryGetter.getEnquiryRepository().getByFilter(
+                e -> projectNames.stream().anyMatch(
+                        name -> name.equalsIgnoreCase(e.getProjectName().trim())
+                )
+        );
+    }
 }
