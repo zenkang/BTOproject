@@ -227,7 +227,7 @@ public class OfficerBoundary {
         else{
             System.out.println("========= Projects =========");
             for (Project proj : filteredProjects) {
-                prettyPrintOfficerProject(officer, proj,true);
+                proj.prettyPrint4Officer();
             }
         }
     }
@@ -568,45 +568,6 @@ public class OfficerBoundary {
         ReceiptController.generateReceipt(officer.getName(),application);
     }
     //pretty print
-    public static void prettyPrintOfficerProject(Officer officer, Project project, boolean displayAll) {
-        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
-        if (officer.getMaritalStatus() == MaritalStatus.SINGLE && officer.getAge() >= 35 && !displayAll) {
-            System.out.println("\nProject ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            if(project.getType1().equalsIgnoreCase("2-Room")){
-                System.out.println("Room Type 1: "+project.getType1());
-                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            }
-            else {
-                System.out.println("Room Type 2: "+project.getType2());
-                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            }
-            System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-            System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-            System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
-
-            System.out.println("------------------------");
-        }
-        else{
-            System.out.println("\nProject ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            System.out.println("Room Type 1: "+project.getType1());
-            System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-            System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            System.out.println("Room Type 2: "+project.getType2());
-            System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-            System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-            System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-            System.out.println("Manager-in-charge: "+ManagerController.getNameById(project.getManagerID()));
-
-            System.out.println("------------------------");
-        }
-    }
     public static void printPrettyReply(Reply reply) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         System.out.println("Reply ID: " + reply.getReplyId());
