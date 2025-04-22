@@ -117,12 +117,11 @@ public class ProjectController {
                                         LocalDate appDateClose,
                                         String managerID,
                                         int noOfficersSlots,
-                                        String[] officers,
                                         boolean visible){
         ProjectRepository repository = getProjectRepository();
         String newID = repository.generateId("PR");
         Project newProject = new Project(newID,projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
-                appDateOpen, appDateClose, managerID, noOfficersSlots, officers,visible);
+                appDateOpen, appDateClose, managerID, noOfficersSlots, visible);
         return repository.create(newProject);
     }
 

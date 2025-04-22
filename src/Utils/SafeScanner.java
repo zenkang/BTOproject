@@ -357,7 +357,7 @@ public class SafeScanner {
         return date;
     }
 
-    public static String getValidProjectID(Scanner sc) {
+    public static String getValidProjectIDInput(Scanner sc) {
         String projectID;
         Project project;
 

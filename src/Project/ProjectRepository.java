@@ -15,6 +15,7 @@ public class ProjectRepository extends Repository<Project>{
     public static ProjectRepository getInstance(String filePath) {
         if (instance == null) {
             instance = new ProjectRepository(filePath);
+            instance.store();//update to make sure project.csv is the latest
         }
         return instance;
     }
@@ -36,9 +37,6 @@ public class ProjectRepository extends Repository<Project>{
                 officers[i] = officers[i].trim(); // Trim each officer ID
             }
             boolean visible = Boolean.parseBoolean(values[14].trim());
-            if (LocalDate.now().isAfter(closeDate)) {
-                visible = false;
-            }
             return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                     sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
                     openDate,closeDate,values[11],noOfficersSlots,

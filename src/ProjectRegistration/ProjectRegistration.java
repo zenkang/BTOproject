@@ -94,4 +94,11 @@ public class ProjectRegistration implements IEntity{
     public String getID() {
         return registrationID;
     }
+
+    public void prettyPrint() {
+        System.out.println("Registration ID: " + this.getRegistrationID());
+        System.out.println("Project Name: " + this.getProjectName());
+        System.out.println("Officer ID: " + this.getOfficerId());
+        System.out.println("Status: " + this.getStatus());
+    }
 }
