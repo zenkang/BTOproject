@@ -326,7 +326,7 @@ public class ApplicantBoundary {
         // Print replies
         List<Reply> replies = ReplyController.getRepliesByEnquiry(enquiryIdInput);
         for (Reply reply : replies) {
-            printPrettyReply(reply);
+            reply.printPrettyReply();
         }
     }
 
@@ -393,15 +393,6 @@ public class ApplicantBoundary {
         EnquiryController.deleteEnquiry(enquiry.getEnquiryId());
 
         System.out.println("Enquiry deleted successfully!");
-    }
-    public static void printPrettyReply(Reply reply) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        System.out.println("Reply ID: " + reply.getReplyId());
-        System.out.println("Enquiry ID: " + reply.getEnquiryId());
-        System.out.println("Date: " + reply.getDate().format(dateFormatter));
-        System.out.println("Officer / Manager ID: "+reply.getOfficerOrManagerId());
-        System.out.println("Reply: "+reply.getReplyContent());
-        System.out.println("----------------------\n");
     }
 
     private void withdrawApplication(Applicant applicant) {
