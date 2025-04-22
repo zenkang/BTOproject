@@ -133,9 +133,16 @@ public class ProjectController {
         return p.isEmpty();
     }
 
+    //active --> within application date and visibility ON
     public static boolean checkActiveProject(String managerID) {
-        List<Project> p = getProjectRepository().getByFilter(project -> (project.getManagerID().equalsIgnoreCase(managerID))&&project.isVisibility());
-        return p.isEmpty();
+        LocalDate today = LocalDate.now();
+        List<Project> activeProjects = getProjectRepository().getByFilter(project ->
+                project.getManagerID().equalsIgnoreCase(managerID) &&
+                        project.isVisibility() &&
+                        (today.isEqual(project.getAppDateOpen()) || today.isAfter(project.getAppDateOpen())) &&
+                        (today.isBefore(project.getAppDateClose()) || today.isEqual(project.getAppDateClose()))
+        );
+        return activeProjects.isEmpty(); // can create only if no active projects found
     }
 
     public static boolean updateProjectVisibility(Project project, boolean b) {
