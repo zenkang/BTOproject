@@ -3,6 +3,9 @@ package Abstract;
 
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.ArrayList;
@@ -10,16 +13,12 @@ import java.util.ArrayList;
 public abstract class Repository <T extends IEntity>{
     protected ArrayList<T> entities;
     private String filePath;
+//    private HashMap<String, CacheEntry> LRUCache;
 
     public Repository(String filePath){
         this.filePath = filePath;
         boolean result = this.load();
-        /*if (result) {
-            System.out.println(filePath+" loaded successfully");
-        }
-        else {
-            System.out.println(filePath+" could not be loaded");
-        }*/
+//        this.LRUCache = new HashMap<>();
     }
 
     public abstract T fromCSVRow(String row);
@@ -81,6 +80,22 @@ public abstract class Repository <T extends IEntity>{
     }
 
     public T getByID(String id){
+        // check if entry is in our LRU cache
+//        if (this.LRUCache.containsKey(id)) {
+//            System.out.println("Cache hit!");
+//            System.out.println(this.LRUCache);
+//            return this.entities.get(this.LRUCache.get(id).idx);
+//        }
+//        for (Integer i=0; i<entities.size(); i++){
+//            T t = this.entities.get(i);
+//            if (t.getID().equals(id)) {
+                // update the cache
+//                this.LRUCache.put(t.getID(), new CacheEntry(i, LocalDateTime.now()));
+//                System.out.println("Cache miss, updated");
+//                System.out.println(this.LRUCache);
+//                return this.entities.get(i);
+//            }
+//        }
         for (T t : entities) {
             if (t.getID().equalsIgnoreCase(id)) {
                 return t;
@@ -104,6 +119,8 @@ public abstract class Repository <T extends IEntity>{
             return false;
         entities.add(object);
         this.store();
+        // update the cache
+        //this.LRUCache.put(object.getID(), new CacheEntry(entities.size()-1, LocalDateTime.now()));
         return true;
     }
 
@@ -111,18 +128,28 @@ public abstract class Repository <T extends IEntity>{
         if (object==null)
             return false;
         entities.remove(object);
+//        this.LRUCache.clear();
         this.store();
         return true;
     }
 
     private int findIndex(T object){
         int idx = -1;
+//        if (this.LRUCache.containsKey(object.getID())) {
+//            System.out.println("Cache hit!");
+//            System.out.println(this.LRUCache);
+//            return this.LRUCache.get(object.getID()).idx;
+//        }
         for (int i = 0; i < entities.size(); i++) {
             if (object.getID().equals(entities.get(i).getID())) {
                 idx = i;
                 break;
             }
         }
+//        System.out.println(idx);
+//        System.out.println("Cache miss, updated");
+//        this.LRUCache.put(object.getID(), new CacheEntry(idx,LocalDateTime.now()));
+//        System.out.println(this.LRUCache);
         return idx;
     }
 

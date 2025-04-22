@@ -4,6 +4,7 @@ package Officer;
 
 import Applicant.Applicant;
 import Applicant.ApplicantController;
+import Applicant.ApplicantBoundary;
 import Enquiry.Enquiry;
 import Enquiry.EnquiryController;
 import Enumerations.ApplicationStatus;
@@ -64,7 +65,7 @@ public class OfficerBoundary {
                 case 8 -> viewApplicantApplications(officer);
                 case 9 -> generateBookingReceipt(officer,sc);
                 case 10 -> officerEnquiryMenu(officer);
-                case 11 -> changePassword();
+                case 11 -> UserBoundary.changePassword(officer.getUserProfile());
                 case 0 -> System.out.println("Exiting the Officer Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -97,7 +98,9 @@ public class OfficerBoundary {
         if(!projects.isEmpty()){
             System.out.println("\n=== Projects ===");
             for (Project project : projects) {
-                prettyPrintProject(project);
+                project.prettyPrint4Officer();
+                System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
+                System.out.println("------------------------");
             }
         }
         else{
@@ -135,9 +138,6 @@ public class OfficerBoundary {
         }while(!selection.equals("n"));
 
     }
-    private void changePassword() {
-        UserBoundary.changePassword(officer.getUserProfile());
-    }
     public void updateOfficerProfile() {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -167,7 +167,6 @@ public class OfficerBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
-
     private void updateName(){
         Scanner sc = new Scanner(System.in);
         String newName = SafeScanner.getValidatedStringInput(sc,"Enter your new Name: ",50);
@@ -178,7 +177,6 @@ public class OfficerBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
-
     private void updateMaritalStatus(){
         Scanner sc = new Scanner(System.in);
         List<String> validOptions = Arrays.asList("m", "s");
@@ -195,6 +193,28 @@ public class OfficerBoundary {
     //Applicant Functionalities
 
     //Project
+//    public void displayProjectMenu(Officer officer) {
+//        Scanner sc = new Scanner(System.in);
+//        int choice;
+//        do {
+//            System.out.println("\n===== Project Menu (Applicant) =====");
+//            System.out.println("1. View available projects");
+//            System.out.println("2. View project you have applied to");
+//            System.out.println("3. Update filters");
+//            System.out.println("0. Exit");
+//            choice  = SafeScanner.getValidatedIntInput(sc, "Enter option: ", 0, 3);
+//
+//            switch (choice) {
+//                case 1 -> ApplicantBoundary.dis
+//                case 2 -> ;
+//                case 3 -> ;
+//                case 0 -> System.out.println("Exiting...");
+//                default -> System.out.println("Invalid option.");
+//            }
+//        }while(choice !=0);
+//    }
+//
+
     private static void displayProjectsForOfficer(Officer officer)  {
         List<ProjectApplication> applications =
                 ProjectApplicationController.getApplicationsByApplicantID(officer.getID());
@@ -210,7 +230,6 @@ public class OfficerBoundary {
                 prettyPrintOfficerProject(officer, p,false);
             }
         }
-
         // 3) fetch the whole “open” list, then skip anything in appliedIds
         List<Project> filteredProjects = ProjectController.getProjectsForApplicant(officer);
         if (filteredProjects.isEmpty()) {
@@ -222,6 +241,7 @@ public class OfficerBoundary {
             }
         }
     }
+
     private void viewHandledProjects(Officer officer) {
         List<Project> filteredProjects = ProjectController.getProjectsHandledByOfficer(officer.getID());
         if (filteredProjects.isEmpty()) {
@@ -702,17 +722,5 @@ public class OfficerBoundary {
         System.out.println("Reply: "+reply.getReplyContent());
         System.out.println("----------------------\n");
     }
-    public static void prettyPrintProject(Project project) {
-        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
-        System.out.println("\nProject ID: "+project.getID());
-        System.out.println("Project name: " + project.getProjectName());
-        System.out.println("Neighbourhood: " + project.getNeighbourhood());
-        System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-        System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-        System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
-        System.out.println("------------------------");
-    }
-
-
 
 }

@@ -161,13 +161,18 @@ public class ProjectController {
         }
         List<ProjectApplication> applications =
                 ProjectApplicationController.getApplicationsByApplicantID(applicant.getNric());
-        if(applications.isEmpty()){
+        List<ProjectRegistration> registrations =
+                ProjectRegistrationController.getProjectRegistrationByOfficerId(applicant.getNric());
+        if(applications.isEmpty() && registrations.isEmpty()) {
             return list;
         }
-        // 2) collect all the project‑IDs this applicant has already applied to
+        // 2) collect all the project‑IDs this applicant has already applied/registered to
         Set<String> appliedIds = new HashSet<>();
         for (ProjectApplication app : applications) {
             appliedIds.add(app.getProjectID());
+        }
+        for (ProjectRegistration reg : registrations) {
+            appliedIds.add(reg.getProjectID());
         }
         // remove all projects whose ID is in appliedIds
         return list.stream()
@@ -183,6 +188,16 @@ public class ProjectController {
                 .map(Project::getID)
                 .distinct()
                 .toList();
+    }
+
+    public static <T extends IUserProfile> List<Project> getFilteredProjectsForApplicant(T Applicant,Predicate<Project> Filter) {
+        List<Project> projects = getProjectsForApplicant(Applicant);
+        if(Filter == null){
+            return getProjectsForApplicant(Applicant);
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
     }
 
     public static List<Project> getFilteredProjects(Predicate<Project> Filter) {

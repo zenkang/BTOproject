@@ -1,2 +1,4 @@
 EnquiryID,Date,ProjectName,ApplicantID,Question,Status
 EN001,22/04/2025,TEST,S1234567A,new testing 123,REPLIED
+EN002,23/04/2025,test,T7654321B,why are we using project name instead of id,REPLIED
+EN003,23/04/2025,new,T7654321B,wow,PENDING

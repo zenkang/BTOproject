@@ -2,12 +2,11 @@ package Applicant;
 
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import Enquiry.Enquiry;
-import Enumerations.ApplicationStatus;
 import Enumerations.EnquiryStatus;
 import Enumerations.MaritalStatus;
 import Manager.ManagerController;
@@ -17,6 +16,7 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 import Reply.Reply;
 import Reply.ReplyController;
+import Utils.PredicateUtils;
 import Utils.SafeScanner;
 import User.UserBoundary;
 import Enquiry.EnquiryController;
@@ -24,6 +24,11 @@ import Enquiry.EnquiryController;
 
 public class ApplicantBoundary {
     private Applicant applicant;
+    private Predicate<Project> Filter = null;
+    private Predicate<Project> neighbourhoodFilter = null;
+    private Predicate<Project> flatTypeFilter = null;
+    private String Filterneighbourhood = null;
+    private String FilterflatType = null;
 
     public ApplicantBoundary(Applicant applicant) {
         this.applicant = applicant;
@@ -39,31 +44,29 @@ public class ApplicantBoundary {
             System.out.println("3. Apply Projects");
             System.out.println("4. View my Application");
             System.out.println("5. View Enquiry Menu");
-            System.out.println("6. Withdraw Application");
-            System.out.println("7. Change Password");
+            System.out.println("6. Change Password");
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 7);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 6);
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> displayProjectsForApplicant(applicant);
+                case 2 -> displayProjectMenu(applicant);
                 case 3 -> applyForProject(applicant);
                 case 4 -> viewApplication(applicant);
                 case 5 -> applicantEnquiryMenu(applicant);
-                case 6 -> withdrawApplication(applicant);
-                case 7 -> UserBoundary.changePassword(applicant.getUserProfile());
+                case 6 -> UserBoundary.changePassword(applicant.getUserProfile());
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0 && choice !=7) ;
+        while (choice != 0 && choice !=6) ;
         if (choice == 0){
             sc.close();
         }
     }
 
-
+//User profile functions
     public void viewApplicantProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
@@ -159,29 +162,31 @@ public class ApplicantBoundary {
             System.out.println("\n=== Project Application ===");
             System.out.println("Valid Projects:");
             List<String> ValidprojIDs = ProjectController.getProjectIDsForApplicant(applicant);
-            ValidprojIDs.forEach(item -> System.out.println("ID: " + item));
-            // TO BE UPDATED
-            // BEST TO GET FILTERED VALID PROJECT ID BASED ON APPLICANT'S ATTRIBUTE
+            System.out.println("ID: "+ValidprojIDs);
             String projectID = SafeScanner.getValidatedStringInput(sc,"Enter Project ID you want to apply for: ",ValidprojIDs);
+            Project p = ProjectController.getProjectByID(projectID);
             String roomType;
             if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
                 roomType = "2-room";
+                p.prettyPrint4SingleApplicant();
             }
             else {
+                p.prettyPrint4MarriedApplicant();
                 List<String> validRoomTypes = Arrays.asList("2-room", "3-room");
-                roomType = SafeScanner.getValidatedStringInput(sc, "Enter a room type (2-Room or 3-Room): ", validRoomTypes);
+                roomType = SafeScanner.getValidatedStringInput(sc, "\nEnter a room type (2-Room or 3-Room): ", validRoomTypes);
             }
-
             // checks that at least 1 unit available for each type
-            Project availUnits = ProjectController.getProjectByID(projectID);
-            if (roomType.equalsIgnoreCase("2-room") && availUnits.getNoOfUnitsType1() < 1) {
-                System.out.println("No 2-room units available for this project.");
-                return;
-            } else if (roomType.equalsIgnoreCase("3-room") && availUnits.getNoOfUnitsType2() < 1) {
-                System.out.println("No 3-room units available for this project.");
-                return;
+            if (roomType.equalsIgnoreCase("2-room")){
+                if(( p.getType1().equalsIgnoreCase("2-room") && p.getNoOfUnitsType1() < 1) ||( p.getType2().equalsIgnoreCase("2-room") && p.getNoOfUnitsType2() < 1) ){
+                    System.out.println("No 2-room units available for this project.");
+                    return;
+                }
+            } else if (roomType.equalsIgnoreCase("3-room")) {
+                if(( p.getType1().equalsIgnoreCase("3-room") && p.getNoOfUnitsType1() < 1) ||( p.getType2().equalsIgnoreCase("3-room") && p.getNoOfUnitsType2() < 1) ){
+                     System.out.println("No 3-room units available for this project.");
+                     return;
+                }
             }
-
             if (!ProjectApplicationController.createProjectApplication(projectID.toUpperCase(),roomType, applicant.getID())){
                 System.out.println("Project application could not be created.");
             }
@@ -193,19 +198,61 @@ public class ApplicantBoundary {
     }
 
     public static void viewApplication(Applicant applicant) {
-        List<ProjectApplication> application = ProjectApplicationController.getApplicationsByApplicantID(applicant.getID());
-        if (application.isEmpty()){
+        List<ProjectApplication> failApp = ProjectApplicationController.getUnsuccessApplicationByApplicantID(applicant.getNric());
+        ProjectApplication currentApp = ProjectApplicationController.getCurrentApplicationByApplicantID(applicant.getNric());
+        if (failApp.isEmpty() && currentApp == null) {
             System.out.println("Application could not be found.");
+            return;
         }
-        else {
-            application.forEach(
-                    ApplicantBoundary::prettyPrintProjectApplications
-            );
+        if(!failApp.isEmpty()){
+            System.out.println("\n________Unsuccessful Applications________");
+            for(ProjectApplication app : failApp){
+                app.prettyPrintApplicant();
+            }
+        }
+        if(currentApp != null){
+            System.out.println("\n__________Current Application__________");
+            currentApp.prettyPrintApplicant();
+            Project p = ProjectController.getProjectByID(currentApp.getProjectID());
+            System.out.println("\n________Project_________");
+            if(currentApp.getRoomType().equalsIgnoreCase("2-room")){
+                p.prettyPrint4SingleApplicant();
+            }
+            else{
+                p.prettyPrintApplicant3room();
+            }
+            Scanner sc = new Scanner(System.in);
+            System.out.println("\nEnter W to withdraw application,\nEnter anything else to go back: ");
+            String selection = sc.nextLine().trim();
+            if(selection.equalsIgnoreCase("W")){
+                withdrawApplication(applicant);
+            }
         }
     }
 
-    public static void displayProjectsForApplicant(Applicant applicant) {
-        // 1) now returns a list
+//Project functions
+    public void displayProjectMenu(Applicant applicant) {
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("\n===== Project Menu =====");
+            System.out.println("1. View available projects");
+            System.out.println("2. View project you have applied to");
+            System.out.println("3. Update filters");
+            System.out.println("0. Exit");
+            choice  = SafeScanner.getValidatedIntInput(sc, "Enter option: ", 0, 3);
+
+            switch (choice) {
+                case 1 -> displayAvailProjectsForApplicant(applicant);
+                case 2 -> displayAppliedProjects(applicant);
+                case 3 -> displayProjectFilterMenu();
+                case 0 -> System.out.println("Exiting...");
+                default -> System.out.println("Invalid option.");
+            }
+        }while(choice !=0);
+    }
+
+    public void displayAppliedProjects(Applicant applicant) {
         List<ProjectApplication> applications =
                 ProjectApplicationController.getApplicationsByApplicantID(applicant.getID());
         if (!applications.isEmpty()) {
@@ -213,48 +260,84 @@ public class ApplicantBoundary {
                     + (applications.size() > 1 ? "s:" : ":"));
             for (ProjectApplication app : applications) {
                 Project p = ProjectController.getProjectByID(app.getProjectID());
-                if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
+                if (applicant.getMaritalStatus() == MaritalStatus.SINGLE) {
                     p.prettyPrint4SingleApplicant();
-                }
-                else{
+                } else {
                     p.prettyPrint4MarriedApplicant();
                 }
-                System.out.println("Manager-in-charge: "+ ManagerController.getNameById(p.getManagerID()));
-                System.out.println("Status: "+ app.getStatus());
+                System.out.println("Manager-in-charge: " + ManagerController.getNameById(p.getManagerID()));
+                System.out.println("Status: " + app.getStatus());
             }
         }
-        List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
+    }
+    public void displayAvailProjectsForApplicant(Applicant applicant) {
+        List<Project> filteredProjects = ProjectController.getFilteredProjectsForApplicant(applicant,Filter);
         if (filteredProjects.isEmpty()) {
             System.out.println("No projects are open to your user group.");
         } else {
             System.out.println("\n========= Projects Available =========");
             for (Project proj : filteredProjects) {
-                if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
+                if((applicant.getMaritalStatus() == MaritalStatus.SINGLE)){
                     proj.prettyPrint4SingleApplicant();
-                }
-                else{
+                } else if (FilterflatType == null) {
                     proj.prettyPrint4MarriedApplicant();
+                } else if (FilterflatType.equalsIgnoreCase("3-room")) {
+                    proj.prettyPrintApplicant3room();
+                } else{
+                    proj.prettyPrint4SingleApplicant();
                 }
                 System.out.println("Manager-in-charge: "+ ManagerController.getNameById(proj.getManagerID()));
             }
+            Scanner sc = new Scanner(System.in);
+            System.out.println("\nEnter A to apply,\n      E to submit enquiry\nEnter anything else to go back: ");
+            String selection = sc.nextLine().trim();
+            if(selection.equalsIgnoreCase("E")){
+                submitEnquiry(this.applicant.getNric());
+            }
+            else if(selection.equalsIgnoreCase("A")){
+                applyForProject(applicant);
+            }
         }
     }
-    public static void prettyPrintProjectApplications(ProjectApplication application) {
-        if (application == null) {
-            System.out.println("No Application available.");
-            return;
-        }
-        Project project = ProjectController.getProjectByID(application.getProjectID());
-        System.out.println("\n======== Project Application ========\n");
-        if (project == null) {
-            System.out.println("Project details are not available.");
-        }
-        System.out.println("Application ID: " + application.getID());
-        assert project != null;
-        System.out.println("Project Name: " + project.getProjectName());
-        System.out.println("Project ID: " + application.getProjectID());
-        System.out.println("Room Type Applied: "+application.getRoomType());
-        System.out.println("Status: " + application.getStatus());
+
+    public void displayProjectFilterMenu() {
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("\n=== Project Filter Menu ===");
+            System.out.println("1. Neighbourhood: "+Filterneighbourhood);
+            System.out.println("2. Flat Type: "+FilterflatType);
+            System.out.println("3. Reset Filters");
+            System.out.println("0. Exit");
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
+
+            switch (choice) {
+                case 1 -> {
+                    Filterneighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter the neighbourhood: ",100);
+                    neighbourhoodFilter = project -> project.getNeighbourhood().equalsIgnoreCase(Filterneighbourhood);
+                }
+                case 2 -> {
+                    List<String> validRoomOptions = Arrays.asList("2-room", "3-room");
+                    FilterflatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type filter(e.g.,2-Room,3-Room:)", validRoomOptions);
+                    flatTypeFilter = project -> ((project.getType1().equalsIgnoreCase(FilterflatType) && project.getNoOfUnitsType1()>0)||
+                            (project.getType2().equalsIgnoreCase(FilterflatType) && project.getNoOfUnitsType2()>0));
+                }
+                case 3 -> {
+                    Filter = null;
+                    FilterflatType = null;
+                    Filterneighbourhood = null;
+                    neighbourhoodFilter = null;
+                    flatTypeFilter = null;
+                    System.out.println("Filter Reset.");
+                }
+                case 0 -> {
+                    System.out.println("Filter preferences updated.");
+                    System.out.println("Exiting the Project Filter Menu.");
+                }
+                default -> System.out.println("Invalid choice. Please select a valid option.");
+            }
+        } while (choice != 0 && choice != 3);
+        Filter = PredicateUtils.combineFilters(neighbourhoodFilter, flatTypeFilter);
     }
 
     public static void applicantEnquiryMenu(Applicant applicant) {
@@ -395,7 +478,7 @@ public class ApplicantBoundary {
         System.out.println("Enquiry deleted successfully!");
     }
 
-    private void withdrawApplication(Applicant applicant) {
+    private static void withdrawApplication(Applicant applicant) {
         ProjectApplication application = ProjectApplicationController.getCurrentApplicationByApplicantID(applicant.getID());
 
         if (application == null) {
