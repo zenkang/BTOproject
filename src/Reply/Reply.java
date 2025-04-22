@@ -60,4 +60,14 @@ public class Reply implements IEntity {
                 "\nResponder: " + officerOrManagerId +
                 "\nReply: " + replyContent;
     }
+
+    public void printPrettyReply() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Reply ID: " + this.getReplyId());
+        System.out.println("Enquiry ID: " + this.getEnquiryId());
+        System.out.println("Date: " + this.getDate().format(dateFormatter));
+        System.out.println("Officer / Manager ID: "+this.getOfficerOrManagerId());
+        System.out.println("Reply: "+this.getReplyContent());
+        System.out.println("----------------------\n");
+    }
 }
