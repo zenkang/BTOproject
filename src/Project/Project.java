@@ -249,5 +249,38 @@ public class Project implements IEntity {
         System.out.println("------------------------");
 
     }
+
+    public void prettyPrint4SingleApplicant(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        if (this.getType1().equalsIgnoreCase("2-room")){
+            System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+            System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        }
+        if (this.getType2().equalsIgnoreCase("2-room")){
+            System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+            System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        }
+        System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
+    }
+
+    public void prettyPrint4MarriedApplicant(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        System.out.println("Room Types : " + this.getType1() + " , " + this.getType2());
+        System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+        System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+        System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
+    }
 }
 

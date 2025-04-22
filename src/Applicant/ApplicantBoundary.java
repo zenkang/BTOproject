@@ -52,7 +52,7 @@ public class ApplicantBoundary {
                 case 4 -> viewApplication(applicant);
                 case 5 -> applicantEnquiryMenu(applicant);
                 case 6 -> withdrawApplication(applicant);
-                case 7 -> changePassword();
+                case 7 -> UserBoundary.changePassword(applicant.getUserProfile());
                 case 0 -> System.out.println("Exiting the Applicant Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -98,9 +98,6 @@ public class ApplicantBoundary {
 
     }
 
-    private void changePassword() {
-        UserBoundary.changePassword(applicant.getUserProfile());
-    }
 
     private void updateAge(){
         Scanner sc = new Scanner(System.in);
@@ -211,67 +208,35 @@ public class ApplicantBoundary {
         // 1) now returns a list
         List<ProjectApplication> applications =
                 ProjectApplicationController.getApplicationsByApplicantID(applicant.getID());
-
-        // 2) collect all the project‑IDs this applicant has already applied to
-        Set<String> appliedIds = new HashSet<>();
         if (!applications.isEmpty()) {
             System.out.println("\nYou have applied to the following project"
                     + (applications.size() > 1 ? "s:" : ":"));
             for (ProjectApplication app : applications) {
-                appliedIds.add(app.getProjectID());
                 Project p = ProjectController.getProjectByID(app.getProjectID());
-                prettyPrintApplicantProject(applicant, p);
+                if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
+                    p.prettyPrint4SingleApplicant();
+                }
+                else{
+                    p.prettyPrint4MarriedApplicant();
+                }
+                System.out.println("Manager-in-charge: "+ ManagerController.getNameById(p.getManagerID()));
+                System.out.println("Status: "+ app.getStatus());
             }
         }
-
-        // 3) fetch the whole “open” list, then skip anything in appliedIds
         List<Project> filteredProjects = ProjectController.getProjectsForApplicant(applicant);
         if (filteredProjects.isEmpty()) {
             System.out.println("No projects are open to your user group.");
         } else {
-            System.out.println("========= Projects =========");
+            System.out.println("\n========= Projects Available =========");
             for (Project proj : filteredProjects) {
-                prettyPrintApplicantProject(applicant, proj);
+                if(applicant.getMaritalStatus() == MaritalStatus.SINGLE){
+                    proj.prettyPrint4SingleApplicant();
+                }
+                else{
+                    proj.prettyPrint4MarriedApplicant();
+                }
+                System.out.println("Manager-in-charge: "+ ManagerController.getNameById(proj.getManagerID()));
             }
-        }
-    }
-    public static void prettyPrintApplicantProject(Applicant applicant, Project project) {
-        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
-        if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
-            System.out.println("\nProject ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            if(project.getType1().equalsIgnoreCase("2-Room")){
-                System.out.println("Room Type 1: "+project.getType1());
-                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            }
-            else {
-                System.out.println("Room Type 2: "+project.getType2());
-                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            }
-            System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-            System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-            System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
-
-            System.out.println("------------------------");
-        }
-        else{
-            System.out.println("\nProject ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            System.out.println("Room Type 1: "+project.getType1());
-            System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-            System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            System.out.println("Room Type 2: "+project.getType2());
-            System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-            System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-            System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-            System.out.println("Manager-in-charge: "+ManagerController.getNameById(project.getManagerID()));
-
-            System.out.println("------------------------");
         }
     }
     public static void prettyPrintProjectApplications(ProjectApplication application) {

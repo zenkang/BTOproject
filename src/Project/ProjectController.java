@@ -1,5 +1,6 @@
 package Project;
 
+import Abstract.IUserProfile;
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
 import Officer.Officer;
@@ -144,7 +145,7 @@ public class ProjectController {
     }
 
 
-    public static List<Project> getProjectsForApplicant(Applicant applicant) {
+    public static  <T extends IUserProfile> List<Project> getProjectsForApplicant(T applicant) {
         ProjectRepository repo = getProjectRepository();
         List<Project> list;
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
@@ -159,11 +160,10 @@ public class ProjectController {
             return Collections.emptyList();
         }
         List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationsByApplicantID(applicant.getID());
+                ProjectApplicationController.getApplicationsByApplicantID(applicant.getNric());
         if(applications.isEmpty()){
             return list;
         }
-
         // 2) collect all the project‑IDs this applicant has already applied to
         Set<String> appliedIds = new HashSet<>();
         for (ProjectApplication app : applications) {
@@ -172,52 +172,12 @@ public class ProjectController {
         // remove all projects whose ID is in appliedIds
         return list.stream()
                 .filter(p -> !appliedIds.contains(p.getID()))
-                .collect(Collectors.toList());
-
-    }
-
-    public static List<Project> getProjectsForApplicant(Officer officer) {
-        ProjectRepository repo = getProjectRepository();
-        List<Project> list;
-        if (officer.getMaritalStatus() == MaritalStatus.SINGLE && officer.getAge() >= 35) {
-            list = repo.getByFilter(project ->
-                    (project.getType1().equalsIgnoreCase("2-Room") ||
-                            project.getType2().equalsIgnoreCase("2-Room"))
-                            && project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0
-            );
-        } else if (officer.getMaritalStatus() == MaritalStatus.MARRIED && officer.getAge() >= 21) {
-            list = repo.getByFilter(project -> project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0);
-        } else {
-            return Collections.emptyList();
-        }
-        List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationsByApplicantID(officer.getID());
-        if(applications.isEmpty()){
-            return list;
-        }
-
-        // 2) collect all the project‑IDs this applicant has already applied to
-        Set<String> appliedIds = new HashSet<>();
-        for (ProjectApplication app : applications) {
-            appliedIds.add(app.getProjectID());
-        }
-        // remove all projects whose ID is in appliedIds
-        return list.stream()
-                .filter(p -> !appliedIds.contains(p.getID()))
-                .collect(Collectors.toList());
-
-    }
-
-    public static List<String> getProjectIDsForApplicant(Applicant applicant) {
-        List<Project> projects = getProjectsForApplicant(applicant);
-        assert projects != null;
-        return projects.stream()
-                .map(Project::getID)
-                .distinct()
                 .toList();
     }
-    public static List<String> getProjectIDsForApplicant(Officer officer) {
-        List<Project> projects = getProjectsForApplicant(officer);
+
+
+    public static  <T extends IUserProfile> List<String> getProjectIDsForApplicant(T applicant) {
+        List<Project> projects = getProjectsForApplicant(applicant);
         assert projects != null;
         return projects.stream()
                 .map(Project::getID)
