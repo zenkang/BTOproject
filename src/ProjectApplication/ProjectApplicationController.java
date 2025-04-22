@@ -4,13 +4,21 @@ import Applicant.Applicant;
 import Enumerations.ApplicationStatus;
 import Enumerations.MaritalStatus;
 import Enumerations.ProjectApplicationStatus;
+import Manager.Manager;
 import Project.Project;
 import Project.ProjectController;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static Utils.RepositoryGetter.getProjectApplicationsRepository;
+import static Utils.RepositoryGetter.*;
 
 
 public class ProjectApplicationController {

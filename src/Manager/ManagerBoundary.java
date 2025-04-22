@@ -71,6 +71,7 @@ public class ManagerBoundary {
                 case 3 -> viewApplicantApplications();
                 case 4 -> viewProjectRegistrationMenu();
                 case 5 -> managerEnquiryMenu(sc, manager);
+                case 6 -> System.out.println("Generate Report Function");
                 case 7 -> changePassword();
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
@@ -718,9 +719,14 @@ public class ManagerBoundary {
         System.out.println(managerID);
         if (selection.equals("yes")) {
             List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerID);
-            System.out.println("Projects created by you:");
-            for (Project project : managerProjects) {
-                prettyPrintProjectDetails(project);
+            if(managerProjects.isEmpty()){
+                System.out.println("\nNo projects created by you.");
+            }
+            else {
+                System.out.println("\nProjects created by you: \n");
+                for (Project project : managerProjects) {
+                    prettyPrintProjectDetails(project);
+                }
             }
         } else {
             displayFilteredProjects(Filter);

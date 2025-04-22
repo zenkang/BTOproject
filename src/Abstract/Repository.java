@@ -37,10 +37,19 @@ public abstract class Repository <T extends IEntity>{
             // Read each subsequent line
             while ((line = br.readLine()) != null) {
                 // Split the line by commas
-
-                T t = this.fromCSVRow(line);
-                if (t != null) {  // Only add if t is not null.
-                    entities.add(t);
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                try {
+                    T t = this.fromCSVRow(line);
+                    if (t != null) {  // Only add if t is not null
+                        entities.add(t);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error parsing line: " + line);
+                    e.printStackTrace();
+                    // Continue to next line instead of failing entire load
+                    continue;
                 }
             }
             return true;
