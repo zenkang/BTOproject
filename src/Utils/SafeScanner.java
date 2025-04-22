@@ -58,6 +58,25 @@ public class SafeScanner {
 
         return input;
     }
+    public static Integer getValidatedIntInput(Scanner sc, String prompt,
+                                               int min, int max, boolean allowBlank) {
+        while(true) {
+            try {
+                System.out.print(prompt);
+                String input = sc.nextLine().trim();
+                if(allowBlank && input.isEmpty()) return null;
+
+                int value = Integer.parseInt(input);
+                if(value < min || value > max) {
+                    System.out.printf("Please enter between %d-%d\n", min, max);
+                    continue;
+                }
+                return value;
+            } catch(NumberFormatException e) {
+                System.out.println("Invalid number format");
+            }
+        }
+    }
     public static double getValidatedDoubleInput(Scanner scanner, String prompt, double min, double max) {
         double input = -1;
         boolean valid = false;
@@ -102,7 +121,6 @@ public class SafeScanner {
         while (!valid) {
             System.out.print(prompt);
             input = scanner.nextLine().trim(); // Get the line and trim spaces
-
             if (input.isEmpty()) {
                 System.out.println("Invalid input. Please enter a non-empty string.");
             } else if (input.length() > maxLength) {
@@ -136,8 +154,10 @@ public class SafeScanner {
         while (!valid) {
             System.out.print(prompt);
             input = scanner.nextLine().trim().toLowerCase(); // Get the line and trim spaces
-
-            if (input.isEmpty()) {
+            if(validInputs.contains(input)) {
+                valid = true;
+            }
+            else if (input.isEmpty()) {
                 System.out.println("Invalid input. Please enter a non-empty string.");
             } else if (!lowerList.contains(input)) {
                 System.out.println("Invalid input. Accepted values are: " + validInputs);

@@ -9,12 +9,26 @@ public class ReportCriteria {
     private Integer maxAge;
     private String neighborhood;
 
+    public ReportCriteria() {
+    }
+
     public ReportCriteria(MaritalStatus maritalStatus, String flatType, Integer minAge, Integer maxAge, String neighborhood) {
         this.maritalStatus = maritalStatus;
         this.flatType = flatType;
         this.minAge = minAge;
         this.maxAge = maxAge;
         this.neighborhood = neighborhood;
+    }
+
+    public void setAgeRange(Integer minAge, Integer maxAge) {
+        if (minAge != null && maxAge != null && minAge > maxAge) {
+            // Swap values if reversed
+            this.minAge = maxAge;
+            this.maxAge = minAge;
+        } else {
+            this.minAge = minAge;
+            this.maxAge = maxAge;
+        }
     }
 
     public MaritalStatus getMaritalStatus() {
@@ -56,4 +70,6 @@ public class ReportCriteria {
     public void setNeighborhood(String neighborhood) {
         this.neighborhood = neighborhood;
     }
+
+
 }

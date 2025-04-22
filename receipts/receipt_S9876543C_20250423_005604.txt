@@ -1,0 +1,19 @@
+=== HDB FLAT BOOKING RECEIPT ===
+Date: 23/04/2025
+
+Applicant Details:
+Name: Grace
+NRIC: S9876543C
+Age: 37
+Marital Status: MARRIED
+
+Project Details:
+Project ID: PR004
+Name: nEW
+Neighborhood: ntu
+Flat Type: 2-room
+
+Officer Details:
+Name: Emily
+Generated on: 23/04/2025 00:56
+================================

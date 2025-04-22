@@ -4,6 +4,7 @@ package Manager;
 import Applicant.ApplicantController;
 import Enquiry.Enquiry;
 import Enumerations.ApplicationStatus;
+import Enumerations.MaritalStatus;
 import Enumerations.RegistrationStatus;
 import Officer.Officer;
 import Officer.OfficerController;
@@ -15,19 +16,23 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 import ProjectRegistration.ProjectRegistration;
 import Reply.ReplyController;
+import Report.ReportCriteria;
 import User.UserBoundary;
 import Enquiry.EnquiryController;
 import Utils.PrettyPrint;
 import Utils.SafeScanner;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
+import Report.ReportController;
 import ProjectRegistration.ProjectRegistrationController;
 
 import Utils.PredicateUtils;
@@ -85,7 +90,65 @@ public class ManagerBoundary {
     }
 
     private void displayReportMenu(String id) {
+        ReportCriteria criteria = new ReportCriteria();
+        criteria.setMaritalStatus(promptMaritalStatus());
+        criteria.setFlatType(promptFlatType());
+        criteria.setAgeRange(promptMinAge(), promptMaxAge());
+        criteria.setNeighborhood(promptNeighborhood());
 
+        String outputPath = "reports/report_" +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) +
+                ".csv";
+
+        try {
+            ReportController.generateReport(id, criteria, outputPath);
+            System.out.println("Report generated: " + outputPath);
+        } catch (IOException e) {
+            System.err.println("Failed to generate report: " + e.getMessage());
+        }
+    }
+
+    private MaritalStatus promptMaritalStatus() {
+        List<String> validOptions = Arrays.asList("S", "M", "");
+        System.out.println("\n--- Marital Status Filter ---");
+        System.out.println("S) Single");
+        System.out.println("M) Married");
+        System.out.print("Enter choice (blank for all): ");
+
+        String input = SafeScanner.getValidatedStringInput(sc, "", validOptions);
+        if(input == null || input.isEmpty()) return null;
+
+        return input.equalsIgnoreCase("S") ? MaritalStatus.SINGLE : MaritalStatus.MARRIED;
+    }
+    private String promptFlatType() {
+        List<String> validTypes = Arrays.asList("2", "3", "");
+        System.out.println("\n--- Flat Type Filter ---");
+        System.out.println("2) 2-Room");
+        System.out.println("3) 3-Room");
+        System.out.print("Enter choice (blank for all): ");
+
+        String input = SafeScanner.getValidatedStringInput(sc, "", validTypes);
+        if(input == null || input.isEmpty()) return null;
+
+        return input.equals("2") ? "2-Room" : "3-Room";
+    }
+
+    private Integer promptMinAge() {
+        System.out.println("\n--- Age Range Filter ---");
+        System.out.print("Enter minimum age (blank for none): ");
+        return SafeScanner.getValidatedIntInput(sc, "", 0, 150, true);
+    }
+
+    private Integer promptMaxAge() {
+        System.out.print("Enter maximum age (blank for none): ");
+        return SafeScanner.getValidatedIntInput(sc, "", 0, 150, true);
+    }
+
+    private String promptNeighborhood() {
+        System.out.println("\n--- Neighborhood Filter ---");
+        System.out.print("Enter neighborhood name (blank for all): ");
+        String input = sc.nextLine().trim();
+        return input.isEmpty() ? null : input;
     }
 
 

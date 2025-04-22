@@ -138,7 +138,7 @@ public class ProjectApplicationController {
 
 
     public static int getNumSusApplications(String id) {
-        List<Project> handledProjects = getProjectRepository().getByFilter(p -> Arrays.asList(p.getOfficer()).contains(id));
+        List<Project> handledProjects = getProjectRepository().getByFilter(p -> p.getOfficer().contains(id));
         List<String> handledProjectIds = handledProjects.stream()
                 .map(Project::getID)
                 .toList();
@@ -167,7 +167,7 @@ public class ProjectApplicationController {
     }
 
     public static List<ProjectApplication> getHandledApplicationsByStatus(String id, ApplicationStatus applicationStatus) {
-        List<Project> handledProjects = getProjectRepository().getByFilter(p -> Arrays.asList(p.getOfficer()).contains(id));
+        List<Project> handledProjects = getProjectRepository().getByFilter(p -> p.getOfficer().contains(id));
         List<String> handledProjectIds = handledProjects.stream()
                 .map(Project::getID)
                 .toList();
