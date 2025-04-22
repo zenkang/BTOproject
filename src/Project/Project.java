@@ -3,6 +3,10 @@ package Project;
 import Abstract.IEntity;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import Utils.CsvUtils;
 
 public class Project implements IEntity {
@@ -19,7 +23,7 @@ public class Project implements IEntity {
     private LocalDate appDateClose;
     private String managerID;
     private int noOfficersSlots;
-    private String[] officer;
+    private List<String> officer;
     private boolean visibility;
 
     public boolean isVisibility() {
@@ -33,7 +37,7 @@ public class Project implements IEntity {
     public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
                    LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
-                   String[] officer, boolean visible) {
+                   List<String> officer, boolean visible) {
         this.projectID = ID;
         this.projectName = projectName;
         this.neighbourhood = neighbourhood;
@@ -72,7 +76,7 @@ public class Project implements IEntity {
         this.appDateOpen=appDateOpen;
         this.appDateClose=appDateClose;
         this.managerID = managerID;
-        this.officer = new String[noOfficersSlots];
+        this.officer = new ArrayList<>(noOfficersSlots);
         this.noOfficersSlots=noOfficersSlots;
         if (LocalDate.now().isAfter(appDateClose) || (noOfUnitsType1<=0 && noOfUnitsType2<=0) ) {
             this.visibility = false;
@@ -119,7 +123,7 @@ public class Project implements IEntity {
     public int getNoOfficersSlots() {
         return noOfficersSlots;
     }
-    public String[] getOfficer() {
+    public List<String> getOfficer() {
         return officer;
     }
 
@@ -155,7 +159,7 @@ public class Project implements IEntity {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate openDate = LocalDate.parse(values[9], formatter);
         LocalDate closeDate = LocalDate.parse(values[10], formatter);
-        String[] officer = values[13].split(";");
+        List<String> officer = new ArrayList<String>(Arrays.asList(values[13].split(";")));
         boolean visible = Boolean.parseBoolean(values[14].trim());
         return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                 sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
@@ -222,7 +226,7 @@ public class Project implements IEntity {
         this.noOfficersSlots = numOfOfficers;
     }
 
-    public void setOfficer(String[] array) {
+    public void setOfficer(List<String> array) {
         this.officer = array;
     }
 
@@ -241,7 +245,7 @@ public class Project implements IEntity {
         System.out.println("Manager-in-charge: " + this.getManagerID());
         System.out.println("Number of Officer Slot(s): " + this.getNoOfficersSlots());
         System.out.println("Officer(s) Assigned: ");
-        String[] officers = this.getOfficer();
+        List<String> officers = this.getOfficer();
         for (String officer : officers) {
             System.out.println(officer);
         }

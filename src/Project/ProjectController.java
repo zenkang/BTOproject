@@ -258,7 +258,7 @@ public class ProjectController {
         ProjectRepository repo = getProjectRepository();
         List<Project> list;
         list = repo.getByFilter(project -> project.getID().equalsIgnoreCase(projectID)
-        && Arrays.asList(project.getOfficer()).contains(id));
+        && Arrays.asList(project.getOfficer()).contains(id) && LocalDate.now().isBefore(project.getAppDateClose()));
         return !list.isEmpty();
     }
 
@@ -278,9 +278,7 @@ public class ProjectController {
         ProjectRegistration registration = ProjectRegistrationController.getProjectRegistrationByID(registerID);
         String officerID = registration.getOfficerId();
         Project project = getProjectRepository().getByID(registration.getProjectID());
-        List<String> officerList = new ArrayList<>(Arrays.asList(project.getOfficer()));
-        officerList.add(officerID);
-        project.setOfficer(officerList.toArray(new String[0]));
+        project.getOfficer().add(officerID);
         getProjectRepository().update(project);
     }
 }

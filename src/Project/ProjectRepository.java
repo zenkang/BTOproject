@@ -5,6 +5,9 @@ import Utils.CsvUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ProjectRepository extends Repository<Project>{
     private static ProjectRepository instance;
@@ -32,10 +35,7 @@ public class ProjectRepository extends Repository<Project>{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate openDate = LocalDate.parse(CsvUtils.formatDate(values[9]), formatter);
             LocalDate closeDate = LocalDate.parse(CsvUtils.formatDate(values[10]), formatter);
-            String[] officers = values[13].split(";");
-            for (int i = 0; i < officers.length; i++) {
-                officers[i] = officers[i].trim(); // Trim each officer ID
-            }
+            List<String> officers = new ArrayList<String>(Arrays.asList(values[13].split(";")));
             boolean visible = Boolean.parseBoolean(values[14].trim());
             return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                     sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,

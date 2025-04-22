@@ -3,6 +3,8 @@ package ProjectApplication;
 import Abstract.Repository;
 import Enumerations.ApplicationStatus;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class ProjectApplicationRepository extends Repository<ProjectApplication> {
@@ -19,20 +21,25 @@ public class ProjectApplicationRepository extends Repository<ProjectApplication>
 
     @Override
     public ProjectApplication fromCSVRow(String row) {
-        String[] values = row.split(",", 6);
+        String[] values = row.split(",", 7);
+        LocalDate book_date = null;
+        if(!values[6].trim().equals("N/A")){
+            book_date = LocalDate.parse(values[6], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        }
         return new ProjectApplication(
                 values[0].trim(),
                 values[1].trim(),
                 values[2].trim(),
                 values[3].trim(),
                 ApplicationStatus.valueOf(values[4].trim().toUpperCase()),
-                ApplicationStatus.valueOf(values[5].trim().toUpperCase()));
+                ApplicationStatus.valueOf(values[5].trim().toUpperCase()),
+                book_date);
     }
 
 
     @Override
     public String CSVHeader() {
-        return "Application ID,Project ID,Room Type,Applicant ID,Status";
+        return "Application ID,Project ID,Room Type,Applicant ID,Status,Book Date";
     }
 
     public ArrayList<ProjectApplication> getAllProjectApplications() {

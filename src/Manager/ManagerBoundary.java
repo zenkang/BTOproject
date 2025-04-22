@@ -73,7 +73,7 @@ public class ManagerBoundary {
                 case 3 -> viewApplicantApplications();
                 case 4 -> viewProjectRegistrationMenu();
                 case 5 -> managerEnquiryMenu(sc, manager);
-                case 6 -> System.out.println("Generate Report Function");
+                case 6 -> displayReportMenu(manager.getID());
                 case 7 -> UserBoundary.changePassword(manager.getUserProfile());
                 case 0 -> System.out.println("Exiting the Manager Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
@@ -84,6 +84,9 @@ public class ManagerBoundary {
         }
     }
 
+    private void displayReportMenu(String id) {
+
+    }
 
 
     public void displayProjectMenu() {

@@ -556,6 +556,7 @@ public class OfficerBoundary {
         while (choice != 0);
     }
     private static void updateApplicationStatus(String applicationID) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Scanner sc = new Scanner(System.in);
         ProjectApplication application = getProjectApplicationsRepository().getByID(applicationID);
         Applicant applicant = ApplicantController.getApplicantById(application.getApplicantID());
@@ -575,6 +576,7 @@ public class OfficerBoundary {
             case "exit" -> System.out.println("exiting...");
             default -> System.out.println("Invalid choice. Please select a valid option.");
         }
+        application.setBook_date(LocalDate.parse(LocalDate.now().format(dtf)));
         if (ProjectApplicationController.updateApplicationStatus(application, status)) {
                 Project project = ProjectController.getProjectByID(application.getProjectID());
                 int numOfUnits;
@@ -589,7 +591,10 @@ public class OfficerBoundary {
                     ProjectController.updateProjectNumOfRoomType2(project.getID(),numOfUnits);
                 }
                 System.out.println("Application Booked!\n");
+
+
                 System.out.println("\n Generating Receipt.....\n");
+                ReceiptController.generateReceipt(officer.getName(),application);
         } else {
             System.out.println("Update failed, try again later\n");
         }

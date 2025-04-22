@@ -61,7 +61,8 @@ public class ProjectApplicationController {
                 roomType,
                 applicantID,
                 ApplicationStatus.PENDING,
-                ApplicationStatus.PENDING);
+                ApplicationStatus.PENDING,
+                null);
         return getProjectApplicationsRepository().create(application);
     }
 
