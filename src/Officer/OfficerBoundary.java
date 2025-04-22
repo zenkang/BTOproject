@@ -321,7 +321,7 @@ public class OfficerBoundary {
                 case 2 -> viewEnquiries(officer.getNric());
                 case 3 -> editEnquiry(officer.getNric());
                 case 4 -> deleteEnquiry(officer.getNric());
-                case 5 -> viewRepliedEnquiry(sc);
+                case 5 -> viewRepliedEnquiry(officer.getNric(), sc);
                 case 6 -> displayHandledProjectEnquiries(officer.getID());
                 case 7 -> replyToHandledProjectEnquiries(officer,sc);
                 case 0 -> System.out.println("Exiting...");
@@ -351,26 +351,59 @@ public class OfficerBoundary {
 
         System.out.println("Enquiry submitted!");
     }
-    private static void viewRepliedEnquiry(Scanner sc) {
+
+    private static void viewRepliedEnquiry(String officerId, Scanner sc) {
         System.out.println("\n--- View Replied Enquiry ---");
-        System.out.println("Enter enquiry id: ");
-        String enquiryId = sc.nextLine();
-        while(ReplyController.getRepliesByEnquiry(enquiryId) == null) {
-            System.out.println("Invalid Enquiry. Please enter a valid Enquiry ID.");
-            enquiryId = sc.nextLine();
+
+        // Step 1: Get only enquiries for projects this officer handles
+        List<Enquiry> enquiries = EnquiryController.getAllEnquiriesForHandledProjects(officerId);
+
+        if (enquiries.isEmpty()) {
+            System.out.println("You have no enquiries for the projects you are handling.");
+            return;
         }
-        List <Reply> replies = ReplyController.getRepliesByEnquiry(enquiryId);
-        if(replies.isEmpty()) {
+
+        // Step 2: Display all enquiries with their REPLIED or NOT YET REPLIED status
+        System.out.println("Enquiries for your projects:");
+        for (Enquiry e : enquiries) {
+            String status = e.isReplied() ? "REPLIED" : "NOT YET REPLIED";
+            System.out.println("Enquiry ID: " + e.getEnquiryId()
+                    + " | Project: " + e.getProjectName()
+                    + " | Applicant: " + e.getApplicantNric()
+                    + " | Status: " + status);
+        }
+
+        // Step 3: Get valid enquiry IDs (case insensitive list)
+        List<String> validIds = enquiries.stream()
+                .map(e -> e.getEnquiryId().toLowerCase())
+                .toList();
+
+        // Step 4: Ask user to input Enquiry ID safely
+        String enquiryIdInput = SafeScanner.getValidatedStringInput(sc,
+                "\nEnter Enquiry ID to view replies: ", validIds);
+
+        // Step 5: Normalize back to real case-sensitive Enquiry ID
+        String finalEnquiryId = enquiries.stream()
+                .map(Enquiry::getEnquiryId)
+                .filter(enquiryId -> enquiryId.equalsIgnoreCase(enquiryIdInput))
+                .findFirst()
+                .orElse(enquiryIdInput); // fallback
+
+        // Step 6: Retrieve and display replies
+        List<Reply> replies = ReplyController.getRepliesByEnquiry(finalEnquiryId);
+
+        if (replies.isEmpty()) {
             System.out.println("There are no replies for this enquiry.");
-        }
-        else{
-            for(Reply reply : replies) {
+        } else {
+            System.out.println("\n--- Replies for Enquiry ID: " + finalEnquiryId + " ---");
+            for (Reply reply : replies) {
                 printPrettyReply(reply);
             }
         }
-
-
     }
+
+
+
     public static void viewEnquiries(String nric) {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {

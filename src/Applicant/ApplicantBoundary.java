@@ -362,8 +362,8 @@ public class ApplicantBoundary {
 
         // Match and normalize to actual case
         String finalEnquiryId = repliedEnquiries.stream()
-                .filter(e -> e.getEnquiryId().equalsIgnoreCase(enquiryIdInput))
                 .map(Enquiry::getEnquiryId)
+                .filter(enquiryId -> enquiryId.equalsIgnoreCase(enquiryIdInput))
                 .findFirst()
                 .orElse(enquiryIdInput); // fallback (shouldn't happen)
 
@@ -391,7 +391,7 @@ public class ApplicantBoundary {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         List<Enquiry> editable = enquiries.stream()
                 .filter(e -> !e.isReplied())
-                .collect(Collectors.toList());
+                .toList();
 
         if (editable.isEmpty()) {
             System.out.println("No editable enquiries found. You cannot edit replied enquiries.");
