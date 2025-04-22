@@ -13,6 +13,7 @@ import Project.Project;
 import ProjectApplication.ProjectApplication;
 import ProjectRegistration.ProjectRegistration;
 import ProjectRegistration.ProjectRegistrationController;
+import Receipt.ReceiptController;
 import Reply.Reply;
 import Reply.ReplyController;
 import User.UserBoundary;
@@ -588,6 +589,7 @@ public class OfficerBoundary {
                     ProjectController.updateProjectNumOfRoomType2(project.getID(),numOfUnits);
                 }
                 System.out.println("Application Booked!\n");
+                System.out.println("\n Generating Receipt.....\n");
         } else {
             System.out.println("Update failed, try again later\n");
         }
@@ -627,7 +629,7 @@ public class OfficerBoundary {
         }
 
         ProjectApplication application = list.get(choice - 1);
-        ProjectApplicationController.generateReceipt(officer.getName(),application);
+        ReceiptController.generateReceipt(officer.getName(),application);
     }
     //pretty print
     public static void prettyPrintProjectApplications(ProjectApplication application) {

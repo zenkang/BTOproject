@@ -1,20 +1,11 @@
 package ProjectApplication;
 
 
-import Applicant.Applicant;
 import Enumerations.ApplicationStatus;
-import Enumerations.MaritalStatus;
-import Enumerations.ProjectApplicationStatus;
 import Manager.Manager;
 import Project.Project;
 import Project.ProjectController;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +36,7 @@ public class ProjectApplicationController {
     }
 
     public static boolean updateApplicationStatus(ProjectApplication projectApplication, ApplicationStatus applicationStatus) {
-
+        projectApplication.setPreviousStatus(applicationStatus);
         projectApplication.setStatus(applicationStatus);
         return getProjectApplicationsRepository().update(projectApplication);
     }
@@ -69,8 +60,8 @@ public class ProjectApplicationController {
                 projectID,
                 roomType,
                 applicantID,
-                ApplicationStatus.PENDING
-        );
+                ApplicationStatus.PENDING,
+                ApplicationStatus.PENDING);
         return getProjectApplicationsRepository().create(application);
     }
 
@@ -100,6 +91,12 @@ public class ProjectApplicationController {
 
     public static List<String> getPendingApplicationIDs(Manager manager) {
         List<ProjectApplication> list = getApplicationsByStatus(manager, ApplicationStatus.PENDING);
+        return list.stream()
+                .map(ProjectApplication::getID)
+                .toList();
+    }
+    public static List<String> getUnsuccessfulApplicationIDs(Manager manager) {
+        List<ProjectApplication> list = getApplicationsByStatus(manager, ApplicationStatus.UNSUCCESSFUL);
         return list.stream()
                 .map(ProjectApplication::getID)
                 .toList();
@@ -183,59 +180,47 @@ public class ProjectApplicationController {
         if (application == null) {
             return false;
         }
-
+        Project project = ProjectController.getProjectByID(application.getProjectID());
+        if(application.getStatus().equals(ApplicationStatus.BOOKED)){
+            int newUnit;
+            String roomtype = application.getRoomType();
+            if(project.getType1().equalsIgnoreCase(roomtype)){
+                newUnit = project.getNoOfUnitsType1() + 1;
+                ProjectController.updateProjectNumOfRoomType1(project.getID(),newUnit);
+            }
+            else{
+                newUnit = project.getNoOfUnitsType2() + 1;
+                ProjectController.updateProjectNumOfRoomType2(project.getID(),newUnit);
+            }
+        }
         application.setStatus(ApplicationStatus.UNSUCCESSFUL);
+
+
         return getProjectApplicationsRepository().update(application);
     }
 
-    public static void generateReceipt(String name, ProjectApplication application) {
-        Project project = getProjectRepository().getByID(application.getProjectID());
-        Applicant applicant = getApplicantRepository().getByID(application.getApplicantID());
-        if (project == null || applicant == null) {
-            System.out.println("Error: Missing project or applicant data");
-            return;
+
+    public static int getNumRejectedApplications(Manager manager) {
+        List<ProjectApplication> list = getApplicationsByStatus(manager, ApplicationStatus.UNSUCCESSFUL);
+        return list.size();
+    }
+
+    public static boolean rejectWithdrawal(String applicationID) {
+        ProjectApplication application = getProjectApplicationsRepository().getByID(applicationID);
+        Project project = ProjectController.getProjectByID(application.getProjectID());
+        int newUnit;
+        String roomtype = application.getRoomType();
+        if(application.getPreviousStatus().equals(ApplicationStatus.BOOKED)){
+            if(project.getType1().equalsIgnoreCase(roomtype)){
+                newUnit = project.getNoOfUnitsType1() - 1;
+                ProjectController.updateProjectNumOfRoomType1(project.getID(),newUnit);
+            }
+            else{
+                newUnit = project.getNoOfUnitsType2() - 1;
+                ProjectController.updateProjectNumOfRoomType2(project.getID(),newUnit);
+            }
         }
-        String receiptContent = String.format(
-                "=== HDB FLAT BOOKING RECEIPT ===\n" +
-                        "Date: %s\n\n" +
-                        "Applicant Details:\n" +
-                        "Name: %s\n" +
-                        "NRIC: %s\n" +
-                        "Age: %d\n" +
-                        "Marital Status: %s\n\n" +
-                        "Project Details:\n" +
-                        "Project ID: %s\n" +
-                        "Name: %s\n" +
-                        "Neighborhood: %s\n" +
-                        "Flat Type: %s\n\n" +
-                        "Officer Details:\n" +
-                        "Name: %s\n" +
-                        "NRIC: %s\n" +
-                        "Generated on: %s\n" +
-                        "================================",
-                LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                applicant.getName(),
-                applicant.getNric(),
-                applicant.getAge(),
-                applicant.getMaritalStatus(),
-                project.getID(),
-                project.getProjectName(),
-                project.getNeighbourhood(),
-                application.getRoomType(),
-                name,
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-        );
-
-        String fileName = String.format("receipt_%s_%s.txt",
-                applicant.getNric(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
-            writer.println(receiptContent);
-            System.out.println("Receipt generated: " + fileName);
-        } catch (IOException e) {
-            System.out.println("Error generating receipt: " + e.getMessage());
-        }
-
+        application.setStatus(application.getPreviousStatus());
+        return getProjectApplicationsRepository().update(application);
     }
 }

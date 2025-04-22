@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import Enquiry.Enquiry;
 import Enumerations.ApplicationStatus;
+import Enumerations.EnquiryStatus;
 import Enumerations.MaritalStatus;
 import Manager.ManagerController;
 import Project.Project;
@@ -335,11 +336,9 @@ public class ApplicantBoundary {
 
         // Filter those that have replies
         List<Enquiry> repliedEnquiries = enquiries.stream()
-                .filter(e -> {
-                    List<Reply> replies = ReplyController.getRepliesByEnquiry(e.getEnquiryId());
-                    return replies != null && !replies.isEmpty();
-                })
-                .collect(Collectors.toList());
+                .filter(e ->
+                    e.getStatus().equals(EnquiryStatus.REPLIED))
+                .toList();
 
         if (repliedEnquiries.isEmpty()) {
             System.out.println("You have no replied enquiries.");
@@ -352,24 +351,15 @@ public class ApplicantBoundary {
             System.out.println("Enquiry ID: " + e.getEnquiryId() + " | Message: " + e.getMessage());
         }
 
-        // Get valid enquiry IDs in lowercase for case-insensitive match
         List<String> validIds = repliedEnquiries.stream()
                 .map(e -> e.getEnquiryId().toLowerCase())
                 .toList();
 
-        // Get validated input
         String enquiryIdInput = SafeScanner.getValidatedStringInput(sc,
                 "\nEnter Enquiry ID to view replies: ", validIds);
 
-        // Match and normalize to actual case
-        String finalEnquiryId = repliedEnquiries.stream()
-                .map(Enquiry::getEnquiryId)
-                .filter(enquiryId -> enquiryId.equalsIgnoreCase(enquiryIdInput))
-                .findFirst()
-                .orElse(enquiryIdInput); // fallback (shouldn't happen)
-
         // Print replies
-        List<Reply> replies = ReplyController.getRepliesByEnquiry(finalEnquiryId);
+        List<Reply> replies = ReplyController.getRepliesByEnquiry(enquiryIdInput);
         for (Reply reply : replies) {
             printPrettyReply(reply);
         }

@@ -10,13 +10,15 @@ public class ProjectApplication implements IEntity {
     private String roomType;
     private String applicantID;
     private ApplicationStatus status;
+    private ApplicationStatus previousStatus;
 
-    public ProjectApplication(String appID, String projectID, String roomType, String applicantID, ApplicationStatus status){
+    public ProjectApplication(String appID, String projectID, String roomType, String applicantID, ApplicationStatus status, ApplicationStatus applicationStatus){
         this.appID=appID;
         this.projectID=projectID;
         this.roomType=roomType;
         this.applicantID=applicantID;
         this.status=status;
+        this.previousStatus=applicationStatus;
     }
     @Override
     public String getID() {
@@ -42,18 +44,20 @@ public class ProjectApplication implements IEntity {
                 projectID,
                 roomType,
                 applicantID,
-                status.name());
+                status.name(),
+                previousStatus.name());
     }
 
     @Override
     public ProjectApplication fromCSVRow(String row) {
-        String[] values = row.split(",", 5);
+        String[] values = row.split(",", 6);
         return new ProjectApplication(
                 values[0].trim(),
                 values[1].trim(),
                 values[2].trim(),
                 values[3].trim(),
-                ApplicationStatus.valueOf(values[4].trim().toUpperCase())
+                ApplicationStatus.valueOf(values[4].trim().toUpperCase()),
+                ApplicationStatus.valueOf(values[5].trim().toUpperCase())
         );
     }
 
@@ -63,6 +67,7 @@ public class ProjectApplication implements IEntity {
                 ", Project ID: " + projectID + '\'' +
                 ", Room Type: '" + roomType + '\'' +
                 ", Applicant ID: " + applicantID + '\'' +
+                ", Status: " + status.name() +'\'' +
                 ", Status: " + status.name() +'\''
                 ;
     }
@@ -85,5 +90,12 @@ public class ProjectApplication implements IEntity {
 
     public void setStatus(ApplicationStatus status) {
         this.status = status;
+    }
+    public ApplicationStatus getPreviousStatus() {
+        return previousStatus;
+    }
+
+    public void setPreviousStatus(ApplicationStatus previousStatus) {
+        this.previousStatus = previousStatus;
     }
 }

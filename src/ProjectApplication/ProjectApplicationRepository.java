@@ -19,14 +19,14 @@ public class ProjectApplicationRepository extends Repository<ProjectApplication>
 
     @Override
     public ProjectApplication fromCSVRow(String row) {
-        String[] values = row.split(",", 5);
+        String[] values = row.split(",", 6);
         return new ProjectApplication(
                 values[0].trim(),
                 values[1].trim(),
                 values[2].trim(),
                 values[3].trim(),
-                ApplicationStatus.valueOf(values[4].trim().toUpperCase())
-        );
+                ApplicationStatus.valueOf(values[4].trim().toUpperCase()),
+                ApplicationStatus.valueOf(values[5].trim().toUpperCase()));
     }
 
 

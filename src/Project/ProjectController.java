@@ -20,9 +20,6 @@ import static Utils.RepositoryGetter.getProjectRepository;
 public class ProjectController {
 
 
-
-
-
     public static Project getProjectByName(String projectName) {
         ArrayList<Project> p = getProjectRepository().getAll();
         for (Project p1 : p) {

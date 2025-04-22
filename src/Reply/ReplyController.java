@@ -29,7 +29,7 @@ public class ReplyController {
     }
 
     public static List<Reply> getRepliesByEnquiry(String enquiryId) {
-        return RepositoryGetter.getReplyRepository().getByFilter(r -> r.getEnquiryId().equals(enquiryId));
+        return RepositoryGetter.getReplyRepository().getByFilter(r -> r.getEnquiryId().equalsIgnoreCase(enquiryId));
     }
 
     public static List<Reply> getRepliesByResponder(String userId) {

@@ -564,15 +564,25 @@ public class ManagerBoundary {
         int choice;
         Scanner sc = new Scanner(System.in);
         do {
+            int numRejected = ProjectApplicationController.getNumRejectedApplications(manager);
+
             int numPending = ProjectApplicationController.getNumPendingApplications(manager);
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
             System.out.println("2. View pending Applications " + ((numPending == 0) ? "" : "(" + numPending + ")"));
             System.out.println("3. View Filtered applications");
             System.out.println("4. Update Filters");
+            if(numRejected > 0) {
+                System.out.println("5. View withdrawn applications");
+            }
             System.out.println("0. Back");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+            if(numRejected > 0) {
+                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
+            }
+            else {
+                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+            }
 
             switch (choice) {
                 case 1 -> ProjectApplicationController.displayAllProjectApplications(manager);
@@ -586,6 +596,7 @@ public class ManagerBoundary {
                 }
                 case 3 -> System.out.println("TBC");
                 case 4 -> System.out.println("TBC");
+                case 5 -> viewWithdrawnApplication(manager);
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -599,6 +610,27 @@ public class ManagerBoundary {
                 }
             }
         } while (choice != 0);
+    }
+
+    private static void viewWithdrawnApplication(Manager manager) {
+        List<ProjectApplication> projectApplicationList = ProjectApplicationController.getApplicationsByStatus(manager, ApplicationStatus.UNSUCCESSFUL);
+        if (projectApplicationList.isEmpty()) {
+            System.out.println("No withdrawn applications found.");
+        }
+        else {
+            for (ProjectApplication projectApplication : projectApplicationList) {
+                System.out.println(projectApplication);
+            }
+            List<String> validIDs = ProjectApplicationController.getUnsuccessfulApplicationIDs(manager);
+            String applicationID = SafeScanner.getValidatedStringInput(sc, "Enter application ID to reject: ", validIDs);
+            if(ProjectApplicationController.rejectWithdrawal(applicationID)){
+                System.out.println("Application rejected.");
+            }
+            else{
+                System.out.println("Application rejection unsuccessful.");
+            }
+        }
+
     }
 
     private static void updateApplicationStatus(String applicationID) {

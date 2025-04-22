@@ -77,8 +77,8 @@ public class ProjectRegistration implements IEntity{
                 values[1].trim(),
                 values[2].trim(),
                 values[3].trim(),
-                ApplicationStatus.valueOf(values[4].trim().toUpperCase())
-        );
+                ApplicationStatus.valueOf(values[4].trim().toUpperCase()),
+                ApplicationStatus.valueOf(values[5].trim().toUpperCase()));
     }
     @Override
     public String toString() {
