@@ -54,7 +54,10 @@ public class OfficerBoundary {
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 11);
             switch (choice) {
                 case 1 -> viewOfficerProfile();
-                case 2 -> displayProjectsForOfficer(officer);
+                case 2 -> {
+                    officerProjectFilterMenu(); // optional, for fine-grained control
+                    displayProjectsForOfficer(officer); // always uses the scoped filter
+                }
                 case 3 -> viewHandledProjects(officer);
                 case 4 -> applyForProject(officer);
                 case 5 -> viewApplication(officer);
@@ -193,11 +196,16 @@ public class OfficerBoundary {
     //Applicant Functionalities
 
     //Project
-    private static void displayProjectsForOfficer(Officer officer)  {
+    private void officerProjectFilterMenu() {
+        Scanner sc = new Scanner(System.in);
+        ProjectController.showFilterMenu(officer.getID(), sc);
+    }
+
+    private static void displayProjectsForOfficer(Officer officer) {
         List<ProjectApplication> applications =
                 ProjectApplicationController.getApplicationByApplicantID(officer.getID());
 
-        // 2) collect all the project‑IDs this applicant has already applied to
+        // 1. Print previously applied projects
         Set<String> appliedIds = new HashSet<>();
         if (!applications.isEmpty()) {
             System.out.println("\nYou have applied to the following project"
@@ -205,21 +213,26 @@ public class OfficerBoundary {
             for (ProjectApplication app : applications) {
                 appliedIds.add(app.getProjectID());
                 Project p = ProjectController.getProjectByID(app.getProjectID());
-                prettyPrintOfficerProject(officer, p,false);
+                OfficerBoundary.prettyPrintOfficerProject(officer, p, false);
             }
         }
 
-        // 3) fetch the whole “open” list, then skip anything in appliedIds
-        List<Project> filteredProjects = ProjectController.getProjectsForApplicant(officer);
+        // 2. Fetch and show filtered projects using the per-user filter state
+        List<Project> filteredProjects = ProjectController.getFilteredProjectsForUser(officer.getID())
+                .stream()
+                .filter(p -> !appliedIds.contains(p.getID()))
+                .toList();
+
         if (filteredProjects.isEmpty()) {
-            System.out.println("No projects are open to your user group.");
+            System.out.println("No new projects matched your filter or you're already applied.");
         } else {
-            System.out.println("========= Projects =========");
+            System.out.println("========= Filtered Projects =========");
             for (Project proj : filteredProjects) {
-                prettyPrintOfficerProject(officer, proj,false);
+                OfficerBoundary.prettyPrintOfficerProject(officer, proj, false);
             }
         }
     }
+
     private void viewHandledProjects(Officer officer) {
         List<Project> filteredProjects = ProjectController.getProjectsHandledByOfficer(officer.getID());
         if (filteredProjects.isEmpty()) {

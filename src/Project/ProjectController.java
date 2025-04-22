@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import Utils.PredicateUtils;
 
 import static Utils.RepositoryGetter.getProjectRepository;
 
@@ -229,20 +230,6 @@ public class ProjectController {
                 .toList();
     }
 
-    public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
-        ProjectRepository repo = getProjectRepository();
-        List<Project> filteredProjects;
-        if(Filter == null){
-            filteredProjects = repo.getAll();
-
-        }
-        else{
-            filteredProjects = repo.getByFilter(Filter);
-        }
-        filteredProjects = new ArrayList<>(filteredProjects);
-        filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
-        return filteredProjects;
-    }
 
     public static List<String> getProjectIDsManagedBy(String managerID) {
         return getProjectRepository().getAll().stream()
@@ -287,6 +274,95 @@ public class ProjectController {
         getProjectRepository().update(project);
     }
 
+// ================== Filter Logic for Each User ==================
+
+    private static final Map<String, FilterState> userFilterStates = new HashMap<>();
+
+    public static class FilterState {
+        public Predicate<Project> neighbourhoodFilter;
+        public Predicate<Project> flatTypeFilter;
+        public Predicate<Project> availabilityFilter;
+
+        public void reset() {
+            neighbourhoodFilter = null;
+            flatTypeFilter = null;
+            availabilityFilter = null;
+        }
+
+        public Predicate<Project> getCombinedFilter() {
+            return PredicateUtils.combineFilters(
+                    neighbourhoodFilter, flatTypeFilter, availabilityFilter
+            );
+        }
+    }
+
+    public static FilterState getFilterStateForUser(String userId) {
+        return userFilterStates.computeIfAbsent(userId, id -> new FilterState());
+    }
+
+    public static void clearFilterState(String userId) {
+        userFilterStates.remove(userId);
+    }
+
+    public static List<Project> getFilteredProjectsForUser(String userId) {
+        return getFilteredProjects(getFilterStateForUser(userId).getCombinedFilter());
+    }
+
+    public static List<Project> getFilteredProjects(Predicate<Project> filter) {
+        ProjectRepository repo = getProjectRepository();
+        List<Project> filteredProjects = (filter == null)
+                ? repo.getAll()
+                : repo.getByFilter(filter);
+        filteredProjects = new ArrayList<>(filteredProjects);
+        filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
+        return filteredProjects;
+    }
+
+    public static void showFilterMenu(String userId, Scanner sc) {
+        FilterState state = getFilterStateForUser(userId);
+        int choice;
+        do {
+            System.out.println(" === Project Filter Menu ===");
+            System.out.println("1. Filter by Neighbourhood");
+            System.out.println("2. Filter by Flat Type");
+            System.out.println("3. Filter by Availability");
+            System.out.println("4. View Filtered Projects");
+            System.out.println("5. Reset Filters");
+            System.out.println("0. Exit");
+
+            choice = Utils.SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Enter neighbourhood: ");
+                    String n = sc.nextLine();
+                    state.neighbourhoodFilter = p -> p.getNeighbourhood().equalsIgnoreCase(n);
+                }
+                case 2 -> {
+                    String flatType = Utils.SafeScanner.getValidatedStringInput(sc,
+                            "Enter flat type (2-room or 3-room): ", List.of("2-room", "3-room"));
+                    state.flatTypeFilter = p -> flatType.equalsIgnoreCase(p.getType1()) || flatType.equalsIgnoreCase(p.getType2());
+                }
+                case 3 -> {
+                    state.availabilityFilter = p -> p.getNoOfUnitsType1() > 0 || p.getNoOfUnitsType2() > 0;
+                }
+                case 4 -> {
+                    List<Project> result = getFilteredProjectsForUser(userId);
+                    if (result.isEmpty()) {
+                        System.out.println("No matching projects found.");
+                    } else {
+                        result.forEach(Utils.PrettyPrint::prettyPrintProject);
+                    }
+                }
+                case 5 -> {
+                    state.reset();
+                    System.out.println("Filters reset.");
+                }
+                case 0 -> System.out.println("Exiting filter menu...");
+                default -> System.out.println("Invalid option. Try again.");
+            }
+        } while (choice != 0);
+    }
 
 }
 

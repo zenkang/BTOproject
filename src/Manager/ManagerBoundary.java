@@ -631,72 +631,7 @@ public class ManagerBoundary {
     }
 
     public static void displayProjectFilterMenu() {
-        int choice;
-        do {
-            System.out.println("\n=== Project Filter Menu ===");
-            System.out.println("1. Neighbourhood");
-            System.out.println("2. Flat Type");
-            System.out.println("3. Available Flats");
-            System.out.println("4. Combine Filters");
-            System.out.println("5. Reset Filters");
-            System.out.println("0. Exit");
-
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
-
-            switch (choice) {
-                case 1 -> {
-                    System.out.println("Enter the neighbourhood: ");
-                    String neighbourhood = sc.nextLine();
-                    neighbourhoodFilter = project -> project.getNeighbourhood().equalsIgnoreCase(neighbourhood);
-                    Filter = neighbourhoodFilter;
-                    ProjectController.getFilteredProjects(Filter);
-                }
-                case 2 -> {
-                    List<String> validRoomOptions = Arrays.asList("2-room", "3-room");
-                    String flatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type filter(e.g.,2-Room,3-Room:)", validRoomOptions);
-                    if (flatType.equals("2-room")) {
-                        flatTypeFilter = project -> project.getType1().equalsIgnoreCase("2-room");
-                        Filter = flatTypeFilter;
-                        ProjectController.getFilteredProjects(Filter);
-                    } else {
-                        flatTypeFilter = project -> project.getType1().equalsIgnoreCase("3-room");
-                        Filter = flatTypeFilter;
-                        ProjectController.getFilteredProjects(Filter);
-                    }
-                }
-                case 3->{
-                    List<String> validRoomOptions = Arrays.asList("2-room", "3-room","Both");
-                    String flatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type availability filter(e.g.,2-Room,3-Room,Both:)", validRoomOptions);
-                    if (flatType.equals("2-room")) {
-                        availOfRoomType1Filter = project -> project.getNoOfUnitsType1() > 0;
-                        Filter = availOfRoomType1Filter;
-                        ProjectController.getFilteredProjects(Filter);
-                    } else if(flatType.equals("3-room")) {
-                        availOfRoomType2Filter = project -> project.getNoOfUnitsType2() > 0;
-                        Filter = availOfRoomType2Filter;
-                        ProjectController.getFilteredProjects(Filter);
-                    }
-                    else{
-                        availOfRoomType1Filter = project -> project.getNoOfUnitsType1() > 0;
-                        availOfRoomType2Filter = project -> project.getNoOfUnitsType2() > 0;
-                        bothRoomFilter =PredicateUtils.combineFilters(availOfRoomType1Filter,availOfRoomType2Filter);
-                    }
-                }
-                case 4 -> {
-                    Filter = PredicateUtils.combineFilters(neighbourhoodFilter, flatTypeFilter,availOfRoomType1Filter,availOfRoomType2Filter,bothRoomFilter);
-                    ProjectController.getFilteredProjects(Filter);
-                }
-                case 5 -> {
-                    Filter = null;
-                    System.out.println("Filter Reset.");
-                }
-                case 0 -> {
-                    System.out.println("Filter preferences updated.");
-                    System.out.println("Exiting the Project Filter Menu.");
-                }
-                default -> System.out.println("Invalid choice. Please select a valid option.");
-            }
-        } while (choice != 0);
+        ProjectController.showFilterMenu(manager.getID(), sc);
     }
 
     public static void displayFilteredProjects(Predicate<Project> Filter) {
@@ -713,20 +648,29 @@ public class ManagerBoundary {
 
     public static void promptProjectViewChoice(String managerID) {
         List<String> validOptions = Arrays.asList("yes", "no");
-        String selection;
-        selection = SafeScanner.getValidatedStringInput(sc, "Would you like to view projects created by you?\nEntering no will display all projects \nEnter yes or no: ", validOptions);
-        System.out.println(managerID);
+        String selection = SafeScanner.getValidatedStringInput(sc,
+                "Would you like to view projects created by you?\nEntering no will display all projects with applied filters.\nEnter yes or no: ",
+                validOptions);
+
         if (selection.equals("yes")) {
             List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerID);
-            System.out.println("Projects created by you:");
-            for (Project project : managerProjects) {
-                prettyPrintProjectDetails(project);
+            if (managerProjects.isEmpty()) {
+                System.out.println("No projects found.");
+            } else {
+                System.out.println("Projects created by you:");
+                managerProjects.forEach(ManagerBoundary::prettyPrintProjectDetails);
             }
         } else {
-            displayFilteredProjects(Filter);
+            List<Project> filtered = ProjectController.getFilteredProjectsForUser(managerID);
+            if (filtered.isEmpty()) {
+                System.out.println("No filtered projects found.");
+            } else {
+                System.out.println("Filtered Projects:");
+                filtered.forEach(ManagerBoundary::prettyPrintProjectDetails);
+            }
         }
-
     }
+
 
     public static void prettyPrintProjectDetails(Project project) {
         if (project == null) {

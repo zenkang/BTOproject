@@ -45,7 +45,10 @@ public class ApplicantBoundary {
 
             switch (choice) {
                 case 1 -> viewApplicantProfile();
-                case 2 -> displayProjectsForApplicant(applicant);
+                case 2 -> {
+                    ProjectController.showFilterMenu(applicant.getID(), sc);
+                    displayProjectsForApplicant(applicant);
+                }
                 case 3 -> applyForProject(applicant);
                 case 4 -> viewApplication(applicant);
                 case 5 -> applicantEnquiryMenu(applicant);
