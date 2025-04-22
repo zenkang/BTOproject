@@ -576,7 +576,7 @@ public class OfficerBoundary {
             case "exit" -> System.out.println("exiting...");
             default -> System.out.println("Invalid choice. Please select a valid option.");
         }
-        application.setBook_date(LocalDate.parse(LocalDate.now().format(dtf)));
+        application.setBook_date(LocalDate.parse(LocalDate.now().format(dtf),dtf));
         if (ProjectApplicationController.updateApplicationStatus(application, status)) {
                 Project project = ProjectController.getProjectByID(application.getProjectID());
                 int numOfUnits;

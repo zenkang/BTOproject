@@ -230,7 +230,7 @@ public class ProjectController {
     }
     public static List<Project> getProjectsHandledByOfficer(String id) {
         return getProjectRepository().getAll().stream()
-                .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
+                .filter(p -> p.getOfficer().contains(id))
                 .toList();
     }
 
