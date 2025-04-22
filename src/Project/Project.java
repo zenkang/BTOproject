@@ -48,7 +48,38 @@ public class Project implements IEntity {
         this.managerID = managerID;
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
-        this.visibility=visible;
+        if (LocalDate.now().isAfter(appDateClose) || (noOfUnitsType1<=0 && noOfUnitsType2<=0) ) {
+            this.visibility = false;
+        }
+        else {
+            this.visibility=visible;
+        }
+    }
+
+    public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
+                   double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
+                   LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
+                    boolean visible) {
+        this.projectID = ID;
+        this.projectName = projectName;
+        this.neighbourhood = neighbourhood;
+        this.type1 = type1;
+        this.noOfUnitsType1 = noOfUnitsType1;
+        this.sellPriceType1 = sellPriceType1;
+        this.type2 = type2;
+        this.noOfUnitsType2=noOfUnitsType2;
+        this.sellPriceType2=getSellPriceType2;
+        this.appDateOpen=appDateOpen;
+        this.appDateClose=appDateClose;
+        this.managerID = managerID;
+        this.officer = new String[noOfficersSlots];
+        this.noOfficersSlots=noOfficersSlots;
+        if (LocalDate.now().isAfter(appDateClose) || (noOfUnitsType1<=0 && noOfUnitsType2<=0) ) {
+            this.visibility = false;
+        }
+        else {
+            this.visibility=visible;
+        }
     }
 
     @Override
@@ -126,9 +157,6 @@ public class Project implements IEntity {
         LocalDate closeDate = LocalDate.parse(values[10], formatter);
         String[] officer = values[13].split(";");
         boolean visible = Boolean.parseBoolean(values[14].trim());
-        if (LocalDate.now().isAfter(appDateClose)) {
-            visible = false;
-        }
         return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                 sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
                 openDate,closeDate,values[11],noOfficersSlots,
@@ -196,6 +224,30 @@ public class Project implements IEntity {
 
     public void setOfficer(String[] array) {
         this.officer = array;
+    }
+
+    public void prettyPrintManager() {
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        System.out.println("Room Types : " + this.getType1() + " , " + this.getType2());
+        System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+        System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+        System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        System.out.println("Application Open Date: " + this.getAppDateOpen());
+        System.out.println("Application Close Date: " + this.getAppDateClose());
+        System.out.println("Manager-in-charge: " + this.getManagerID());
+        System.out.println("Number of Officer Slot(s): " + this.getNoOfficersSlots());
+        System.out.println("Officer(s) Assigned: ");
+        String[] officers = this.getOfficer();
+        for (String officer : officers) {
+            System.out.println(officer);
+        }
+        System.out.println("Active Project: " + this.isVisibility());
+        System.out.println("------------------------");
+
     }
 }
 
