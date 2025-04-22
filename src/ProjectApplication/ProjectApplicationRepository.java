@@ -39,7 +39,7 @@ public class ProjectApplicationRepository extends Repository<ProjectApplication>
 
     @Override
     public String CSVHeader() {
-        return "Application ID,Project ID,Room Type,Applicant ID,Status,Book Date";
+        return "Application ID,Project ID,Room Type,Applicant ID,Status,Previous Status,Book Date";
     }
 
     public ArrayList<ProjectApplication> getAllProjectApplications() {
