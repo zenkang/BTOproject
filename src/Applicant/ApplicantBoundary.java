@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import Abstract.IUserProfile;
 import Enquiry.Enquiry;
 import Enumerations.EnquiryStatus;
 import Enumerations.MaritalStatus;
@@ -24,11 +25,11 @@ import Enquiry.EnquiryController;
 
 public class ApplicantBoundary {
     private Applicant applicant;
-    private Predicate<Project> Filter = null;
-    private Predicate<Project> neighbourhoodFilter = null;
-    private Predicate<Project> flatTypeFilter = null;
-    private String Filterneighbourhood = null;
-    private String FilterflatType = null;
+    private static Predicate<Project> Filter = null;
+    private static Predicate<Project> neighbourhoodFilter = null;
+    private static Predicate<Project> flatTypeFilter = null;
+    private static String Filterneighbourhood = null;
+    private static String FilterflatType = null;
 
     public ApplicantBoundary(Applicant applicant) {
         this.applicant = applicant;
@@ -140,7 +141,7 @@ public class ApplicantBoundary {
 
 //Applications functions
 
-    public static void applyForProject(Applicant applicant) {
+    public static <T extends IUserProfile> void applyForProject(T applicant) {
         Scanner sc = new Scanner(System.in);
         if (!ProjectApplicationController.checkPreviousApplication(applicant.getNric())) {
             System.out.println("You have already submitted an Application Before.");
@@ -187,7 +188,7 @@ public class ApplicantBoundary {
                      return;
                 }
             }
-            if (!ProjectApplicationController.createProjectApplication(projectID.toUpperCase(),roomType, applicant.getID())){
+            if (!ProjectApplicationController.createProjectApplication(projectID.toUpperCase(),roomType, applicant.getNric())){
                 System.out.println("Project application could not be created.");
             }
             else{
@@ -197,7 +198,7 @@ public class ApplicantBoundary {
         }
     }
 
-    public static void viewApplication(Applicant applicant) {
+    public static <T extends IUserProfile> void viewApplication(T applicant) {
         List<ProjectApplication> failApp = ProjectApplicationController.getUnsuccessApplicationByApplicantID(applicant.getNric());
         ProjectApplication currentApp = ProjectApplicationController.getCurrentApplicationByApplicantID(applicant.getNric());
         if (failApp.isEmpty() && currentApp == null) {
@@ -231,7 +232,7 @@ public class ApplicantBoundary {
     }
 
 //Project functions
-    public void displayProjectMenu(Applicant applicant) {
+    public static <T extends IUserProfile> void displayProjectMenu(T applicant) {
         Scanner sc = new Scanner(System.in);
         int choice;
         do {
@@ -252,9 +253,9 @@ public class ApplicantBoundary {
         }while(choice !=0);
     }
 
-    public void displayAppliedProjects(Applicant applicant) {
+    public static <T extends IUserProfile> void displayAppliedProjects(T applicant) {
         List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationsByApplicantID(applicant.getID());
+                ProjectApplicationController.getApplicationsByApplicantID(applicant.getNric());
         if (!applications.isEmpty()) {
             System.out.println("\nYou have applied to the following project"
                     + (applications.size() > 1 ? "s:" : ":"));
@@ -270,7 +271,7 @@ public class ApplicantBoundary {
             }
         }
     }
-    public void displayAvailProjectsForApplicant(Applicant applicant) {
+    public static <T extends IUserProfile> void displayAvailProjectsForApplicant(T applicant) {
         List<Project> filteredProjects = ProjectController.getFilteredProjectsForApplicant(applicant,Filter);
         if (filteredProjects.isEmpty()) {
             System.out.println("No projects are open to your user group.");
@@ -292,7 +293,7 @@ public class ApplicantBoundary {
             System.out.println("\nEnter A to apply,\n      E to submit enquiry\nEnter anything else to go back: ");
             String selection = sc.nextLine().trim();
             if(selection.equalsIgnoreCase("E")){
-                submitEnquiry(this.applicant.getNric());
+                submitEnquiry(applicant.getNric());
             }
             else if(selection.equalsIgnoreCase("A")){
                 applyForProject(applicant);
@@ -300,7 +301,7 @@ public class ApplicantBoundary {
         }
     }
 
-    public void displayProjectFilterMenu() {
+    public static void displayProjectFilterMenu() {
         Scanner sc = new Scanner(System.in);
         int choice;
         do {
@@ -478,8 +479,8 @@ public class ApplicantBoundary {
         System.out.println("Enquiry deleted successfully!");
     }
 
-    private static void withdrawApplication(Applicant applicant) {
-        ProjectApplication application = ProjectApplicationController.getCurrentApplicationByApplicantID(applicant.getID());
+    private static <T extends IUserProfile> void withdrawApplication(T applicant) {
+        ProjectApplication application = ProjectApplicationController.getCurrentApplicationByApplicantID(applicant.getNric());
 
         if (application == null) {
             System.out.println("No application to withdraw.");
@@ -493,7 +494,7 @@ public class ApplicantBoundary {
         );
 
         if (confirm.equalsIgnoreCase("y")) {
-            boolean success = ProjectApplicationController.withdrawApplication(applicant.getID());
+            boolean success = ProjectApplicationController.withdrawApplication(applicant.getNric());
             if (success) {
                 System.out.println("Application withdrawn successfully.");
             } else {

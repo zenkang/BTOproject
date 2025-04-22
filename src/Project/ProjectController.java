@@ -200,6 +200,26 @@ public class ProjectController {
         }
     }
 
+    public static List<Project> getFilteredProjectsForRegistration(Officer officer,Predicate<Project> Filter) {
+        List<Project> projects = ProjectController.getFilteredProjects(project -> project.isVisibility());
+
+        List<ProjectApplication> applications =
+                ProjectApplicationController.getApplicationsByApplicantID(officer.getNric());
+        Set<String> appliedIds = new HashSet<>();
+        for (ProjectApplication app : applications) {
+            appliedIds.add(app.getProjectID());
+        }
+        List<Project> list = projects.stream()
+                .filter(p -> !appliedIds.contains(p.getID()))
+                .toList();
+        if(Filter == null){
+            return list;
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
+    }
+
     public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
         ProjectRepository repo = getProjectRepository();
         List<Project> filteredProjects;
