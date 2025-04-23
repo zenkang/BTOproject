@@ -262,7 +262,7 @@ public class ManagerBoundary {
                 case 5 -> updateSellingPrice(sc,projectID);
                 case 6 -> updateProjectApplicationOpen(sc,projectID);
                 case 7 -> updateProjectApplicationClose(sc,projectID);
-                case 9 -> updateProjectVisibility(sc,projectID);
+                case 8 -> updateProjectVisibility(sc,projectID);
                 case 0 -> System.out.println("Exiting........");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -685,11 +685,21 @@ public class ManagerBoundary {
     public void promptProjectViewChoice(String managerID) {
         String selection = SafeScanner.getValidatedStringInput(sc, "View your projects? (y : yes || n : no) ", Arrays.asList("y", "n"));
         if (selection.equals("y")) {
-            List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerID);
+            List<Project> managerProjects = new ArrayList<>(
+                    ProjectController.getFilteredProjectsByManager(managerID,filterContext.combinedFilter)
+            );
             if(managerProjects.isEmpty()){
                 System.out.println("\nNo projects created by you.");
             }
             else {
+                System.out.println("\nFilters applied: " + filterContext.neighbourhood + " | " + filterContext.flatType + " | " + filterContext.visibility);
+                System.out.println("\nEnter 'o' to sort by Opening Date,\n      'c' to sort by Closing Date\nEnter anything else to continue: ");
+                selection = sc.nextLine().trim().toLowerCase();
+
+                switch (selection) {
+                    case "c" -> managerProjects.sort(Comparator.comparing(Project::getAppDateClose));
+                    case "o" -> managerProjects.sort(Comparator.comparing(Project::getAppDateOpen));
+                }
                 System.out.println("\nYour Projects: \n");
                 for (Project project : managerProjects) {
                     project.prettyPrintManager();
