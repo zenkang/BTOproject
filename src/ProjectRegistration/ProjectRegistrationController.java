@@ -30,7 +30,8 @@ public class ProjectRegistrationController {
                 p.getAppDateOpen().isBefore(newProject.getAppDateClose()) &&
                 p.getAppDateClose().isAfter(newProject.getAppDateOpen()) &&
                 p.isVisibility());
-        return isOverlapping && projectApplications.isEmpty();
+
+        return isOverlapping && projectApplications.isEmpty() && (newProject.getNoOfficersSlots()>0);
     }
 
     public static boolean createProjectRegistration(String project_id, String id) {
