@@ -65,7 +65,10 @@ public class ApplicantBoundary {
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice.");
             }
-        } while (choice != 0);
+        } while (choice != 0 && choice != 6);
+        if (choice==0){
+            sc.close();
+        }
     }
 
     public void displayProjectMenu() {
