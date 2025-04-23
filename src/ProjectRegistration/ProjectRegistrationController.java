@@ -8,7 +8,7 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 
 
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,6 +81,20 @@ public class ProjectRegistrationController {
             return false;
         }
         return true;
+
+    }
+
+    public static boolean checkOfficerInActiveProject(String registerID) {
+        LocalDate currentDate = LocalDate.now();
+        ProjectRegistration projectRegistration = getProjectRegistrationRepository().getByID(registerID);
+        String officer_id = projectRegistration.getOfficerId();
+        List<Project> projects = ProjectController.getProjectsHandledByOfficer(officer_id);
+        for(Project project:projects){
+            if(currentDate.isBefore(project.getAppDateClose())){
+                return true;
+            }
+        }
+        return false;
 
     }
 }

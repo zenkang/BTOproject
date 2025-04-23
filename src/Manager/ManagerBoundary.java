@@ -90,8 +90,13 @@ public class ManagerBoundary {
                 ".csv";
 
         try {
-            ReportController.generateReport(id, criteria, outputPath);
-            System.out.println("Report generated: " + outputPath);
+            if(ReportController.generateReport(id, criteria, outputPath)){
+                System.out.println("Report generated: " + outputPath);
+            }
+            else{
+                System.out.println("No reports found");
+            }
+
         } catch (IOException e) {
             System.err.println("Failed to generate report: " + e.getMessage());
         }
@@ -521,18 +526,16 @@ public class ManagerBoundary {
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
             System.out.println("2. View pending Applications " + ((numPending == 0) ? "" : "(" + numPending + ")"));
-            System.out.println("3. View Filtered applications");
-            System.out.println("4. Update Filters");
             if(numRejected > 0) {
-                System.out.println("5. View withdrawn applications");
+                System.out.println("3. View withdrawn applications");
             }
             System.out.println("0. Back");
 
             if(numRejected > 0) {
-                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
+                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
             }
             else {
-                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
             }
 
             switch (choice) {
@@ -545,9 +548,7 @@ public class ManagerBoundary {
                         list.forEach(System.out::println);
                     }
                 }
-                case 3 -> System.out.println("TBC");
-                case 4 -> System.out.println("TBC");
-                case 5 -> viewWithdrawnApplication(manager);
+                case 3 -> viewWithdrawnApplication(manager);
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -810,13 +811,18 @@ public class ManagerBoundary {
         }
         List<String> validRegisterIds = projectRegistrations.stream().map(ProjectRegistration::getRegistrationID).toList();
         String registerID = SafeScanner.getValidatedStringInput(sc,"Enter Registration ID you want to approve or reject for: ",validRegisterIds);
-        List<String> validOptions = Arrays.asList("a", "r");
-        String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
-        RegistrationStatus status = null;
-        switch (choice.toLowerCase()) {
-            case "a" -> status = RegistrationStatus.APPROVED;
-            case "r" -> status = RegistrationStatus.REJECTED;
-            default -> System.out.println("Invalid choice. Please select a valid option.");
+        boolean officerInActiveProject = ProjectRegistrationController.checkOfficerInActiveProject(registerID);
+        if(officerInActiveProject){
+            System.out.println("Officer is handling an existing active project");
+        }
+        else{
+            List<String> validOptions = Arrays.asList("a", "r");
+            String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
+            RegistrationStatus status = null;
+            switch (choice.toLowerCase()) {
+                case "a" -> status = RegistrationStatus.APPROVED;
+                case "r" -> status = RegistrationStatus.REJECTED;
+                default -> System.out.println("Invalid choice. Please select a valid option.");
             }
             if(ProjectRegistrationController.updateProjectRegistration(registerID,status)){
                 if(status == RegistrationStatus.APPROVED){
@@ -829,9 +835,9 @@ public class ManagerBoundary {
 
             }
             else{
-               System.out.println("Error");
+                System.out.println("Error");
             }
-
+        }
 
 
     }

@@ -145,7 +145,7 @@ public class OfficerBoundary {
                 System.out.println("Registration ID: " + projectRegistration.getRegistrationID());
                 System.out.println("Project Name: " + projectRegistration.getProjectName());
                 System.out.println("Officer ID: " + projectRegistration.getOfficerId());
-                System.out.println("Status: " + projectRegistration.getStatus());
+                System.out.println("Status: " + projectRegistration.getStatus()+"\n");
             }
         }
         else {
@@ -375,7 +375,7 @@ public class OfficerBoundary {
         } else {
             System.out.println("\n--- Replies for Enquiry ID: " + finalEnquiryId + " ---");
             for (Reply reply : replies) {
-                printPrettyReply(reply);
+                reply.printPrettyReply();
             }
         }
     }
@@ -498,11 +498,9 @@ public class OfficerBoundary {
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
             System.out.println("2. View Successful Applications " + ((numSus == 0) ? "" : "(" + numSus + ")"));
-            System.out.println("3. View Filtered applications");
-            System.out.println("4. Update Filters");
             System.out.println("0. Back");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
 
             switch (choice) {
                 case 1 -> ProjectApplicationController.displayAllHandledProjectApplications(officer.getID());
@@ -514,8 +512,6 @@ public class OfficerBoundary {
                         list.forEach(System.out::println);
                     }
                 }
-                case 3 -> System.out.println("TBC");
-                case 4 -> System.out.println("TBC");
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -612,15 +608,6 @@ public class OfficerBoundary {
         ProjectApplication application = list.get(choice - 1);
         ReceiptController.generateReceipt(officer.getName(),application);
     }
-    //pretty print
-    public static void printPrettyReply(Reply reply) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        System.out.println("Reply ID: " + reply.getReplyId());
-        System.out.println("Enquiry ID: " + reply.getEnquiryId());
-        System.out.println("Date: " + reply.getDate().format(dateFormatter));
-        System.out.println("Officer / Manager ID: "+reply.getOfficerOrManagerId());
-        System.out.println("Reply: "+reply.getReplyContent());
-        System.out.println("----------------------\n");
-    }
+
 
 }
