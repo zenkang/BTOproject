@@ -21,34 +21,23 @@ import User.UserBoundary;
 import Enquiry.EnquiryController;
 import Utils.PrettyPrint;
 import Utils.SafeScanner;
+import Utils.ProjectFilterContext;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.*;
+
 import Report.ReportController;
 import ProjectRegistration.ProjectRegistrationController;
-
-import Utils.PredicateUtils;
 
 import static Utils.RepositoryGetter.*;
 
 
 public class ManagerBoundary {
     private Manager manager;
-    private Predicate<Project> Filter = null;
-    private Predicate<Project> neighbourhoodFilter = null;
-    private Predicate<Project> flatTypeFilter = null;
-    private Predicate<Project>visibilityFilter = null;
-    private String Filterneighbourhood = null;
-    private String FilterflatType = null;
-    private String FiltervisibilityChoice  = null;
+    private final ProjectFilterContext filterContext = new ProjectFilterContext();
     static Scanner sc = new Scanner(System.in);
 
     public ManagerBoundary(Manager manager) {
@@ -629,39 +618,36 @@ public class ManagerBoundary {
         int choice;
         do {
             System.out.println("\n=== Project Filter Menu ===");
-            System.out.println("1. Neighbourhood");
-            System.out.println("2. Flat Type");
-            System.out.println("3. visibility");
+
+            System.out.println("1. Neighbourhood: "+filterContext.neighbourhood);
+            System.out.println("2. Flat Type: "+filterContext.flatType);
+            System.out.println("3. visibility: "+filterContext.visibility);
             System.out.println("4. Reset Filters");
             System.out.println("0. Exit");
-            System.out.println("\nCurrent filters applied :\nNeighbourhood: "+Filterneighbourhood+" | Flat Type: "+FilterflatType+" | Visibility: "+ FiltervisibilityChoice);
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
 
             switch (choice) {
                 case 1 -> {
-                    Filterneighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter the neighbourhood: ",100);
-                    neighbourhoodFilter = project -> project.getNeighbourhood().equalsIgnoreCase(Filterneighbourhood);
+                    filterContext.neighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter the neighbourhood: ",100);
+                    filterContext.neighbourhoodFilter = project -> project.getNeighbourhood().equalsIgnoreCase(filterContext.neighbourhood);
                 }
                 case 2 -> {
                     List<String> validRoomOptions = Arrays.asList("2-room", "3-room");
-                    FilterflatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type filter(e.g.,2-Room,3-Room:)", validRoomOptions);
-                    flatTypeFilter = project -> ((project.getType1().equalsIgnoreCase(FilterflatType) && project.getNoOfUnitsType1()>0)||
-                                (project.getType2().equalsIgnoreCase(FilterflatType) && project.getNoOfUnitsType2()>0));
+                    filterContext.flatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type filter(e.g.,2-Room,3-Room) ", validRoomOptions);
+                    filterContext.flatTypeFilter = project -> ((project.getType1().equalsIgnoreCase(filterContext.flatType) && project.getNoOfUnitsType1()>0)||
+                                (project.getType2().equalsIgnoreCase(filterContext.flatType) && project.getNoOfUnitsType2()>0));
                 }
                 case 3->{
-                    FiltervisibilityChoice = SafeScanner.getValidatedStringInput(sc, "Enter the visibility : (t : True || f : False) :",Arrays.asList("t", "f") );
-                    visibilityFilter = switch (FiltervisibilityChoice) {
-                        case "y" -> project -> project.isVisibility();
-                        case "n" -> project -> !project.isVisibility();
+                    filterContext.visibility = SafeScanner.getValidatedStringInput(sc, "Enter the visibility : (on/off) ",Arrays.asList("on", "off") );
+                    filterContext.visibilityFilter = switch (filterContext.visibility) {
+                        case "on" -> project -> project.isVisibility();
+                        case "off" -> project -> !project.isVisibility();
                         default -> project -> project.isVisibility();
                     };
                 }
                 case 4 -> {
-                    Filter = null;
-                    FilterflatType = null;
-                    FiltervisibilityChoice = null;
-                    Filterneighbourhood = null;
+                    filterContext.reset();
                     System.out.println("Filter Reset.");
                 }
                 case 0 -> {
@@ -670,16 +656,25 @@ public class ManagerBoundary {
                 }
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        } while (choice != 0);
-        Filter = PredicateUtils.combineFilters(neighbourhoodFilter, flatTypeFilter,visibilityFilter);
+            filterContext.updateFilterWithVisibility();
+        } while (choice != 0 && choice != 4);
     }
 
-    public static void displayFilteredProjects(Predicate<Project> Filter) {
-        List<Project> filteredProjects = ProjectController.getFilteredProjects(Filter);
+    public void displayFilteredProjects() {
+        List<Project> filteredProjects = new ArrayList<>(
+                ProjectController.getFilteredProjects(filterContext.combinedFilter)
+        );
         if (filteredProjects.isEmpty()) {
             System.out.println("No projects match your filter criteria.");
         } else {
-            System.out.println("Filtered Projects:");
+            System.out.println("\nFilters applied: " + filterContext.neighbourhood + " | " + filterContext.flatType + " | " + filterContext.visibility);
+            System.out.println("\nEnter 'o' to sort by Opening Date,\n      'c' to sort by Closing Date\nEnter anything else to continue: ");
+            String selection = sc.nextLine().trim().toLowerCase();
+
+            switch (selection) {
+                case "c" -> filteredProjects.sort(Comparator.comparing(Project::getAppDateClose));
+                case "o" -> filteredProjects.sort(Comparator.comparing(Project::getAppDateOpen));
+            }
             for (Project project : filteredProjects) {
                 project.prettyPrintManager();
             }
@@ -700,7 +695,7 @@ public class ManagerBoundary {
                 }
             }
         } else {
-            displayFilteredProjects(Filter);
+            displayFilteredProjects();
         }
 
     }

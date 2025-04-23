@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Manager.ManagerController;
 import Utils.CsvUtils;
 
 public class Project implements IEntity {
@@ -271,6 +272,23 @@ public class Project implements IEntity {
         System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
         System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
     }
+    public void prettyPrintApplicant3room(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        if (this.getType1().equalsIgnoreCase("3-room")){
+            System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+            System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        }
+        if (this.getType2().equalsIgnoreCase("3-room")){
+            System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+            System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        }
+        System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
+    }
 
     public void prettyPrint4MarriedApplicant(){
         DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
@@ -285,6 +303,15 @@ public class Project implements IEntity {
         System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
         System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
         System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
+    }
+
+    public void prettyPrint4Officer(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: "+this.getID());
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        System.out.println("Application Open Date: "+this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: "+this.getAppDateClose().format(fmt1));
     }
 }
 

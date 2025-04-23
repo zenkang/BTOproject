@@ -124,4 +124,12 @@ public class ProjectApplication implements IEntity {
     public void setPreviousStatus(ApplicationStatus previousStatus) {
         this.previousStatus = previousStatus;
     }
+
+    public void prettyPrintApplicant() {
+        System.out.println("\n======== Project Application ========");
+        System.out.println("Application ID: " + this.getID());
+        System.out.println("Project ID: " + this.getProjectID());
+        System.out.println("Room Type Applied: "+this.getRoomType());
+        System.out.println("Status: " + this.getStatus());
+    }
 }
