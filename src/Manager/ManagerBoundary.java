@@ -250,9 +250,10 @@ public class ManagerBoundary {
             System.out.println("6. Update Application Opening Date");
             System.out.println("7. Update Application Closing Date");
             System.out.println("8. Update Visibility");
+            System.out.println("9. Delete Project");
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 8);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 9);
 
             switch (choice) {
                 case 1 -> updateProjectName(sc,projectID);
@@ -263,10 +264,11 @@ public class ManagerBoundary {
                 case 6 -> updateProjectApplicationOpen(sc,projectID);
                 case 7 -> updateProjectApplicationClose(sc,projectID);
                 case 8 -> updateProjectVisibility(sc,projectID);
+                case 9 -> deleteProject(sc,projectID);
                 case 0 -> System.out.println("Exiting........");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        } while (choice != 0);
+        } while (choice != 0 && choice != 9);
     }
 
     private void updateProjectVisibility(Scanner sc,String projectID) {
@@ -445,6 +447,15 @@ public class ManagerBoundary {
             System.out.println("Project Application Closing Date updated successfully.");
         } else {
             System.out.println("Update failed.");
+        }
+    }
+    
+    public static void deleteProject(Scanner sc, String projectID) {
+        boolean deleted = ProjectController.deleteProject(projectID);
+        if (deleted) {
+            System.out.println("Project deleted successfully.");
+        } else {
+            System.out.println("Deletion failed or Project not found.");
         }
     }
 
