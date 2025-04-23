@@ -8,7 +8,6 @@ import Applicant.ApplicantBoundary;
 import Enquiry.Enquiry;
 import Enquiry.EnquiryController;
 import Enumerations.ApplicationStatus;
-import Enumerations.MaritalStatus;
 import Manager.ManagerController;
 import Project.Project;
 import ProjectApplication.ProjectApplication;
@@ -19,13 +18,13 @@ import Reply.Reply;
 import Reply.ReplyController;
 import User.UserBoundary;
 import Utils.SafeScanner;
+import Utils.ProjectFilterContext;
 import Project.ProjectController;
 import ProjectApplication.ProjectApplicationController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -33,13 +32,8 @@ import static Utils.RepositoryGetter.getProjectApplicationsRepository;
 
 public class OfficerBoundary {
     private static Officer officer;
-    private Predicate<Project> Filter = null;
-    private Predicate<Project> neighbourhoodFilter = null;
-    private Predicate<Project> flatTypeFilter = null;
-    private Predicate<Project>visibilityFilter = null;
-    private String Filterneighbourhood = null;
-    private String FilterflatType = null;
-    private String FiltervisibilityChoice  = null;
+    private static final ProjectFilterContext filterContext = new ProjectFilterContext();
+
 
     public OfficerBoundary(Officer officer) {
         this.officer = officer;
@@ -57,10 +51,12 @@ public class OfficerBoundary {
             System.out.println("6. View Applications for my Project");
             System.out.println("7. Generate flat booking receipt");
             System.out.println("8. View Enquiry Menu");
-            System.out.println("9. Change Password");
+            System.out.println("9. Set Project Filters (applies to both viewing & registering)");
+            System.out.println("10. Change Password");
+
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 9);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 10);
             switch (choice) {
                 case 1 -> viewOfficerProfile();
                 case 2 -> applicantMenu();
@@ -70,18 +66,20 @@ public class OfficerBoundary {
                 case 6 -> viewApplicantApplications(officer);
                 case 7 -> generateBookingReceipt(officer,sc);
                 case 8 -> officerEnquiryMenu(officer);
-                case 9 -> UserBoundary.changePassword(officer.getUserProfile());
+                case 9 -> displayProjectFilterMenu();
+                case 10 -> UserBoundary.changePassword(officer.getUserProfile());
                 case 0 -> System.out.println("Exiting the Officer Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0 && choice !=9) ;
+        while (choice != 0 && choice !=10) ;
         if (choice == 0){
             sc.close();
         }
     }
 
     private void applicantMenu(){
+        ApplicantBoundary view = new ApplicantBoundary(officer, filterContext);
         Scanner sc = new Scanner(System.in);
         int choice;
         do {
@@ -93,14 +91,50 @@ public class OfficerBoundary {
             choice  = SafeScanner.getValidatedIntInput(sc, "Enter option: ", 0, 3);
 
             switch (choice) {
-                case 1 -> ApplicantBoundary.displayProjectMenu(officer);
-                case 2 -> ApplicantBoundary.applyForProject(officer);
-                case 3 -> ApplicantBoundary.viewApplication(officer);
+                case 1 -> view.displayProjectMenu();
+                case 2 -> view.applyForProject();
+                case 3 -> view.viewApplication();
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid option.");
             }
-        }while(choice !=0);
+        } while(choice != 0);
     }
+
+
+    private void displayProjectFilterMenu() {
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("\n=== Project Filter Menu ===");
+            System.out.println("1. Neighbourhood: " + filterContext.neighbourhood);
+            System.out.println("2. Flat Type: " + filterContext.flatType);
+            System.out.println("3. Reset Filters");
+            System.out.println("0. Exit");
+
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
+            switch (choice) {
+                case 1 -> {
+                    filterContext.neighbourhood = SafeScanner.getValidatedStringInput(sc, "Enter the neighbourhood: ", 100);
+                    filterContext.neighbourhoodFilter = p -> p.getNeighbourhood().equalsIgnoreCase(filterContext.neighbourhood);
+                }
+                case 2 -> {
+                    List<String> validRoomOptions = List.of("2-room", "3-room");
+                    filterContext.flatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type (2-Room/3-Room):", validRoomOptions);
+                    filterContext.flatTypeFilter = p ->
+                            (p.getType1().equalsIgnoreCase(filterContext.flatType) && p.getNoOfUnitsType1() > 0)
+                                    || (p.getType2().equalsIgnoreCase(filterContext.flatType) && p.getNoOfUnitsType2() > 0);
+                }
+                case 3 -> {
+                    filterContext.reset();
+                    System.out.println("Filters reset.");
+                }
+                case 0 -> System.out.println("Filter preferences saved.");
+                default -> System.out.println("Invalid choice.");
+            }
+            filterContext.updateFilter();
+        } while (choice != 0 && choice !=3);
+    }
+
 
     private void viewRegistrationStatus(Officer officer, Scanner sc) {
         List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getProjectRegistrationByOfficerId(officer.getID());
@@ -120,8 +154,18 @@ public class OfficerBoundary {
 
     private void registerToHandleProject(Officer officer,Scanner sc) {
 
-        List<Project> projects = ProjectController.getFilteredProjectsForRegistration(officer,Filter);
+        List<Project> projects = new ArrayList<>(
+                ProjectController.getFilteredProjectsForRegistration(officer,filterContext.combinedFilter)
+        );
         if(!projects.isEmpty()){
+            System.out.println("\nFilters applied: " + filterContext.neighbourhood + " | " + filterContext.flatType);
+            System.out.println("\nEnter 'o' to sort by Opening Date,\n      'c' to sort by Closing Date\nEnter anything else to continue: ");
+            String selection = sc.nextLine().trim().toLowerCase();
+
+            switch (selection) {
+                case "c" -> projects.sort(Comparator.comparing(Project::getAppDateClose));
+                case "o" -> projects.sort(Comparator.comparing(Project::getAppDateOpen));
+            }
             System.out.println("\n=== Projects ===");
             for (Project project : projects) {
                 project.prettyPrint4Officer();
