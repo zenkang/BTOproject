@@ -2,6 +2,7 @@ package Applicant;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import Abstract.IUserProfile;
@@ -53,6 +54,7 @@ public class ApplicantBoundary {
             System.out.println("0. Exit");
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 6);
+
             switch (choice) {
                 case 1 -> viewApplicantProfile(applicant);
                 case 2 -> displayProjectMenu();
@@ -140,6 +142,7 @@ public class ApplicantBoundary {
         }
     }
 
+
     public void applyForProject() {
         Scanner sc = new Scanner(System.in);
         if (!ProjectApplicationController.checkPreviousApplication(user.getNric())) {
@@ -171,6 +174,7 @@ public class ApplicantBoundary {
             p.prettyPrint4MarriedApplicant();
             roomType = SafeScanner.getValidatedStringInput(sc, "\nEnter a room type (2-Room or 3-Room): ", List.of("2-room", "3-room"));
         }
+
 
         if (!validateRoomAvailability(p, roomType)) return;
 
@@ -426,6 +430,7 @@ public class ApplicantBoundary {
 
         System.out.println("Enquiry deleted successfully!");
     }
+
 
     //User profile functions
     public void viewApplicantProfile(Applicant applicant) {

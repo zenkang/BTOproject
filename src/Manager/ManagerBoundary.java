@@ -618,6 +618,7 @@ public class ManagerBoundary {
         int choice;
         do {
             System.out.println("\n=== Project Filter Menu ===");
+
             System.out.println("1. Neighbourhood: "+filterContext.neighbourhood);
             System.out.println("2. Flat Type: "+filterContext.flatType);
             System.out.println("3. visibility: "+filterContext.visibility);
