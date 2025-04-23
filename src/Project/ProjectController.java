@@ -274,6 +274,9 @@ public class ProjectController {
         String officerID = registration.getOfficerId();
         Project project = getProjectRepository().getByID(registration.getProjectID());
         project.getOfficer().add(officerID);
+        int officerSlots = project.getNoOfficersSlots();
+        officerSlots-=1;
+        project.setProjectNumOfOfficers(officerSlots);
         getProjectRepository().update(project);
     }
 }

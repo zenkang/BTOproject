@@ -68,7 +68,7 @@ public class ApplicantBoundary {
         } while (choice != 0 && choice != 6);
         if (choice==0){
             sc.close();
-        }
+        };
     }
 
     public void displayProjectMenu() {
