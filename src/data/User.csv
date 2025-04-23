@@ -1,5 +1,5 @@
 NRIC,PASSWORD,ROLE
-S1234567A,password,Applicant
+S1234567A,Password@123,Applicant
 T7654321B,password,Applicant
 S9876543C,password,Applicant
 T2345678D,password,Applicant

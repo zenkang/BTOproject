@@ -9,29 +9,31 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ReportController {
 
-    public static void generateReport(String managerId,
-                                      ReportCriteria criteria,
-                                      String outputPath) throws IOException {
+    public static boolean generateReport(String managerId,
+                                         ReportCriteria criteria,
+                                         String outputPath) throws IOException {
 
         List<Project> managedProjects = ProjectController.getProjectsCreatedByManager(managerId);
 
 
         List<ReportEntry> entries = processApplications(managedProjects, criteria);
+        if(!entries.isEmpty()){
+            new ReportWriter().writeReport(entries, outputPath);
+            return true;
+        }
 
-        // 3. Generate output
-        new ReportWriter().writeReport(entries, outputPath);
+        return false;
     }
     private static List<ReportEntry> processApplications(List<Project> projects,
                                                          ReportCriteria criteria) {
         return projects.stream()
                 .flatMap(p -> ProjectApplicationController.getApplicationsByProjectID(p.getID()).stream())
-                .filter(app -> matchesCriteria(app, criteria))
+                .filter(app -> matchesCriteria(app, criteria) && app.getStatus().equals(ApplicationStatus.BOOKED))
                 .map(app -> toReportEntry(app))
                 .collect(Collectors.toList());
     }
