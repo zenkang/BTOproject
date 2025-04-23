@@ -144,6 +144,16 @@ public class ProjectController {
         return repo.getByFilter(project -> project.getManagerID().equalsIgnoreCase(managerID));
     }
 
+    public static List<Project> getFilteredProjectsByManager(String managerID,Predicate<Project> Filter ) {
+        List<Project> projects = getProjectsCreatedByManager(managerID);
+        if(Filter == null){
+            return getProjectsCreatedByManager(managerID);
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
+    }
+
 
     public static  <T extends IUserProfile> List<Project> getProjectsForApplicant(T applicant) {
         ProjectRepository repo = getProjectRepository();
