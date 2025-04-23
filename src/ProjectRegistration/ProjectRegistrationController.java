@@ -19,10 +19,11 @@ import static Utils.RepositoryGetter.getProjectRegistrationRepository;
 
 public class ProjectRegistrationController {
     public static boolean canRegisterForProject(String officer_id, String project_id) {
+        //check officer never applied to the project
         List<ProjectApplication> projectApplications = ProjectApplicationController.getApplicationsByApplicantID(officer_id);
         projectApplications = projectApplications.stream()
                 .filter(p -> p.getProjectID().equalsIgnoreCase(project_id)).toList();
-
+        //check officer isnt registered to any active projects
         Project newProject = ProjectController.getProjectByID(project_id);
         List<Project> currentProjects = ProjectController.getProjectsHandledByOfficer(officer_id);
         boolean isOverlapping = currentProjects.stream().noneMatch(p ->
