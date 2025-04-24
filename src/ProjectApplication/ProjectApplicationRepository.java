@@ -6,19 +6,38 @@ import Enumerations.ApplicationStatus;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
+/**
+ * Repository class for managing {@link ProjectApplication} entities.
+ * Handles operations such as parsing CSV rows, generating headers, and retrieving or deleting applications.
+ */
 public class ProjectApplicationRepository extends Repository<ProjectApplication> {
     private static ProjectApplicationRepository instance;
+    /**
+     * Private constructor to enforce singleton pattern.
+     *
+     * @param filePath the file path where project application data is stored
+     */
     private ProjectApplicationRepository(String filePath) {
         super(filePath);
     }
+    /**
+     * Returns the singleton instance of the repository.
+     *
+     * @param filePath the CSV file path to load or create repository from
+     * @return the singleton {@code ProjectApplicationRepository} instance
+     */
     public static ProjectApplicationRepository getInstance(String filePath) {
         if (instance == null) {
             instance = new ProjectApplicationRepository(filePath);
         }
         return instance;
     }
-
+    /**
+     * Converts a CSV row into a {@link ProjectApplication} object.
+     *
+     * @param row a line from the CSV file
+     * @return the corresponding {@code ProjectApplication} object
+     */
     @Override
     public ProjectApplication fromCSVRow(String row) {
         String[] values = row.split(",", 7);
@@ -36,35 +55,31 @@ public class ProjectApplicationRepository extends Repository<ProjectApplication>
                 book_date);
     }
 
-
+    /**
+     * Returns the CSV header for this repository.
+     *
+     * @return the header string used when saving to CSV
+     */
     @Override
     public String CSVHeader() {
         return "Application ID,Project ID,Room Type,Applicant ID,Status,Previous Status,Book Date";
     }
 
+    /**
+     * Returns all stored {@link ProjectApplication} objects.
+     *
+     * @return list of all project applications
+     */
     public ArrayList<ProjectApplication> getAllProjectApplications() {
         return this.entities;
     }
-
+    /**
+     * Displays all project applications to the console.
+     */
     public void display(){
         for (ProjectApplication projectApplication : entities){
             System.out.println(projectApplication);
         }
     }
 
-    public ProjectApplication getByApplicantID(String applicantID) {
-        for (ProjectApplication projectApplication : entities) {
-            if (projectApplication.getApplicantID().equalsIgnoreCase(applicantID)) {
-                return projectApplication;
-            }
-        }
-        return null;
-    }
-    public boolean deleteProjectApplicationByID(String appID) {
-        ProjectApplication projectApplication = this.getByID(appID);
-        if(projectApplication == null) {
-            return false;
-        }
-        return this.delete(projectApplication);
-    }
 }

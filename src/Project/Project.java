@@ -10,6 +10,11 @@ import java.util.List;
 import Manager.ManagerController;
 import Utils.CsvUtils;
 
+/**
+ * Represents a BTO housing project with various room types, unit counts, pricing,
+ * application periods, and assigned officers.
+ * Implements IEntity to support CSV serialization and repository operations.
+ */
 public class Project implements IEntity {
     private String projectID;
     private String projectName;
@@ -27,14 +32,43 @@ public class Project implements IEntity {
     private List<String> officer;
     private boolean visibility;
 
+    /**
+     * Returns the visibility status.
+     *
+     * @return {@code true} if the item is visible; {@code false} otherwise
+     */
     public boolean isVisibility() {
         return visibility;
     }
 
+    /**
+     * Sets the visibility status.
+     *
+     * @param visibility {@code true} to make the item visible; {@code false} to hide it
+     */
     public void setVisibility(boolean visibility) {
         this.visibility = visibility;
     }
 
+    /**
+     * Constructs a Project with full officer list.
+     *
+     * @param ID                 project ID
+     * @param projectName        project name
+     * @param neighbourhood      location of the project
+     * @param type1              first room type
+     * @param noOfUnitsType1     number of units for type1
+     * @param sellPriceType1     price for type1
+     * @param type2              second room type
+     * @param noOfUnitsType2     number of units for type2
+     * @param getSellPriceType2  price for type2
+     * @param appDateOpen        application start date
+     * @param appDateClose       application end date
+     * @param managerID          manager assigned
+     * @param noOfficersSlots    maximum officers allowed
+     * @param officer            list of officers assigned
+     * @param visible            project visibility status
+     */
     public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
                    LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
@@ -61,6 +95,9 @@ public class Project implements IEntity {
         }
     }
 
+    /**
+     * Constructs a Project without officer list (initially empty).
+     */
     public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
                    LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
@@ -87,47 +124,134 @@ public class Project implements IEntity {
         }
     }
 
+    /**
+     * Returns the unique ID of the project.
+     *
+     * @return the project ID
+     */
     @Override
-    public String getID() {return projectID;}
+    public String getID() {
+        return projectID;
+    }
+
+    /**
+     * Returns the name of the project.
+     *
+     * @return the project name
+     */
     public String getProjectName() {
         return projectName;
     }
+
+    /**
+     * Returns the neighbourhood where the project is located.
+     *
+     * @return the project neighbourhood
+     */
     public String getNeighbourhood() {
         return neighbourhood;
     }
+
+    /**
+     * Returns the name or identifier of the first unit type offered in the project.
+     *
+     * @return the first unit type
+     */
     public String getType1() {
         return type1;
     }
-    public int getNoOfUnitsType1(){
+
+    /**
+     * Returns the number of units available for the first unit type.
+     *
+     * @return the number of units for type 1
+     */
+    public int getNoOfUnitsType1() {
         return noOfUnitsType1;
     }
+
+    /**
+     * Returns the selling price for the first unit type.
+     *
+     * @return the selling price for type 1
+     */
     public double getSellPriceType1() {
         return sellPriceType1;
     }
+
+    /**
+     * Returns the name or identifier of the second unit type offered in the project.
+     *
+     * @return the second unit type
+     */
     public String getType2() {
         return type2;
     }
+
+    /**
+     * Returns the number of units available for the second unit type.
+     *
+     * @return the number of units for type 2
+     */
     public int getNoOfUnitsType2() {
         return noOfUnitsType2;
     }
+
+    /**
+     * Returns the selling price for the second unit type.
+     *
+     * @return the selling price for type 2
+     */
     public double getSellPriceType2() {
         return sellPriceType2;
     }
-    public LocalDate getAppDateOpen(){
+
+    /**
+     * Returns the opening date for applications to this project.
+     *
+     * @return the application opening date
+     */
+    public LocalDate getAppDateOpen() {
         return appDateOpen;
     }
-    public LocalDate getAppDateClose(){
-        return appDateClose;}
+
+    /**
+     * Returns the closing date for applications to this project.
+     *
+     * @return the application closing date
+     */
+    public LocalDate getAppDateClose() {
+        return appDateClose;
+    }
+
+    /**
+     * Returns the ID of the manager assigned to this project.
+     *
+     * @return the manager ID
+     */
     public String getManagerID() {
         return managerID;
     }
+
+    /**
+     * Returns the number of officer slots available for the project.
+     *
+     * @return the number of officer slots
+     */
     public int getNoOfficersSlots() {
         return noOfficersSlots;
     }
+
+    /**
+     * Returns the list of officer IDs assigned to this project.
+     *
+     * @return the list of officer IDs
+     */
     public List<String> getOfficer() {
         return officer;
     }
 
+    /** @return CSV-compatible row string of this project */
     @Override
     public String toCSVRow() {
         String officersString = String.join(";", this.officer);
@@ -150,6 +274,11 @@ public class Project implements IEntity {
         );
     }
 
+    /**
+     * Converts a CSV row string into a Project object.
+     * @param row comma-separated row
+     * @return constructed Project instance
+     */
     public Project fromCSVRow(String row) {
         String[] values = row.split(",");
         int noOfUnitsType1 = Integer.parseInt(values[4].trim());
@@ -169,6 +298,12 @@ public class Project implements IEntity {
     }
 
 
+    /**
+     * Returns a string representation of the project containing all its core details,
+     * including unit types, prices, application dates, manager, and officers.
+     *
+     * @return a formatted string of project information
+     */
     @Override
     public String toString() {
         return " Project ID: '" + projectID+'\''+
@@ -187,50 +322,137 @@ public class Project implements IEntity {
                 ", Officer/s: " + String.join(",", officer)
                 ;
     }
+
+    /**
+     * Sets the unique ID for the project.
+     *
+     * @param projectID the project ID to set
+     */
     public void setProjectID(String projectID){
         this.projectID = projectID;
     }
+
+    /**
+     * Sets the name of the project.
+     *
+     * @param name the project name
+     */
     public void setProjectName(String name){
         this.projectName = name;
     }
+
+    /**
+     * Sets the neighbourhood in which the project is located.
+     *
+     * @param newProjectNeighbourhood the neighbourhood name
+     */
     public void setProjectNeighbourhood(String newProjectNeighbourhood) {
         this.neighbourhood = newProjectNeighbourhood;
     }
+
+
+    /**
+     * Sets the name of the first room type in the project.
+     *
+     * @param roomType1 the first room type
+     */
     public void setProjectRoomType1(String roomType1){
         this.type1 = roomType1;
     }
+
+    /**
+     * Sets the number of units for the first room type.
+     *
+     * @param numOfType1 the unit count for type 1
+     */
     public void setProjectNumOfType1(int numOfType1){
         this.noOfUnitsType1 = numOfType1;
     }
+
+    /**
+     * Sets the selling price for the first room type.
+     *
+     * @param sellPriceType1 the price for type 1
+     */
     public void setSellPriceType1(double sellPriceType1){
         this.sellPriceType1=sellPriceType1;
     }
+
+    /**
+     * Sets the name of the second room type in the project.
+     *
+     * @param roomType2 the second room type
+     */
     public void setProjectRoomType2(String roomType2){
         this.type2= roomType2;
     }
+
+    /**
+     * Sets the number of units for the second room type.
+     *
+     * @param numOfType2 the unit count for type 2
+     */
     public void setProjectNumOfType2(int numOfType2){
         this.noOfUnitsType2 = numOfType2;
     }
+
+    /**
+     * Sets the selling price for the second room type.
+     *
+     * @param sellPriceType2 the price for type 2
+     */
     public void setSellPriceType2(double sellPriceType2){
         this.sellPriceType2=sellPriceType2;
     }
+
+    /**
+     * Sets the date when applications for the project open.
+     *
+     * @param openDate the opening date
+     */
     public void setProjectApplicationOpenData(LocalDate openDate){
         this.appDateOpen=openDate;
     }
+
+    /**
+     * Sets the date when applications for the project close.
+     *
+     * @param closeDate the closing date
+     */
     public void setProjectApplicationCloseDate(LocalDate closeDate){
         this.appDateClose = closeDate;
     }
+
+    /**
+     * Sets the manager ID for this project.
+     *
+     * @param manager the manager's ID
+     */
     public void setProjectManager(String manager){
         this.managerID = manager;
     }
+
+    /**
+     * Sets the number of officer slots for the project.
+     *
+     * @param numOfOfficers the number of officer slots
+     */
     public void setProjectNumOfOfficers(int numOfOfficers){
         this.noOfficersSlots = numOfOfficers;
     }
 
+    /**
+     * Sets the list of officer IDs assigned to this project.
+     *
+     * @param array a list of officer IDs
+     */
     public void setOfficer(List<String> array) {
         this.officer = array;
     }
 
+    /**
+     * Displays all project details for managerial review.
+     */
     public void prettyPrintManager() {
         System.out.println("\nProject ID: " + this.getID());
         System.out.println("============================");
@@ -255,6 +477,9 @@ public class Project implements IEntity {
 
     }
 
+    /**
+     * Displays project details suitable for a single applicant viewing only 2-room units.
+     */
     public void prettyPrint4SingleApplicant(){
         DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
         System.out.println("\nProject ID: " + this.getID());
@@ -272,6 +497,10 @@ public class Project implements IEntity {
         System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
         System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
     }
+
+    /**
+     * Displays project details relevant to applicants interested in 3-room units.
+     */
     public void prettyPrintApplicant3room(){
         DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
         System.out.println("\nProject ID: " + this.getID());
@@ -290,6 +519,9 @@ public class Project implements IEntity {
         System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
     }
 
+    /**
+     * Displays project details tailored for married applicants.
+     */
     public void prettyPrint4MarriedApplicant(){
         DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
         System.out.println("\nProject ID: " + this.getID());
@@ -305,6 +537,9 @@ public class Project implements IEntity {
         System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
     }
 
+    /**
+     * Displays basic project information for officers.
+     */
     public void prettyPrint4Officer(){
         DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
         System.out.println("\nProject ID: "+this.getID());
