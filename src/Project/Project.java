@@ -10,6 +10,11 @@ import java.util.List;
 import Manager.ManagerController;
 import Utils.CsvUtils;
 
+/**
+ * Represents a BTO housing project with various room types, unit counts, pricing,
+ * application periods, and assigned officers.
+ * Implements IEntity to support CSV serialization and repository operations.
+ */
 public class Project implements IEntity {
     private String projectID;
     private String projectName;
@@ -35,6 +40,25 @@ public class Project implements IEntity {
         this.visibility = visibility;
     }
 
+    /**
+     * Constructs a Project with full officer list.
+     *
+     * @param ID                 project ID
+     * @param projectName        project name
+     * @param neighbourhood      location of the project
+     * @param type1              first room type
+     * @param noOfUnitsType1     number of units for type1
+     * @param sellPriceType1     price for type1
+     * @param type2              second room type
+     * @param noOfUnitsType2     number of units for type2
+     * @param getSellPriceType2  price for type2
+     * @param appDateOpen        application start date
+     * @param appDateClose       application end date
+     * @param managerID          manager assigned
+     * @param noOfficersSlots    maximum officers allowed
+     * @param officer            list of officers assigned
+     * @param visible            project visibility status
+     */
     public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
                    LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
@@ -61,6 +85,9 @@ public class Project implements IEntity {
         }
     }
 
+    /**
+     * Constructs a Project without officer list (initially empty).
+     */
     public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
                    LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
@@ -128,6 +155,7 @@ public class Project implements IEntity {
         return officer;
     }
 
+    /** @return CSV-compatible row string of this project */
     @Override
     public String toCSVRow() {
         String officersString = String.join(";", this.officer);
@@ -150,6 +178,11 @@ public class Project implements IEntity {
         );
     }
 
+    /**
+     * Converts a CSV row string into a Project object.
+     * @param row comma-separated row
+     * @return constructed Project instance
+     */
     public Project fromCSVRow(String row) {
         String[] values = row.split(",");
         int noOfUnitsType1 = Integer.parseInt(values[4].trim());

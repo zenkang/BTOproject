@@ -8,7 +8,11 @@ import java.time.format.DateTimeFormatter;
 
 ;
 
-
+/**
+ * Represents an application submitted by an applicant for a BTO project.
+ * Includes details such as the project, applicant, room type, current and previous status, and booking date.
+ * Implements the {@code IEntity} interface to support CSV serialization and deserialization.
+ */
 public class ProjectApplication implements IEntity {
     private String appID;
     private String projectID;
@@ -20,6 +24,17 @@ public class ProjectApplication implements IEntity {
 
     private LocalDate book_date;
 
+    /**
+     * Constructs a {@code ProjectApplication} with the specified details.
+     *
+     * @param appID           the unique ID of the application
+     * @param projectID       the ID of the project applied for
+     * @param roomType        the type of room applied for
+     * @param applicantID     the NRIC or ID of the applicant
+     * @param status          the current application status
+     * @param applicationStatus the previous application status
+     * @param book_date       the booking date, if applicable
+     */
     public ProjectApplication(String appID, String projectID, String roomType, String applicantID, ApplicationStatus status, ApplicationStatus applicationStatus, LocalDate book_date) {
         this.appID=appID;
         this.projectID=projectID;
@@ -46,6 +61,11 @@ public class ProjectApplication implements IEntity {
         return status;
     }
 
+    /**
+     * Converts this application into a CSV-compatible row.
+     *
+     * @return a comma-separated string representing this object
+     */
     @Override
     public String toCSVRow() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -60,6 +80,12 @@ public class ProjectApplication implements IEntity {
                 formattedDate);
     }
 
+    /**
+     * Constructs a {@code ProjectApplication} from a single CSV row.
+     *
+     * @param row the CSV row string
+     * @return a {@code ProjectApplication} object parsed from the row
+     */
     @Override
     public ProjectApplication fromCSVRow(String row) {
         String[] values = row.split(",", 7);
@@ -78,6 +104,11 @@ public class ProjectApplication implements IEntity {
         );
     }
 
+    /**
+     * Returns a human-readable string representation of this application.
+     *
+     * @return formatted string of application details
+     */
     @Override
     public String toString() {
         return " Application ID: '" + appID+'\''+
@@ -125,6 +156,10 @@ public class ProjectApplication implements IEntity {
         this.previousStatus = previousStatus;
     }
 
+    /**
+     * Prints the application details in a user-friendly format.
+     * Intended for display to the applicant.
+     */
     public void prettyPrintApplicant() {
         System.out.println("\n======== Project Application ========");
         System.out.println("Application ID: " + this.getID());

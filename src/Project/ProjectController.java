@@ -17,10 +17,19 @@ import java.util.stream.Collectors;
 
 import static Utils.RepositoryGetter.getProjectRepository;
 
-
+/**
+ * The ProjectController class provides methods to manage BTO projects in the system.
+ * It handles CRUD operations, filtering, and project status updates related to managers, officers, and applicants.
+ */
 public class ProjectController {
 
 
+    /**
+     * Retrieves a project by its name (case-insensitive).
+     *
+     * @param projectName the name of the project
+     * @return the Project object if found, else null
+     */
     public static Project getProjectByName(String projectName) {
         ArrayList<Project> p = getProjectRepository().getAll();
         for (Project p1 : p) {
@@ -30,9 +39,24 @@ public class ProjectController {
         }
         return null;
     }
+
+    /**
+     * Retrieves a project by its unique ID.
+     *
+     * @param projectID the ID of the project
+     * @return the Project object if found, else null
+     */
     public static Project getProjectByID(String projectID) {
         return getProjectRepository().getByID(projectID);
     }
+
+    /**
+     * Updates the name of a project.
+     *
+     * @param projectID the ID of the project
+     * @param newProjectName the new name for the project
+     * @return true if update was successful, false otherwise
+     */
     public static boolean updateProjectName(String projectID, String newProjectName) {
             ProjectRepository projectRepository = getProjectRepository();
             Project project = projectRepository.getByID(projectID);
@@ -103,6 +127,11 @@ public class ProjectController {
         return getProjectRepository().delete(project);
     }
 
+    /**
+     * Creates a new project and saves it to the repository.
+     *
+     * @return true if creation was successful, false otherwise
+     */
     public static boolean createProject(String projectName,
                                         String neighbourhood,
                                         String roomType1,
@@ -123,22 +152,46 @@ public class ProjectController {
         return repository.create(newProject);
     }
 
-
+    /**
+     * Checks whether a project name is unique (not already used).
+     *
+     * @param projectName the project name to check
+     * @return true if name is unique, false otherwise
+     */
     public static boolean checkUniqueProjectName(String projectName) {
         List<Project> p = getProjectRepository().getByFilter(project -> project.getProjectName().equalsIgnoreCase(projectName));
         return p.isEmpty();
     }
 
+    /**
+     * Checks whether the manager currently has any active projects.
+     *
+     * @param managerID the manager's ID
+     * @return true if no active project exists (i.e., can create new one), false otherwise
+     */
     public static boolean checkActiveProject(String managerID) {
         List<Project> p = getProjectRepository().getByFilter(project -> (project.getManagerID().equalsIgnoreCase(managerID))&&project.isVisibility());
         return p.isEmpty();
     }
 
+    /**
+     * Updates the visibility of the specified project.
+     *
+     * @param project the project to update
+     * @param b the new visibility status
+     * @return true if update was successful, false otherwise
+     */
     public static boolean updateProjectVisibility(Project project, boolean b) {
         project.setVisibility(b);
         return getProjectRepository().update(project);
     }
 
+    /**
+     * Retrieves all projects created by a specific manager.
+     *
+     * @param managerID the manager's ID
+     * @return list of projects created by the manager
+     */
     public static List<Project> getProjectsCreatedByManager(String managerID) {
         ProjectRepository repo = getProjectRepository();
         return repo.getByFilter(project -> project.getManagerID().equalsIgnoreCase(managerID));
@@ -154,7 +207,13 @@ public class ProjectController {
         }
     }
 
-
+    /**
+     * Gets a list of projects eligible for viewing or application by the applicant,
+     * based on age, marital status, and previous application/registration.
+     *
+     * @param applicant the applicant (implements IUserProfile)
+     * @return list of eligible projects
+     */
     public static  <T extends IUserProfile> List<Project> getProjectsForApplicant(T applicant) {
         ProjectRepository repo = getProjectRepository();
         List<Project> list;
@@ -190,7 +249,12 @@ public class ProjectController {
                 .toList();
     }
 
-
+    /**
+     * Gets project IDs based on eligibility rules for the given applicant.
+     *
+     * @param applicant the applicant
+     * @return list of project IDs
+     */
     public static  <T extends IUserProfile> List<String> getProjectIDsForApplicant(T applicant) {
         List<Project> projects = getProjectsForApplicant(applicant);
         assert projects != null;
@@ -200,6 +264,13 @@ public class ProjectController {
                 .toList();
     }
 
+    /**
+     * Filters a list of applicant-eligible projects based on custom predicate.
+     *
+     * @param Applicant the applicant
+     * @param Filter predicate to apply for filtering
+     * @return filtered project list
+     */
     public static <T extends IUserProfile> List<Project> getFilteredProjectsForApplicant(T Applicant,Predicate<Project> Filter) {
         List<Project> projects = getProjectsForApplicant(Applicant);
         if(Filter == null){
@@ -210,6 +281,13 @@ public class ProjectController {
         }
     }
 
+    /**
+     * Gets filtered list of projects that an officer can register for.
+     *
+     * @param officer the officer
+     * @param Filter optional predicate filter
+     * @return filtered project list
+     */
     public static List<Project> getFilteredProjectsForRegistration(Officer officer,Predicate<Project> Filter) {
         List<Project> projects = ProjectController.getFilteredProjects(project -> project.isVisibility());
 
@@ -230,6 +308,12 @@ public class ProjectController {
         }
     }
 
+    /**
+     * Returns all projects matching a specified predicate.
+     *
+     * @param Filter predicate to apply
+     * @return list of matching projects
+     */
     public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
         ProjectRepository repo = getProjectRepository();
         List<Project> filteredProjects;
@@ -279,6 +363,11 @@ public class ProjectController {
                 .toList();
     }
 
+    /**
+     * Updates the assigned officer list when a registration is approved.
+     *
+     * @param registerID the ID of the registration
+     */
     public static void updateOfficer(String registerID) {
         ProjectRegistration registration = ProjectRegistrationController.getProjectRegistrationByID(registerID);
         String officerID = registration.getOfficerId();
