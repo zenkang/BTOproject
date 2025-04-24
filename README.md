@@ -1,14 +1,15 @@
 
+
+
+![](img/BTO.png)
+
 <br/>
 <div align="center">
-<a href="https://github.com/ShaanCoding/ReadME-Generator">
-<img src="https://www.cmgassets.com/s3fs-public/styles/opengraph/public/2023-05/screen-shot-2023-05-09-at-9.54.24-am.png?h=b5c7f43f&itok=CS-ivDjJ" alt="Logo" width="80" height="80">
-</a>
+
 <h3 align="center">BTO Management System</h3>
 <p align="center">
 
-<br/>
-<br/>
+
 <a href="https://zenkang.github.io/BTOproject/"><strong>Explore the docs »</strong></a>
 
   
@@ -16,8 +17,6 @@
 
 </p>
 </div>
-
-![](img/BTO.png)
 ## About The Project
 
 NTU AY2024/25 Semester 2 SC2002 Group Project - BTO Management System (BTOMS).
@@ -35,7 +34,7 @@ Controllers manage interaction logic, Repositories persist data to CSV, and Boun
 
 Use of enumerations for ApplicationStatus, RegistrationStatus, Role etc, to enforce valid values
 
-SHA-3 Password Encryption**: User passwords are encrypted using the SHA-256 algorithm for enhanced
+**SHA-3 Password Encryption**: User passwords are encrypted using the SHA-256 algorithm for enhanced
 security.
 ## Features
 
