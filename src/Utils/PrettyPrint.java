@@ -256,7 +256,7 @@ public class PrettyPrint {
         String bar2 = buildBar(c2, max);
         System.out.println(" " + p.getType2() + ": " + bar2 + suffix2 + "\n");
     }
-    
+
     /**
      * Prints the full profile of a user implementing IUserProfile.
      * Includes name, NRIC, age, and marital status.
