@@ -164,7 +164,7 @@ public class ApplicantBoundary {
         }
 
         System.out.println("\n=== Project Application ===");
-        List<String> ValidprojIDs = ProjectController.getProjectIDsForApplicant(user);
+        List<String> ValidprojIDs = getProjectIDsForApplicant(validProjects);
         System.out.println("ID: " + ValidprojIDs);
         String projectID = SafeScanner.getValidatedStringInput(sc, "Enter Project ID you want to apply for: ", ValidprojIDs);
         Project p = ProjectController.getProjectByID(projectID);
@@ -186,6 +186,14 @@ public class ApplicantBoundary {
         } else {
             System.out.println("Application created successfully!");
         }
+    }
+
+    private List<String> getProjectIDsForApplicant(List<Project> projects) {
+        assert projects != null;
+        return projects.stream()
+                .map(Project::getID)
+                .distinct()
+                .toList();
     }
 
     private boolean validateRoomAvailability(Project p, String roomType) {

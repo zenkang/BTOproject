@@ -93,11 +93,6 @@ public class ProjectController {
         project.setProjectApplicationCloseDate(newAppCloseDate);
         return projectRepository.update(project);
     }
-    public static boolean updateProjectManager(String projectID, String newProjectManager) {
-        Project project = getProjectRepository().getByID(projectID);
-        project.setProjectManager(newProjectManager);
-        return getProjectRepository().update(project);
-    }
     public static boolean deleteProject(String projectID) {
         Project project = getProjectRepository().getByID(projectID);
         return getProjectRepository().delete(project);
@@ -190,15 +185,6 @@ public class ProjectController {
                 .toList();
     }
 
-
-    public static  <T extends IUserProfile> List<String> getProjectIDsForApplicant(T applicant) {
-        List<Project> projects = getProjectsForApplicant(applicant);
-        assert projects != null;
-        return projects.stream()
-                .map(Project::getID)
-                .distinct()
-                .toList();
-    }
 
     public static <T extends IUserProfile> List<Project> getFilteredProjectsForApplicant(T Applicant,Predicate<Project> Filter) {
         List<Project> projects = getProjectsForApplicant(Applicant);
