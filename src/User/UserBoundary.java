@@ -32,8 +32,13 @@ public class UserBoundary {
      */
     public static void changePassword(User user){
         Scanner sc = new Scanner(System.in);
-        System.out.println("Old password: "+user.getPassword());
         String NewPassword = SafeScanner.getStrongPassword(sc,"Enter new Password:\n");
+        String confirmPassword = SafeScanner.getValidatedStringInput(sc,"Confirm password: ",50);
+        while(!confirmPassword.equals(NewPassword)){
+            System.out.println("Passwords do not match. Please try again.");
+            NewPassword = SafeScanner.getStrongPassword(sc,"Enter new Password:\n");
+            confirmPassword = SafeScanner.getValidatedStringInput(sc,"Confirm password: ",50);
+        }
         if(UserController.changePassword(user,NewPassword)){
             System.out.println("Password changed!");
             System.out.println("Password changed Successfully!\nPlease proceed to login again.");

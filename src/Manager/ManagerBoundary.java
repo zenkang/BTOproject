@@ -28,7 +28,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 import Report.ReportController;
 import ProjectRegistration.ProjectRegistrationController;
 
@@ -115,7 +114,6 @@ public class ManagerBoundary {
             else{
                 System.out.println("No reports found");
             }
-
         } catch (IOException e) {
             System.err.println("Failed to generate report: " + e.getMessage());
         }

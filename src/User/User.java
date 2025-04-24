@@ -3,6 +3,7 @@ package User;
 import Abstract.IEntity;
 import Enumerations.Role;
 import Utils.CsvUtils;
+import Utils.PasswordHasher;
 
 /**
  * Represents a user in the system with authentication credentials and a specific role.
@@ -12,7 +13,7 @@ import Utils.CsvUtils;
 public class User implements IEntity {
     private String nric;
     private String password;
-    private Role role;
+    private final Role role;
 
     /**
      * Constructs a new User with the specified NRIC, password, and role.

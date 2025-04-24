@@ -8,6 +8,7 @@ import Utils.SessionManager;
 import static Utils.BoundaryStrings.BYE_LOGO;
 
 
+
 public class Main {
 
     public static void main(String[] args) {
@@ -22,6 +23,7 @@ public class Main {
             UserBoundary.route(user);
         }while (SessionManager.passwordChanged);
         System.out.println(BYE_LOGO);
+
 
     }
 }
