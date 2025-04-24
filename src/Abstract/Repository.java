@@ -10,21 +10,51 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.ArrayList;
 
+/**
+ * Generic abstract repository class to manage storage, retrieval, and persistence
+ * of entities that implement the IEntity interface. This class supports
+ * operations such as loading from CSV, saving to CSV, filtering, and ID-based access.
+ *
+ * @param <T> the type of entity managed by this repository, must implement IEntity
+ */
 public abstract class Repository <T extends IEntity>{
     protected ArrayList<T> entities;
     private String filePath;
 //    private HashMap<String, CacheEntry> LRUCache;
 
+    /**
+     * Constructs the repository and loads existing entities from a CSV file.
+     *
+     * @param filePath the path to the CSV file
+     */
     public Repository(String filePath){
         this.filePath = filePath;
         boolean result = this.load();
 //        this.LRUCache = new HashMap<>();
     }
 
+    /**
+     * Converts a CSV row string into an entity instance.
+     * Must be implemented by subclasses.
+     *
+     * @param row the CSV-formatted row
+     * @return the parsed entity instance
+     */
     public abstract T fromCSVRow(String row);
 
+    /**
+     * Returns the header line for the CSV file.
+     *
+     * @return the CSV header string
+     */
     public abstract String CSVHeader();
 
+    /**
+     * Loads entities from the CSV file into the in-memory list.
+     * Skips malformed or empty lines.
+     *
+     * @return true if loading succeeds, false otherwise
+     */
     private boolean load(){
         entities = new ArrayList<T>();
         try (BufferedReader br = new BufferedReader(new FileReader(this.filePath))) {
@@ -58,6 +88,11 @@ public abstract class Repository <T extends IEntity>{
         }
     }
 
+    /**
+     * Persists all current entities to the CSV file.
+     *
+     * @return true if storing succeeds, false otherwise
+     */
     public boolean store(){
         // open file stream
         // write the headers
@@ -79,6 +114,12 @@ public abstract class Repository <T extends IEntity>{
         }
     }
 
+    /**
+     * Retrieves an entity by its unique ID.
+     *
+     * @param id the ID of the entity to retrieve
+     * @return the entity if found, null otherwise
+     */
     public T getByID(String id){
         // check if entry is in our LRU cache
 //        if (this.LRUCache.containsKey(id)) {
@@ -104,12 +145,22 @@ public abstract class Repository <T extends IEntity>{
         return null;
     }
 
+    /**
+     * Displays all entities using their toString representation.
+     */
     public void display(){
         for (T t : entities) {
             System.out.println(t.toString());
         }
     }
 
+    /**
+     * Creates a new entity in the repository.
+     * Fails if the entity is null or already exists.
+     *
+     * @param object the entity to create
+     * @return true if creation succeeds, false otherwise
+     */
     public boolean create(T object){
         // check null obj
         if (object==null)
@@ -124,6 +175,12 @@ public abstract class Repository <T extends IEntity>{
         return true;
     }
 
+    /**
+     * Deletes the specified entity from the repository.
+     *
+     * @param object the entity to delete
+     * @return true if deletion succeeds, false otherwise
+     */
     public boolean delete(T object){
         if (object==null)
             return false;
@@ -153,6 +210,12 @@ public abstract class Repository <T extends IEntity>{
         return idx;
     }
 
+    /**
+     * Updates an existing entity in the repository.
+     *
+     * @param object the entity to update
+     * @return true if update succeeds, false otherwise
+     */
     public boolean update(T object){
         if (object==null)
             return false;
@@ -163,13 +226,13 @@ public abstract class Repository <T extends IEntity>{
         this.store();
         return true;
     }
+
     /**
      * Retrieves all entities matching a specific filter.
      *
      * @param predicate The predicate to filter entities.
      * @return A list of entities matching the filter.
      */
-
     public List<T> getByFilter(Predicate<T> predicate) {
         return this.entities.stream().filter(predicate).toList();
     }
@@ -192,9 +255,10 @@ public abstract class Repository <T extends IEntity>{
     }
 
     /**
-     * Retrieves the last ID from the list of entities.
+     * Generates a new ID based on the most recent one and the specified prefix.
      *
-     * @return The last ID as a string.
+     * @param defaultprefix the prefix for the ID (e.g., "EN" for Enquiry)
+     * @return the newly generated ID
      */
     public String generateId(String defaultprefix) {
         String lastId = this.getLastId();
@@ -213,10 +277,20 @@ public abstract class Repository <T extends IEntity>{
         return String.format("%s%03d", prefix, number);
     }
 
+    /**
+     * Checks if the repository has no entities.
+     *
+     * @return true if empty, false otherwise
+     */
     public boolean isEmpty() {
         return entities.isEmpty();
     }
 
+    /**
+     * Retrieves all entities currently stored in memory.
+     *
+     * @return an ArrayList of all entities
+     */
     public ArrayList<T> getAll() {
         return this.entities;
     }

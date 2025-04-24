@@ -21,20 +21,38 @@ import Utils.ProjectFilterContext;
 import Utils.SafeScanner;
 import User.UserBoundary;
 
+/**
+ * The ApplicantBoundary class provides the main interface for applicant interactions.
+ * It handles actions such as viewing and updating profiles, viewing and applying to projects,
+ * managing project filters, handling enquiries, and processing applications.
+ */
 public class ApplicantBoundary {
     private final IUserProfile user;
     private final ProjectFilterContext filterContext;
 
+    /**
+     * Constructs the boundary with a given user profile and filter context.
+     * @param user the user implementing IUserProfile
+     * @param filterContext the context containing project filters
+     */
     public ApplicantBoundary(IUserProfile user, ProjectFilterContext filterContext) {
         this.user = user;
         this.filterContext = filterContext;
     }
 
+    /**
+     * Constructs the boundary with an Applicant instance and initializes a default filter context.
+     * @param applicant the applicant user
+     */
     public ApplicantBoundary(Applicant applicant) {
         this.user = applicant;
         this.filterContext = new ProjectFilterContext();
     }
 
+    /**
+     * Displays the main applicant menu and routes user inputs to corresponding actions.
+     * Ensures only Applicant instances can access this menu.
+     */
     public void displayMenu() {
         if (!(user instanceof Applicant applicant)) {
             System.out.println("This menu is only available for applicants.");
@@ -71,6 +89,9 @@ public class ApplicantBoundary {
         };
     }
 
+    /**
+     * Displays all available projects the applicant can apply to, with optional sorting and enquiry options.
+     */
     public void displayProjectMenu() {
         Scanner sc = new Scanner(System.in);
         int choice;
@@ -92,6 +113,9 @@ public class ApplicantBoundary {
         } while (choice != 0);
     }
 
+    /**
+     * Displays projects that the applicant has already applied to.
+     */
     private void displayAvailProjectsForApplicant() {
         List<Project> filteredProjects = new ArrayList<>(
                 ProjectController.getFilteredProjectsForApplicant(user, filterContext.combinedFilter)
@@ -127,6 +151,9 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Displays projects that the applicant has already applied to.
+     */
     private void displayAppliedProjects() {
         List<ProjectApplication> applications =
                 ProjectApplicationController.getApplicationsByApplicantID(user.getNric());
@@ -145,7 +172,9 @@ public class ApplicantBoundary {
         }
     }
 
-
+    /**
+     * Allows the applicant to apply for a project if eligible.
+     */
     public void applyForProject() {
         Scanner sc = new Scanner(System.in);
         if (!ProjectApplicationController.checkPreviousApplication(user.getNric())) {
@@ -188,6 +217,12 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Validates room availability for the specified project and room type.
+     * @param p the project to validate
+     * @param roomType the room type requested
+     * @return true if available, false otherwise
+     */
     private boolean validateRoomAvailability(Project p, String roomType) {
         if (roomType.equalsIgnoreCase("2-room") &&
                 ((p.getType1().equalsIgnoreCase("2-room") && p.getNoOfUnitsType1() < 1)
@@ -204,6 +239,9 @@ public class ApplicantBoundary {
         return true;
     }
 
+    /**
+     * Displays the applicant's current and unsuccessful applications, with the option to withdraw.
+     */
     public void viewApplication() {
         List<ProjectApplication> failApp = ProjectApplicationController.getUnsuccessApplicationByApplicantID(user.getNric());
         ProjectApplication currentApp = ProjectApplicationController.getCurrentApplicationByApplicantID(user.getNric());
@@ -239,6 +277,9 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Withdraws the applicant's current application upon confirmation.
+     */
     private void withdrawApplication() {
         ProjectApplication application = ProjectApplicationController.getCurrentApplicationByApplicantID(user.getNric());
         if (application == null) {
@@ -252,6 +293,9 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Displays the menu for setting and resetting project view filters (neighbourhood and flat type).
+     */
     private void displayProjectFilterMenu() {
         Scanner sc = new Scanner(System.in);
         int choice;
@@ -283,6 +327,11 @@ public class ApplicantBoundary {
         } while (choice != 0 && choice != 3);
     }
 
+    /**
+     * Prints a project in the appropriate format based on the applicant's marital status and filters.
+     * @param user the applicant viewing the project
+     * @param proj the project to be printed
+     */
     private void printProjectForApplicant(IUserProfile user, Project proj) {
         if (user.getMaritalStatus() == MaritalStatus.SINGLE) {
             proj.prettyPrint4SingleApplicant();
@@ -295,6 +344,10 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Displays the enquiry menu specific to applicants and routes actions to respective methods.
+     * @param applicant the applicant performing enquiry operations
+     */
     // Add back any applicant-only functions here like viewApplicantProfile, enquiry menus, etc...
     public static void applicantEnquiryMenu(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
@@ -322,6 +375,10 @@ public class ApplicantBoundary {
         }while(choice !=0);
     }
 
+    /**
+     * Allows an applicant to submit a new enquiry regarding a project.
+     * @param nric the applicant's NRIC
+     */
     public static void submitEnquiry(String nric) {
         Scanner sc = new Scanner(System.in);
         String projectName = SafeScanner.getValidProjectName(sc);
@@ -332,6 +389,12 @@ public class ApplicantBoundary {
 
         System.out.println("Enquiry submitted!");
     }
+
+    /**
+     * Displays replies to an applicant's enquiries, allowing selection by enquiry ID.
+     * @param applicant the applicant whose replies are viewed
+     * @param sc the scanner for input
+     */
     private static void viewRepliedEnquiry(Applicant applicant, Scanner sc) {
         System.out.println("\n--- View Replied Enquiry ---");
 
@@ -369,7 +432,10 @@ public class ApplicantBoundary {
         }
     }
 
-
+    /**
+     * Displays all enquiries submitted by the applicant.
+     * @param nric the applicant's NRIC
+     */
     public static void viewEnquiries(String nric) {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
@@ -381,6 +447,10 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Allows an applicant to edit an enquiry if it has not been replied to.
+     * @param nric the applicant's NRIC
+     */
     public static void editEnquiry(String nric) {
         Scanner sc = new Scanner(System.in);
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
@@ -409,6 +479,10 @@ public class ApplicantBoundary {
         System.out.println("Enquiry updated successfully!");
     }
 
+    /**
+     * Allows an applicant to delete an enquiry if it has not been replied to.
+     * @param nric the applicant's NRIC
+     */
     public static void deleteEnquiry(String nric) {
         Scanner sc = new Scanner(System.in);
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
@@ -436,6 +510,10 @@ public class ApplicantBoundary {
 
 
     //User profile functions
+    /**
+     * Displays the applicant's profile and provides an option to update details.
+     * @param applicant the applicant whose profile is being viewed
+     */
     public void viewApplicantProfile(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
         String selection;
@@ -451,6 +529,10 @@ public class ApplicantBoundary {
 
     }
 
+    /**
+     * Prompts the applicant to update their profile details (name, age, marital status).
+     * @param applicant the applicant to update
+     */
     public void updateApplicantProfile(Applicant applicant) {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -470,7 +552,10 @@ public class ApplicantBoundary {
 
     }
 
-
+    /**
+     * Updates the age of the applicant.
+     * @param applicant the applicant to update
+     */
     private void updateAge(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
         int age;
@@ -483,6 +568,10 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Updates the name of the applicant.
+     * @param applicant the applicant to update
+     */
     private void updateName(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
         String newName = SafeScanner.getValidatedStringInput(sc,"Enter your new Name: ",50);
@@ -494,6 +583,10 @@ public class ApplicantBoundary {
         }
     }
 
+    /**
+     * Updates the marital status of the applicant.
+     * @param applicant the applicant to update
+     */
     private void updateMaritalStatus(Applicant applicant) {
         Scanner sc = new Scanner(System.in);
         List<String> validOptions = Arrays.asList("m", "s");
