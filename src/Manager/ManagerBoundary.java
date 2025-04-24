@@ -34,17 +34,31 @@ import ProjectRegistration.ProjectRegistrationController;
 
 import static Utils.RepositoryGetter.*;
 
-
+/**
+ * The ManagerBoundary class handles the
+ * manager's user interface interactions including profile updates, project management,
+ * application approvals, enquiry responses, and report generation.
+ * This boundary acts as the main menu driver and interaction point for a manager user.
+ */
 public class ManagerBoundary {
     private Manager manager;
     private final ProjectFilterContext filterContext = new ProjectFilterContext();
     static Scanner sc = new Scanner(System.in);
 
+    /**
+     * Constructs a ManagerBoundary for a given Manager.
+     *
+     * @param manager the manager object
+     */
     public ManagerBoundary(Manager manager) {
         this.manager = manager;
 
     }
 
+    /**
+     * Displays the main menu options for the Manager.
+     * Provides routing to submenus such as profile, project, applications, enquiries, and reports.
+     */
     public void displayManagerMenu() {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -78,6 +92,11 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Displays options for generating reports based on various criteria.
+     *
+     * @param id the manager's ID
+     */
     private void displayReportMenu(String id) {
         ReportCriteria criteria = new ReportCriteria();
         criteria.setMaritalStatus(promptMaritalStatus());
@@ -102,6 +121,9 @@ public class ManagerBoundary {
         }
     }
 
+    // ===== Filter Prompt Utilities =====
+
+    /** @return the selected MaritalStatus from user input */
     private MaritalStatus promptMaritalStatus() {
         List<String> validOptions = Arrays.asList("S", "M", "");
         System.out.println("\n--- Marital Status Filter ---");
@@ -114,6 +136,8 @@ public class ManagerBoundary {
 
         return input.equalsIgnoreCase("S") ? MaritalStatus.SINGLE : MaritalStatus.MARRIED;
     }
+
+    /** @return the selected flat type (e.g., 2-Room or 3-Room) */
     private String promptFlatType() {
         List<String> validTypes = Arrays.asList("2", "3", "");
         System.out.println("\n--- Flat Type Filter ---");
@@ -127,17 +151,20 @@ public class ManagerBoundary {
         return input.equals("2") ? "2-Room" : "3-Room";
     }
 
+    /** @return the minimum age for filtering applicants */
     private Integer promptMinAge() {
         System.out.println("\n--- Age Range Filter ---");
         System.out.print("Enter minimum age (blank for none): ");
         return SafeScanner.getValidatedIntInput(sc, "", 0, 150, true);
     }
 
+    /** @return the maximum age for filtering applicants */
     private Integer promptMaxAge() {
         System.out.print("Enter maximum age (blank for none): ");
         return SafeScanner.getValidatedIntInput(sc, "", 0, 150, true);
     }
 
+    /** @return the neighborhood string for project filtering */
     private String promptNeighborhood() {
         System.out.println("\n--- Neighborhood Filter ---");
         System.out.print("Enter neighborhood name (blank for all): ");
@@ -145,7 +172,7 @@ public class ManagerBoundary {
         return input.isEmpty() ? null : input;
     }
 
-
+    /** Displays options for viewing, creating, and editing projects */
     public void displayProjectMenu() {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -170,6 +197,12 @@ public class ManagerBoundary {
         } while (choice != 0);
     }
 
+    /**
+     * Prompts user for project creation details and delegates to controller.
+     *
+     * @param managerID the manager's ID
+     * @param sc        the scanner to capture user input
+     */
     public void createNewProject(String managerID, Scanner sc) {
         int noOfUnitsType2, noOfUnitsType1;
         double sellPriceType2, sellPriceType1;
@@ -232,6 +265,11 @@ public class ManagerBoundary {
 
     }
 
+    /**
+     * Displays a submenu for updating project details by project ID.
+     *
+     * @param sc the Scanner instance for input
+     */
     public void projectChangesMenu(Scanner sc) {
         String projectID = SafeScanner.getValidatedStringInput(sc,"Please enter the Project ID: ",6);
         while (ProjectController.getProjectByID(projectID) == null) {
@@ -271,6 +309,12 @@ public class ManagerBoundary {
         } while (choice != 0 && choice != 9);
     }
 
+    /**
+     * Toggles visibility of a project based on user input.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     private void updateProjectVisibility(Scanner sc,String projectID) {
         String choice;
         Project project = ProjectController.getProjectByID(projectID);
@@ -308,6 +352,12 @@ public class ManagerBoundary {
         System.out.println("update visibility failed");
     }
 
+    /**
+     * Updates the name of a project identified by ID.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     public void updateProjectName(Scanner sc, String projectID) {
         String newProjectName = SafeScanner.getValidatedStringInput(sc,"Please enter the new Project Name:",100);
         while (!ProjectController.checkUniqueProjectName(newProjectName)) {
@@ -321,6 +371,12 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Updates the neighbourhood of a project.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     public void updateProjectNeighbourhood(Scanner sc, String projectID) {
         String newNeighbourhood = SafeScanner.getValidatedStringInput(sc,"Please enter a new Neighbourhood:",100);
         if (ProjectController.updateProjectNeighbourhood(projectID, newNeighbourhood)) {
@@ -330,6 +386,12 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Allows the manager to change one of the project's room types.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     public void updateProjectRoomType(Scanner sc, String projectID) {
         String roomType;
         int choice;
@@ -363,6 +425,12 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Updates the number of units available for one of the room types in the project.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     public void updateProjectNumOfUnit(Scanner sc,String projectID) {
         int numOfUnits;
         int choice;
@@ -395,6 +463,12 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Updates the selling price for a given room type in the project.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     public void updateSellingPrice(Scanner sc, String projectID) {
         double sellPrice;
         int choice;
@@ -428,6 +502,12 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Updates the application opening date of a project.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     public void updateProjectApplicationOpen(Scanner sc, String projectID) {
         Project project = ProjectController.getProjectByID(projectID);
         System.out.println("The Current Opening Date is :" + project.getAppDateOpen());
@@ -439,6 +519,12 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Updates the application closing date of a project.
+     *
+     * @param sc        the scanner for input
+     * @param projectID the ID of the project
+     */
     public void updateProjectApplicationClose(Scanner sc, String projectID) {
         Project project = ProjectController.getProjectByID(projectID);
         System.out.println("The Current Closing Date is :" + project.getAppDateClose());
@@ -449,7 +535,13 @@ public class ManagerBoundary {
             System.out.println("Update failed.");
         }
     }
-    
+
+    /**
+     * Deletes a project identified by its ID.
+     *
+     * @param sc        the scanner for user confirmation
+     * @param projectID the ID of the project to be deleted
+     */
     public static void deleteProject(Scanner sc, String projectID) {
         boolean deleted = ProjectController.deleteProject(projectID);
         if (deleted) {
@@ -459,6 +551,7 @@ public class ManagerBoundary {
         }
     }
 
+    /** Displays and allows updates to manager profile */
     public void viewProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
@@ -474,6 +567,7 @@ public class ManagerBoundary {
 
     }
 
+    /** Shows update options and handles profile updates */
     public void updateProfile() {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -525,7 +619,7 @@ public class ManagerBoundary {
         }
     }
 
-
+    /** Views and manages project applications */
     //project applications ***TO BE COMPLETED!!!
     private void viewApplicantApplications() {
         int choice;
@@ -575,6 +669,11 @@ public class ManagerBoundary {
         } while (choice != 0);
     }
 
+    /**
+     * Displays all withdrawn applications and allows rejection by manager.
+     *
+     * @param manager the manager reviewing the withdrawals
+     */
     private static void viewWithdrawnApplication(Manager manager) {
         List<ProjectApplication> projectApplicationList = ProjectApplicationController.getApplicationsByStatus(manager, ApplicationStatus.UNSUCCESSFUL);
         if (projectApplicationList.isEmpty()) {
@@ -596,6 +695,11 @@ public class ManagerBoundary {
 
     }
 
+    /**
+     * Updates the status of an application (e.g., approved or rejected).
+     *
+     * @param applicationID the ID of the application to update
+     */
     private static void updateApplicationStatus(String applicationID) {
         Scanner sc = new Scanner(System.in);
         ProjectApplication application = getProjectApplicationsRepository().getByID(applicationID);
@@ -626,6 +730,7 @@ public class ManagerBoundary {
         }
     }
 
+    /** Shows filtering options for projects */
     public void displayProjectFilterMenu() {
         int choice;
         do {
@@ -672,6 +777,7 @@ public class ManagerBoundary {
         } while (choice != 0 && choice != 4);
     }
 
+    /** Displays projects matching active filters */
     public void displayFilteredProjects() {
         List<Project> filteredProjects = new ArrayList<>(
                 ProjectController.getFilteredProjects(filterContext.combinedFilter)
@@ -693,6 +799,11 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Prompts the user to choose between viewing their own projects or all filtered projects.
+     *
+     * @param managerID the manager's ID
+     */
     public void promptProjectViewChoice(String managerID) {
         String selection = SafeScanner.getValidatedStringInput(sc, "View your projects? (y : yes || n : no) ", Arrays.asList("y", "n"));
         if (selection.equals("y")) {
@@ -722,7 +833,12 @@ public class ManagerBoundary {
 
     }
 
-
+    /**
+     * Displays the menu for viewing and replying to enquiries related to the manager's projects.
+     *
+     * @param sc      the scanner to capture user input
+     * @param manager the manager object
+     */
     public static void managerEnquiryMenu(Scanner sc, Manager manager) {
         int choice;
         do {
@@ -757,6 +873,11 @@ public class ManagerBoundary {
         }
     }
 
+    /**
+     * Allows manager to view and reply to enquiries specific to their projects.
+     *
+     * @param manager the manager replying to project-specific enquiries
+     */
     private static void replyToOwnProjectEnquiries(Manager manager) {
 
         List<Enquiry> replyable = EnquiryController.getUnrepliedEnquiriesByProjects(manager.getID());
@@ -800,6 +921,7 @@ public class ManagerBoundary {
         System.out.println("Reply submitted and enquiry status updated.");
     }
 
+    /** Displays the officer registration handling menu */
     private void viewProjectRegistrationMenu() {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -819,6 +941,11 @@ public class ManagerBoundary {
 
     }
 
+    /**
+     * Handles approving or rejecting officer registration for projects.
+     *
+     * @param id the manager ID handling the registrations
+     */
     private static void ApproveOrRejectProjectRegistration(String id) {
         System.out.println("\n--- Approve or Reject Project Registration ---");
         List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getHandledProjectRegistration(id);
@@ -863,6 +990,11 @@ public class ManagerBoundary {
 
     }
 
+    /**
+     * Displays all officer registrations handled by this manager.
+     *
+     * @param id the manager ID used to fetch handled registrations
+     */
     private static void displayAllHandledProjectRegistration(String id) {
         List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getHandledProjectRegistration(id);
         if (projectRegistrations.isEmpty()) {

@@ -15,8 +15,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 
-
+/**
+ * The ReceiptController class is responsible for generating booking receipts
+ * for successfully booked HDB applications.
+ * It gathers data from project and applicant entities and creates a formatted text file.
+ */
 public class ReceiptController {
+
+    /**
+     * Generates a receipt file for a successful HDB flat booking.
+     * It retrieves relevant information from the applicant, application, and project data,
+     * formats the receipt, and writes it to a `.txt` file in the "receipts" directory.
+     *
+     * @param name        the name of the officer handling the booking
+     * @param application the application object representing the booking
+     */
     public static void generateReceipt(String name, ProjectApplication application) {
         Project project = ProjectController.getProjectByID(application.getProjectID());
         Applicant applicant = ApplicantController.getApplicantById(application.getApplicantID());
