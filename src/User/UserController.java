@@ -13,8 +13,19 @@ import Officer.OfficerBoundary;
 import Officer.OfficerController;
 import static Utils.RepositoryGetter.*;
 
+/**
+ * The UserController class handles logic related to routing users to role-specific
+ * menu interfaces and updating user credentials such as passwords.
+ */
 public class UserController {
 
+    /**
+     * Routes the authenticated user to their corresponding role-specific boundary interface.
+     * Depending on the role (APPLICANT, OFFICER, MANAGER), it initializes the corresponding
+     * controller and boundary class to display the user's menu.
+     *
+     * @param user the authenticated User object
+     */
     public static void route(User user) {
         switch(user.getRole()){
             case APPLICANT ->{
@@ -60,6 +71,15 @@ public class UserController {
 
         }
     }
+
+    /**
+     * Changes the user's password and updates it in the repository.
+     * Also flags that the password was changed during this session.
+     *
+     * @param user the user whose password is to be changed
+     * @param newPassword the new password to assign
+     * @return true if the password was successfully updated, false otherwise
+     */
     public static boolean changePassword(User user, String newPassword){
         UsersRepository usersRepository = getUsersRepository();
         user.setPassword(newPassword);

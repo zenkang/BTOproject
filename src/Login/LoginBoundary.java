@@ -6,7 +6,18 @@ import java.util.Scanner;
 import static Utils.BoundaryStrings.footer;
 import static Utils.BoundaryStrings.logo;
 
+/**
+ * Handles user interface and interaction for the login process.
+ * Displays the system logo, prompts for user credentials, and invokes the LoginController.
+ */
 public class LoginBoundary {
+
+    /**
+     * Displays the login screen and repeatedly prompts the user until valid credentials are provided.
+     * Utilizes the LoginController to authenticate the user based on NRIC and password.
+     *
+     * @return the authenticated User object, or null if login fails
+     */
     public static User login(){
         User user;
         Scanner sc = new Scanner(System.in);
