@@ -12,6 +12,7 @@ import Utils.SessionManager;
 import Officer.OfficerBoundary;
 import Officer.OfficerController;
 import static Utils.RepositoryGetter.*;
+import static Utils.PasswordHasher.hashPassword;
 
 public class UserController {
 
@@ -62,7 +63,8 @@ public class UserController {
     }
     public static boolean changePassword(User user, String newPassword){
         UsersRepository usersRepository = getUsersRepository();
-        user.setPassword(newPassword);
+        String hashedPassword = hashPassword(newPassword);
+        user.setPassword(hashedPassword);
         if(!usersRepository.update(user)){
             return false;
         }

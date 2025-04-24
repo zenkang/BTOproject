@@ -3,11 +3,12 @@ package User;
 import Abstract.IEntity;
 import Enumerations.Role;
 import Utils.CsvUtils;
+import Utils.PasswordHasher;
 
 public class User implements IEntity {
     private String nric;
     private String password;
-    private Role role;
+    private final Role role;
 
     public User(String nric, String password, Role role) {
         this.nric = nric;
