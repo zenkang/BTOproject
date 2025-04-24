@@ -50,12 +50,10 @@ public class SafeScanner {
                 scanner.next(); // Clear the invalid input
             }
         }
-
         // Clear the buffer after reading an integer to handle any lingering newline
         if (scanner.hasNextLine()) {
             scanner.nextLine();
         }
-
         return input;
     }
 

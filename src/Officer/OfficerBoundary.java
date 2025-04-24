@@ -17,7 +17,7 @@ import Receipt.ReceiptController;
 import Reply.Reply;
 import Reply.ReplyController;
 import User.UserBoundary;
-import Utils.AvailabilityChart;
+import Utils.PrettyPrint;
 import Utils.SafeScanner;
 import Utils.ProjectFilterContext;
 import Project.ProjectController;
@@ -26,7 +26,6 @@ import ProjectApplication.ProjectApplicationController;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -202,8 +201,7 @@ public class OfficerBoundary {
             }
             System.out.println("\n=== Projects ===");
             for (Project project : projects) {
-                project.prettyPrint4Officer();
-                AvailabilityChart.print(project);
+                PrettyPrint.printOfficer(project);
                 System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
                 System.out.println("------------------------");
             }
@@ -323,7 +321,7 @@ public class OfficerBoundary {
         else{
             System.out.println("========= Projects =========");
             for (Project proj : filteredProjects) {
-                proj.prettyPrint4Officer();
+                PrettyPrint.printOfficer(proj);
             }
         }
     }
@@ -651,7 +649,10 @@ public class OfficerBoundary {
         ApplicationStatus status = null;
         switch (selection.toLowerCase()) {
             case "b" -> status = ApplicationStatus.BOOKED;
-            case "exit" -> System.out.println("exiting...");
+            case "exit" -> {
+                System.out.println("exiting...");
+                return;
+            }
             default -> System.out.println("Invalid choice. Please select a valid option.");
         }
         application.setBook_date(LocalDate.parse(LocalDate.now().format(dtf),dtf));
@@ -669,7 +670,7 @@ public class OfficerBoundary {
                     ProjectController.updateProjectNumOfRoomType2(project.getID(),numOfUnits);
                 }
                 System.out.println("Application Booked!\n");
-
+                PrettyPrint.printAvailabilityChart(project,false);
 
                 System.out.println("\n Generating Receipt.....\n");
                 ReceiptController.generateReceipt(officer.getName(),application);

@@ -17,6 +17,7 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 import Reply.Reply;
 import Reply.ReplyController;
+import Utils.PrettyPrint;
 import Utils.ProjectFilterContext;
 import Utils.SafeScanner;
 import User.UserBoundary;
@@ -138,8 +139,8 @@ public class ApplicantBoundary {
 
         System.out.println("\n========= Projects Available =========");
         for (Project proj : filteredProjects) {
-            printProjectForApplicant(user, proj);
             System.out.println("Manager-in-charge: " + ManagerController.getNameById(proj.getManagerID()));
+            printProjectForApplicant(user, proj);
         }
 
         System.out.println("\nEnter 'A' to apply,\n      'E' to submit enquiry\nEnter anything else to go back: ");
@@ -202,9 +203,9 @@ public class ApplicantBoundary {
         String roomType;
         if (user.getMaritalStatus() == MaritalStatus.SINGLE) {
             roomType = "2-room";
-            p.prettyPrint4SingleApplicant();
+            PrettyPrint.printApplicant2Room(p);
         } else {
-            p.prettyPrint4MarriedApplicant();
+            PrettyPrint.printApplicantMarried(p);
             roomType = SafeScanner.getValidatedStringInput(sc, "\nEnter a room type (2-Room or 3-Room): ", List.of("2-room", "3-room"));
         }
 
@@ -284,9 +285,9 @@ public class ApplicantBoundary {
             Project p = ProjectController.getProjectByID(currentApp.getProjectID());
             System.out.println("\n________Project_________");
             if (currentApp.getRoomType().equalsIgnoreCase("2-room")) {
-                p.prettyPrint4SingleApplicant();
+                PrettyPrint.printApplicant2Room(p);
             } else {
-                p.prettyPrintApplicant3room();
+                PrettyPrint.printApplicant3Room(p);
             }
 
             Scanner sc = new Scanner(System.in);
@@ -354,13 +355,13 @@ public class ApplicantBoundary {
      */
     private void printProjectForApplicant(IUserProfile user, Project proj) {
         if (user.getMaritalStatus() == MaritalStatus.SINGLE) {
-            proj.prettyPrint4SingleApplicant();
+            PrettyPrint.printApplicant2Room(proj);
         } else if (filterContext.flatType == null) {
-            proj.prettyPrint4MarriedApplicant();
+            PrettyPrint.printApplicantMarried(proj);
         } else if ("3-room".equalsIgnoreCase(filterContext.flatType)) {
-            proj.prettyPrintApplicant3room();
+            PrettyPrint.printApplicant3Room(proj);
         } else {
-            proj.prettyPrint4SingleApplicant();
+            PrettyPrint.printApplicant2Room(proj);
         }
     }
 

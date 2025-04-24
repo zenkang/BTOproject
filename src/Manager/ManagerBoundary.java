@@ -826,7 +826,7 @@ public class ManagerBoundary {
                 case "o" -> filteredProjects.sort(Comparator.comparing(Project::getAppDateOpen));
             }
             for (Project project : filteredProjects) {
-                project.prettyPrintManager();
+                PrettyPrint.printManager(project);
             }
         }
     }
@@ -856,7 +856,7 @@ public class ManagerBoundary {
                 }
                 System.out.println("\nYour Projects: \n");
                 for (Project project : managerProjects) {
-                    project.prettyPrintManager();
+                    PrettyPrint.printManager(project);
                 }
             }
         } else {
