@@ -141,7 +141,7 @@ public class ProjectApplicationController {
     }
 
     public static void displayAllHandledProjectApplications(String id) {
-        List<Project> handledProjects = getProjectRepository().getByFilter(p -> Arrays.asList(p.getOfficer()).contains(id));
+        List<Project> handledProjects = getProjectRepository().getByFilter(p -> p.getOfficer().contains(id));
         List<String> handledProjectIds = handledProjects.stream()
                 .map(Project::getID)
                 .toList();

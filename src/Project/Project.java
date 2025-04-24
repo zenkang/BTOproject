@@ -312,6 +312,10 @@ public class Project implements IEntity {
         System.out.println("Neighbourhood: " + this.getNeighbourhood());
         System.out.println("Application Open Date: "+this.getAppDateOpen().format(fmt1));
         System.out.println("Application Close Date: "+this.getAppDateClose().format(fmt1));
+        System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+        System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+        System.out.println("Active Project: " + this.isVisibility());
+        System.out.println("------------------------");
     }
 }
 

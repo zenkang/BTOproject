@@ -259,17 +259,10 @@ public class ProjectController {
     }
 
 
-    public static boolean isHandlingProject(String id, String projectID) {
-        ProjectRepository repo = getProjectRepository();
-        List<Project> list;
-        list = repo.getByFilter(project -> project.getID().equalsIgnoreCase(projectID)
-        && Arrays.asList(project.getOfficer()).contains(id) && LocalDate.now().isBefore(project.getAppDateClose()));
-        return !list.isEmpty();
-    }
 
     public static List<String> getProjectNamesHandledByOfficer(String id) {
         return getProjectRepository().getAll().stream()
-                .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
+                .filter(p -> p.getOfficer().contains(id))
                 .map(Project::getProjectName)
                 .toList();
     }
