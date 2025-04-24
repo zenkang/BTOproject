@@ -21,34 +21,22 @@ import User.UserBoundary;
 import Enquiry.EnquiryController;
 import Utils.PrettyPrint;
 import Utils.SafeScanner;
+import Utils.ProjectFilterContext;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.*;
 import Report.ReportController;
 import ProjectRegistration.ProjectRegistrationController;
-
-import Utils.PredicateUtils;
 
 import static Utils.RepositoryGetter.*;
 
 
 public class ManagerBoundary {
     private Manager manager;
-    private Predicate<Project> Filter = null;
-    private Predicate<Project> neighbourhoodFilter = null;
-    private Predicate<Project> flatTypeFilter = null;
-    private Predicate<Project>visibilityFilter = null;
-    private String Filterneighbourhood = null;
-    private String FilterflatType = null;
-    private String FiltervisibilityChoice  = null;
+    private final ProjectFilterContext filterContext = new ProjectFilterContext();
     static Scanner sc = new Scanner(System.in);
 
     public ManagerBoundary(Manager manager) {
@@ -101,8 +89,12 @@ public class ManagerBoundary {
                 ".csv";
 
         try {
-            ReportController.generateReport(id, criteria, outputPath);
-            System.out.println("Report generated: " + outputPath);
+            if(ReportController.generateReport(id, criteria, outputPath)){
+                System.out.println("Report generated: " + outputPath);
+            }
+            else{
+                System.out.println("No reports found");
+            }
         } catch (IOException e) {
             System.err.println("Failed to generate report: " + e.getMessage());
         }
@@ -256,9 +248,10 @@ public class ManagerBoundary {
             System.out.println("6. Update Application Opening Date");
             System.out.println("7. Update Application Closing Date");
             System.out.println("8. Update Visibility");
+            System.out.println("9. Delete Project");
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 8);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 9);
 
             switch (choice) {
                 case 1 -> updateProjectName(sc,projectID);
@@ -268,11 +261,12 @@ public class ManagerBoundary {
                 case 5 -> updateSellingPrice(sc,projectID);
                 case 6 -> updateProjectApplicationOpen(sc,projectID);
                 case 7 -> updateProjectApplicationClose(sc,projectID);
-                case 9 -> updateProjectVisibility(sc,projectID);
+                case 8 -> updateProjectVisibility(sc,projectID);
+                case 9 -> deleteProject(sc,projectID);
                 case 0 -> System.out.println("Exiting........");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        } while (choice != 0);
+        } while (choice != 0 && choice != 9);
     }
 
     private void updateProjectVisibility(Scanner sc,String projectID) {
@@ -453,6 +447,15 @@ public class ManagerBoundary {
             System.out.println("Update failed.");
         }
     }
+    
+    public static void deleteProject(Scanner sc, String projectID) {
+        boolean deleted = ProjectController.deleteProject(projectID);
+        if (deleted) {
+            System.out.println("Project deleted successfully.");
+        } else {
+            System.out.println("Deletion failed or Project not found.");
+        }
+    }
 
     public void viewProfile() {
         Scanner sc = new Scanner(System.in);
@@ -532,18 +535,16 @@ public class ManagerBoundary {
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
             System.out.println("2. View pending Applications " + ((numPending == 0) ? "" : "(" + numPending + ")"));
-            System.out.println("3. View Filtered applications");
-            System.out.println("4. Update Filters");
             if(numRejected > 0) {
-                System.out.println("5. View withdrawn applications");
+                System.out.println("3. View withdrawn applications");
             }
             System.out.println("0. Back");
 
             if(numRejected > 0) {
-                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
+                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
             }
             else {
-                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+                choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
             }
 
             switch (choice) {
@@ -556,9 +557,7 @@ public class ManagerBoundary {
                         list.forEach(System.out::println);
                     }
                 }
-                case 3 -> System.out.println("TBC");
-                case 4 -> System.out.println("TBC");
-                case 5 -> viewWithdrawnApplication(manager);
+                case 3 -> viewWithdrawnApplication(manager);
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -629,39 +628,36 @@ public class ManagerBoundary {
         int choice;
         do {
             System.out.println("\n=== Project Filter Menu ===");
-            System.out.println("1. Neighbourhood");
-            System.out.println("2. Flat Type");
-            System.out.println("3. visibility");
+
+            System.out.println("1. Neighbourhood: "+filterContext.neighbourhood);
+            System.out.println("2. Flat Type: "+filterContext.flatType);
+            System.out.println("3. visibility: "+filterContext.visibility);
             System.out.println("4. Reset Filters");
             System.out.println("0. Exit");
-            System.out.println("\nCurrent filters applied :\nNeighbourhood: "+Filterneighbourhood+" | Flat Type: "+FilterflatType+" | Visibility: "+ FiltervisibilityChoice);
 
             choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
 
             switch (choice) {
                 case 1 -> {
-                    Filterneighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter the neighbourhood: ",100);
-                    neighbourhoodFilter = project -> project.getNeighbourhood().equalsIgnoreCase(Filterneighbourhood);
+                    filterContext.neighbourhood = SafeScanner.getValidatedStringInput(sc,"Enter the neighbourhood: ",100);
+                    filterContext.neighbourhoodFilter = project -> project.getNeighbourhood().equalsIgnoreCase(filterContext.neighbourhood);
                 }
                 case 2 -> {
                     List<String> validRoomOptions = Arrays.asList("2-room", "3-room");
-                    FilterflatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type filter(e.g.,2-Room,3-Room:)", validRoomOptions);
-                    flatTypeFilter = project -> ((project.getType1().equalsIgnoreCase(FilterflatType) && project.getNoOfUnitsType1()>0)||
-                                (project.getType2().equalsIgnoreCase(FilterflatType) && project.getNoOfUnitsType2()>0));
+                    filterContext.flatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type filter(e.g.,2-Room,3-Room) ", validRoomOptions);
+                    filterContext.flatTypeFilter = project -> ((project.getType1().equalsIgnoreCase(filterContext.flatType) && project.getNoOfUnitsType1()>0)||
+                                (project.getType2().equalsIgnoreCase(filterContext.flatType) && project.getNoOfUnitsType2()>0));
                 }
                 case 3->{
-                    FiltervisibilityChoice = SafeScanner.getValidatedStringInput(sc, "Enter the visibility : (t : True || f : False) :",Arrays.asList("t", "f") );
-                    visibilityFilter = switch (FiltervisibilityChoice) {
-                        case "y" -> project -> project.isVisibility();
-                        case "n" -> project -> !project.isVisibility();
+                    filterContext.visibility = SafeScanner.getValidatedStringInput(sc, "Enter the visibility : (on/off) ",Arrays.asList("on", "off") );
+                    filterContext.visibilityFilter = switch (filterContext.visibility) {
+                        case "on" -> project -> project.isVisibility();
+                        case "off" -> project -> !project.isVisibility();
                         default -> project -> project.isVisibility();
                     };
                 }
                 case 4 -> {
-                    Filter = null;
-                    FilterflatType = null;
-                    FiltervisibilityChoice = null;
-                    Filterneighbourhood = null;
+                    filterContext.reset();
                     System.out.println("Filter Reset.");
                 }
                 case 0 -> {
@@ -670,16 +666,25 @@ public class ManagerBoundary {
                 }
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
-        } while (choice != 0);
-        Filter = PredicateUtils.combineFilters(neighbourhoodFilter, flatTypeFilter,visibilityFilter);
+            filterContext.updateFilterWithVisibility();
+        } while (choice != 0 && choice != 4);
     }
 
-    public static void displayFilteredProjects(Predicate<Project> Filter) {
-        List<Project> filteredProjects = ProjectController.getFilteredProjects(Filter);
+    public void displayFilteredProjects() {
+        List<Project> filteredProjects = new ArrayList<>(
+                ProjectController.getFilteredProjects(filterContext.combinedFilter)
+        );
         if (filteredProjects.isEmpty()) {
             System.out.println("No projects match your filter criteria.");
         } else {
-            System.out.println("Filtered Projects:");
+            System.out.println("\nFilters applied: " + filterContext.neighbourhood + " | " + filterContext.flatType + " | " + filterContext.visibility);
+            System.out.println("\nEnter 'o' to sort by Opening Date,\n      'c' to sort by Closing Date\nEnter anything else to continue: ");
+            String selection = sc.nextLine().trim().toLowerCase();
+
+            switch (selection) {
+                case "c" -> filteredProjects.sort(Comparator.comparing(Project::getAppDateClose));
+                case "o" -> filteredProjects.sort(Comparator.comparing(Project::getAppDateOpen));
+            }
             for (Project project : filteredProjects) {
                 project.prettyPrintManager();
             }
@@ -689,18 +694,28 @@ public class ManagerBoundary {
     public void promptProjectViewChoice(String managerID) {
         String selection = SafeScanner.getValidatedStringInput(sc, "View your projects? (y : yes || n : no) ", Arrays.asList("y", "n"));
         if (selection.equals("y")) {
-            List<Project> managerProjects = ProjectController.getProjectsCreatedByManager(managerID);
+            List<Project> managerProjects = new ArrayList<>(
+                    ProjectController.getFilteredProjectsByManager(managerID,filterContext.combinedFilter)
+            );
             if(managerProjects.isEmpty()){
                 System.out.println("\nNo projects created by you.");
             }
             else {
+                System.out.println("\nFilters applied: " + filterContext.neighbourhood + " | " + filterContext.flatType + " | " + filterContext.visibility);
+                System.out.println("\nEnter 'o' to sort by Opening Date,\n      'c' to sort by Closing Date\nEnter anything else to continue: ");
+                selection = sc.nextLine().trim().toLowerCase();
+
+                switch (selection) {
+                    case "c" -> managerProjects.sort(Comparator.comparing(Project::getAppDateClose));
+                    case "o" -> managerProjects.sort(Comparator.comparing(Project::getAppDateOpen));
+                }
                 System.out.println("\nYour Projects: \n");
                 for (Project project : managerProjects) {
                     project.prettyPrintManager();
                 }
             }
         } else {
-            displayFilteredProjects(Filter);
+            displayFilteredProjects();
         }
 
     }
@@ -815,13 +830,18 @@ public class ManagerBoundary {
         }
         List<String> validRegisterIds = projectRegistrations.stream().map(ProjectRegistration::getRegistrationID).toList();
         String registerID = SafeScanner.getValidatedStringInput(sc,"Enter Registration ID you want to approve or reject for: ",validRegisterIds);
-        List<String> validOptions = Arrays.asList("a", "r");
-        String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
-        RegistrationStatus status = null;
-        switch (choice.toLowerCase()) {
-            case "a" -> status = RegistrationStatus.APPROVED;
-            case "r" -> status = RegistrationStatus.REJECTED;
-            default -> System.out.println("Invalid choice. Please select a valid option.");
+        boolean officerInActiveProject = ProjectRegistrationController.checkOfficerInActiveProject(registerID);
+        if(officerInActiveProject){
+            System.out.println("Officer is handling an existing active project");
+        }
+        else{
+            List<String> validOptions = Arrays.asList("a", "r");
+            String choice = SafeScanner.getValidatedStringInput(sc, "\nUpdated Status: (a : Approve, r : Reject) \n", validOptions);
+            RegistrationStatus status = null;
+            switch (choice.toLowerCase()) {
+                case "a" -> status = RegistrationStatus.APPROVED;
+                case "r" -> status = RegistrationStatus.REJECTED;
+                default -> System.out.println("Invalid choice. Please select a valid option.");
             }
             if(ProjectRegistrationController.updateProjectRegistration(registerID,status)){
                 if(status == RegistrationStatus.APPROVED){
@@ -834,9 +854,9 @@ public class ManagerBoundary {
 
             }
             else{
-               System.out.println("Error");
+                System.out.println("Error");
             }
-
+        }
 
 
     }

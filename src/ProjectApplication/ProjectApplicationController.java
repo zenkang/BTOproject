@@ -41,14 +41,6 @@ public class ProjectApplicationController {
         return getProjectApplicationsRepository().update(projectApplication);
     }
 
-    public static ProjectApplication getApplicationByApplicantID(String applicantID) {
-        for (ProjectApplication app : getProjectApplicationsRepository().getAllProjectApplications()) {
-            if (app.getApplicantID().equalsIgnoreCase(applicantID)) {
-                return app;
-            }
-        }
-        return null;
-    }
     public static List<ProjectApplication> getApplicationsByApplicantID(String applicantID) {
         return getProjectApplicationsRepository().getByFilter(application -> applicantID.equalsIgnoreCase(application.getApplicantID()));
     }
@@ -65,9 +57,6 @@ public class ProjectApplicationController {
                 null);
         return getProjectApplicationsRepository().create(application);
     }
-
-
-
 
 
     public static boolean checkPreviousApplication(String applicantID){
@@ -87,7 +76,6 @@ public class ProjectApplicationController {
         List<ProjectApplication> list = getApplicationsByStatus(manager, ApplicationStatus.PENDING);
         return list.size();
     }
-
 
 
     public static List<String> getPendingApplicationIDs(Manager manager) {
@@ -119,9 +107,6 @@ public class ProjectApplicationController {
         return getProjectApplicationsRepository().getByFilter(app -> app.getProjectID().equalsIgnoreCase(projectID));
     }
 
-    public static List<ProjectApplication> getApplicationsByRoomType(String roomType) {
-        return getProjectApplicationsRepository().getByFilter(app -> app.getRoomType().equalsIgnoreCase(roomType));
-    }
 
     public static ProjectApplication getCurrentApplicationByApplicantID(String applicantID) {
         List<ProjectApplication> list = getProjectApplicationsRepository().getByFilter(
@@ -134,6 +119,13 @@ public class ProjectApplicationController {
         }
 
         return list.get(0); // returns the first active application (e.g., PENDING or BOOKED)
+    }
+    public static List<ProjectApplication> getUnsuccessApplicationByApplicantID(String applicantID) {
+        List<ProjectApplication> list = getProjectApplicationsRepository().getByFilter(
+                application -> applicantID.equalsIgnoreCase(application.getApplicantID()) &&
+                        application.getStatus() == ApplicationStatus.UNSUCCESSFUL
+        );
+        return list;
     }
 
 

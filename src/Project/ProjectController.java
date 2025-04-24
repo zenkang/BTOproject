@@ -144,6 +144,16 @@ public class ProjectController {
         return repo.getByFilter(project -> project.getManagerID().equalsIgnoreCase(managerID));
     }
 
+    public static List<Project> getFilteredProjectsByManager(String managerID,Predicate<Project> Filter ) {
+        List<Project> projects = getProjectsCreatedByManager(managerID);
+        if(Filter == null){
+            return getProjectsCreatedByManager(managerID);
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
+    }
+
 
     public static  <T extends IUserProfile> List<Project> getProjectsForApplicant(T applicant) {
         ProjectRepository repo = getProjectRepository();
@@ -161,13 +171,18 @@ public class ProjectController {
         }
         List<ProjectApplication> applications =
                 ProjectApplicationController.getApplicationsByApplicantID(applicant.getNric());
-        if(applications.isEmpty()){
+        List<ProjectRegistration> registrations =
+                ProjectRegistrationController.getProjectRegistrationByOfficerId(applicant.getNric());
+        if(applications.isEmpty() && registrations.isEmpty()) {
             return list;
         }
-        // 2) collect all the project‑IDs this applicant has already applied to
+        // 2) collect all the project‑IDs this applicant has already applied/registered to
         Set<String> appliedIds = new HashSet<>();
         for (ProjectApplication app : applications) {
             appliedIds.add(app.getProjectID());
+        }
+        for (ProjectRegistration reg : registrations) {
+            appliedIds.add(reg.getProjectID());
         }
         // remove all projects whose ID is in appliedIds
         return list.stream()
@@ -183,6 +198,36 @@ public class ProjectController {
                 .map(Project::getID)
                 .distinct()
                 .toList();
+    }
+
+    public static <T extends IUserProfile> List<Project> getFilteredProjectsForApplicant(T Applicant,Predicate<Project> Filter) {
+        List<Project> projects = getProjectsForApplicant(Applicant);
+        if(Filter == null){
+            return getProjectsForApplicant(Applicant);
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
+    }
+
+    public static List<Project> getFilteredProjectsForRegistration(Officer officer,Predicate<Project> Filter) {
+        List<Project> projects = ProjectController.getFilteredProjects(project -> project.isVisibility());
+
+        List<ProjectApplication> applications =
+                ProjectApplicationController.getApplicationsByApplicantID(officer.getNric());
+        Set<String> appliedIds = new HashSet<>();
+        for (ProjectApplication app : applications) {
+            appliedIds.add(app.getProjectID());
+        }
+        List<Project> list = projects.stream()
+                .filter(p -> !appliedIds.contains(p.getID()))
+                .toList();
+        if(Filter == null){
+            return list;
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
     }
 
     public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
@@ -239,6 +284,9 @@ public class ProjectController {
         String officerID = registration.getOfficerId();
         Project project = getProjectRepository().getByID(registration.getProjectID());
         project.getOfficer().add(officerID);
+        int officerSlots = project.getNoOfficersSlots();
+        officerSlots-=1;
+        project.setProjectNumOfOfficers(officerSlots);
         getProjectRepository().update(project);
     }
 }

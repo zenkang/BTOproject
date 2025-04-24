@@ -8,7 +8,7 @@ import ProjectApplication.ProjectApplication;
 import ProjectApplication.ProjectApplicationController;
 
 
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,17 +19,19 @@ import static Utils.RepositoryGetter.getProjectRegistrationRepository;
 
 public class ProjectRegistrationController {
     public static boolean canRegisterForProject(String officer_id, String project_id) {
+        //check officer never applied to the project
         List<ProjectApplication> projectApplications = ProjectApplicationController.getApplicationsByApplicantID(officer_id);
         projectApplications = projectApplications.stream()
                 .filter(p -> p.getProjectID().equalsIgnoreCase(project_id)).toList();
-
+        //check officer isnt registered to any active projects
         Project newProject = ProjectController.getProjectByID(project_id);
         List<Project> currentProjects = ProjectController.getProjectsHandledByOfficer(officer_id);
         boolean isOverlapping = currentProjects.stream().noneMatch(p ->
                 p.getAppDateOpen().isBefore(newProject.getAppDateClose()) &&
                 p.getAppDateClose().isAfter(newProject.getAppDateOpen()) &&
                 p.isVisibility());
-        return isOverlapping && projectApplications.isEmpty();
+
+        return isOverlapping && projectApplications.isEmpty() && (newProject.getNoOfficersSlots()>0);
     }
 
     public static boolean createProjectRegistration(String project_id, String id) {
@@ -80,6 +82,20 @@ public class ProjectRegistrationController {
             return false;
         }
         return true;
+
+    }
+
+    public static boolean checkOfficerInActiveProject(String registerID) {
+        LocalDate currentDate = LocalDate.now();
+        ProjectRegistration projectRegistration = getProjectRegistrationRepository().getByID(registerID);
+        String officer_id = projectRegistration.getOfficerId();
+        List<Project> projects = ProjectController.getProjectsHandledByOfficer(officer_id);
+        for(Project project:projects){
+            if(currentDate.isBefore(project.getAppDateClose())){
+                return true;
+            }
+        }
+        return false;
 
     }
 }
