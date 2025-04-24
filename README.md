@@ -17,7 +17,7 @@
 
 </p>
 </div>
-## **About The Project**
+## About The Project
 
 NTU AY2024/25 Semester 2 SC2002 Group Project - BTO Management System (BTOMS).
 
