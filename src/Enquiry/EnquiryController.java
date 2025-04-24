@@ -55,7 +55,7 @@ public class EnquiryController {
         List<Project> projects = ProjectController.getProjectsByIDs(projectsIds);
          List<String> projectNames = projects.stream()
                 .map(Project::getProjectName)
-                .collect(Collectors.toList());
+                .toList();
         return RepositoryGetter.getEnquiryRepository().getByFilter(e ->
                 projectNames.stream().anyMatch(
                         name -> name.equalsIgnoreCase(e.getProjectName().trim())

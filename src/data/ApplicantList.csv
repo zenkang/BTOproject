@@ -1,8 +1,6 @@
 Name,NRIC,Age,Marital Status
-Zen,S1234567A,36,Married
-hweej,S1234567A,2,Single
 John,S1234567A,35,Single
-Sarah,T7654321B,40,Married
-Grace,S9876543C,37,Married
-James,T2345678D,30,Married
-Rachel,S3456789E,25,Single
+Sarah Tan,T7654321B,35,Married
+sarah,S9876543C,37,Married
+Samatha,T2345678D,30,Married
+Rachel,S3456789E,37,Single

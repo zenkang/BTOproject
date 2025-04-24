@@ -72,13 +72,12 @@ public class ProjectRegistration implements IEntity{
     @Override
     public IEntity fromCSVRow(String row) {
         String[] values = row.split(",", 5);
-        return new ProjectApplication(
+        return new ProjectRegistration(
                 values[0].trim(),
                 values[1].trim(),
                 values[2].trim(),
                 values[3].trim(),
-                ApplicationStatus.valueOf(values[4].trim().toUpperCase())
-        );
+                RegistrationStatus.valueOf(values[4].trim().toUpperCase()));
     }
     @Override
     public String toString() {
@@ -93,5 +92,12 @@ public class ProjectRegistration implements IEntity{
     @Override
     public String getID() {
         return registrationID;
+    }
+
+    public void prettyPrint() {
+        System.out.println("Registration ID: " + this.getRegistrationID());
+        System.out.println("Project Name: " + this.getProjectName());
+        System.out.println("Officer ID: " + this.getOfficerId());
+        System.out.println("Status: " + this.getStatus());
     }
 }

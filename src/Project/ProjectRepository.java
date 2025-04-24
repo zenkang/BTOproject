@@ -5,6 +5,10 @@ import Utils.CsvUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProjectRepository extends Repository<Project>{
     private static ProjectRepository instance;
@@ -15,6 +19,7 @@ public class ProjectRepository extends Repository<Project>{
     public static ProjectRepository getInstance(String filePath) {
         if (instance == null) {
             instance = new ProjectRepository(filePath);
+            instance.store();//update to make sure project.csv is the latest
         }
         return instance;
     }
@@ -31,15 +36,14 @@ public class ProjectRepository extends Repository<Project>{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate openDate = LocalDate.parse(CsvUtils.formatDate(values[9]), formatter);
             LocalDate closeDate = LocalDate.parse(CsvUtils.formatDate(values[10]), formatter);
-            String[] officer = values[13].split(",");
+            List<String> officers = new ArrayList<String>(Arrays.stream(values[13].split(";")).map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList()));
             boolean visible = Boolean.parseBoolean(values[14].trim());
-            if (LocalDate.now().isAfter(closeDate)) {
-                visible = false;
-            }
             return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                     sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
                     openDate,closeDate,values[11],noOfficersSlots,
-                    officer,visible);
+                    officers,visible);
         }
 
         @Override

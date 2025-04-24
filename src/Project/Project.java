@@ -3,6 +3,11 @@ package Project;
 import Abstract.IEntity;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import Manager.ManagerController;
 import Utils.CsvUtils;
 
 public class Project implements IEntity {
@@ -19,7 +24,7 @@ public class Project implements IEntity {
     private LocalDate appDateClose;
     private String managerID;
     private int noOfficersSlots;
-    private String[] officer;
+    private List<String> officer;
     private boolean visibility;
 
     public boolean isVisibility() {
@@ -33,7 +38,7 @@ public class Project implements IEntity {
     public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
                    double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
                    LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
-                   String[] officer, boolean visible) {
+                   List<String> officer, boolean visible) {
         this.projectID = ID;
         this.projectName = projectName;
         this.neighbourhood = neighbourhood;
@@ -48,7 +53,38 @@ public class Project implements IEntity {
         this.managerID = managerID;
         this.noOfficersSlots=noOfficersSlots;
         this.officer=officer;
-        this.visibility=visible;
+        if (LocalDate.now().isAfter(appDateClose) || (noOfUnitsType1<=0 && noOfUnitsType2<=0) ) {
+            this.visibility = false;
+        }
+        else {
+            this.visibility=visible;
+        }
+    }
+
+    public Project(String ID, String projectName, String neighbourhood, String type1, int noOfUnitsType1,
+                   double sellPriceType1, String type2, int noOfUnitsType2, double getSellPriceType2,
+                   LocalDate appDateOpen, LocalDate appDateClose, String managerID, int noOfficersSlots,
+                    boolean visible) {
+        this.projectID = ID;
+        this.projectName = projectName;
+        this.neighbourhood = neighbourhood;
+        this.type1 = type1;
+        this.noOfUnitsType1 = noOfUnitsType1;
+        this.sellPriceType1 = sellPriceType1;
+        this.type2 = type2;
+        this.noOfUnitsType2=noOfUnitsType2;
+        this.sellPriceType2=getSellPriceType2;
+        this.appDateOpen=appDateOpen;
+        this.appDateClose=appDateClose;
+        this.managerID = managerID;
+        this.officer = new ArrayList<>(noOfficersSlots);
+        this.noOfficersSlots=noOfficersSlots;
+        if (LocalDate.now().isAfter(appDateClose) || (noOfUnitsType1<=0 && noOfUnitsType2<=0) ) {
+            this.visibility = false;
+        }
+        else {
+            this.visibility=visible;
+        }
     }
 
     @Override
@@ -88,12 +124,13 @@ public class Project implements IEntity {
     public int getNoOfficersSlots() {
         return noOfficersSlots;
     }
-    public String[] getOfficer() {
+    public List<String> getOfficer() {
         return officer;
     }
 
     @Override
     public String toCSVRow() {
+        String officersString = String.join(";", this.officer);
         return String.join(",",
                 projectID,
                 projectName,
@@ -108,7 +145,7 @@ public class Project implements IEntity {
                 CsvUtils.getFmtDate(appDateClose),
                 managerID,
                 String.valueOf(noOfficersSlots),
-                String.join(";", officer),
+                officersString,
                 String.valueOf(visibility)
         );
     }
@@ -123,11 +160,8 @@ public class Project implements IEntity {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate openDate = LocalDate.parse(values[9], formatter);
         LocalDate closeDate = LocalDate.parse(values[10], formatter);
-        String[] officer = values[13].split(";");
+        List<String> officer = new ArrayList<String>(Arrays.asList(values[13].split(";")));
         boolean visible = Boolean.parseBoolean(values[14].trim());
-        if (LocalDate.now().isAfter(appDateClose)) {
-            visible = false;
-        }
         return new Project(values[0],values[1], values[2],values[3],noOfUnitsType1,
                 sellPriceType1,values[6],noOfUnitsType2,sellPriceType2,
                 openDate,closeDate,values[11],noOfficersSlots,
@@ -193,8 +227,91 @@ public class Project implements IEntity {
         this.noOfficersSlots = numOfOfficers;
     }
 
-    public void setOfficer(String[] array) {
+    public void setOfficer(List<String> array) {
         this.officer = array;
+    }
+
+    public void prettyPrintManager() {
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        System.out.println("Room Types : " + this.getType1() + " , " + this.getType2());
+        System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+        System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+        System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        System.out.println("Application Open Date: " + this.getAppDateOpen());
+        System.out.println("Application Close Date: " + this.getAppDateClose());
+        System.out.println("Manager-in-charge: " + this.getManagerID());
+        System.out.println("Number of Officer Slot(s): " + this.getNoOfficersSlots());
+        System.out.println("Officer(s) Assigned: ");
+        List<String> officers = this.getOfficer();
+        for (String officer : officers) {
+            System.out.println(officer);
+        }
+        System.out.println("Active Project: " + this.isVisibility());
+        System.out.println("------------------------");
+
+    }
+
+    public void prettyPrint4SingleApplicant(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        if (this.getType1().equalsIgnoreCase("2-room")){
+            System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+            System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        }
+        if (this.getType2().equalsIgnoreCase("2-room")){
+            System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+            System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        }
+        System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
+    }
+    public void prettyPrintApplicant3room(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        if (this.getType1().equalsIgnoreCase("3-room")){
+            System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+            System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        }
+        if (this.getType2().equalsIgnoreCase("3-room")){
+            System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+            System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        }
+        System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
+    }
+
+    public void prettyPrint4MarriedApplicant(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: " + this.getID());
+        System.out.println("============================");
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        System.out.println("Room Types : " + this.getType1() + " , " + this.getType2());
+        System.out.println("Number of "+this.getType1()+" units: " + this.getNoOfUnitsType1());
+        System.out.println("Selling price of "+this.getType1()+" :  $" + this.getSellPriceType1());
+        System.out.println("Number of "+this.getType2()+" units: " + this.getNoOfUnitsType2());
+        System.out.println("Selling price of "+this.getType2()+" :  $" + this.getSellPriceType2());
+        System.out.println("Application Open Date: " + this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: " + this.getAppDateClose().format(fmt1));
+    }
+
+    public void prettyPrint4Officer(){
+        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        System.out.println("\nProject ID: "+this.getID());
+        System.out.println("Project name: " + this.getProjectName());
+        System.out.println("Neighbourhood: " + this.getNeighbourhood());
+        System.out.println("Application Open Date: "+this.getAppDateOpen().format(fmt1));
+        System.out.println("Application Close Date: "+this.getAppDateClose().format(fmt1));
     }
 }
 

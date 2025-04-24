@@ -1,5 +1,6 @@
 package Project;
 
+import Abstract.IUserProfile;
 import Applicant.Applicant;
 import Enumerations.MaritalStatus;
 import Officer.Officer;
@@ -13,15 +14,11 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import Utils.PredicateUtils;
 
 import static Utils.RepositoryGetter.getProjectRepository;
 
 
 public class ProjectController {
-
-
-
 
 
     public static Project getProjectByName(String projectName) {
@@ -118,12 +115,11 @@ public class ProjectController {
                                         LocalDate appDateClose,
                                         String managerID,
                                         int noOfficersSlots,
-                                        String[] officers,
                                         boolean visible){
         ProjectRepository repository = getProjectRepository();
         String newID = repository.generateId("PR");
         Project newProject = new Project(newID,projectName, neighbourhood, roomType1, noOfUnitsType1, sellPriceType1, roomType2, noOfUnitsType2, sellPriceType2,
-                appDateOpen, appDateClose, managerID, noOfficersSlots, officers,visible);
+                appDateOpen, appDateClose, managerID, noOfficersSlots, visible);
         return repository.create(newProject);
     }
 
@@ -133,16 +129,9 @@ public class ProjectController {
         return p.isEmpty();
     }
 
-    //active --> within application date and visibility ON
     public static boolean checkActiveProject(String managerID) {
-        LocalDate today = LocalDate.now();
-        List<Project> activeProjects = getProjectRepository().getByFilter(project ->
-                project.getManagerID().equalsIgnoreCase(managerID) &&
-                        project.isVisibility() &&
-                        (today.isEqual(project.getAppDateOpen()) || today.isAfter(project.getAppDateOpen())) &&
-                        (today.isBefore(project.getAppDateClose()) || today.isEqual(project.getAppDateClose()))
-        );
-        return activeProjects.isEmpty(); // can create only if no active projects found
+        List<Project> p = getProjectRepository().getByFilter(project -> (project.getManagerID().equalsIgnoreCase(managerID))&&project.isVisibility());
+        return p.isEmpty();
     }
 
     public static boolean updateProjectVisibility(Project project, boolean b) {
@@ -155,12 +144,21 @@ public class ProjectController {
         return repo.getByFilter(project -> project.getManagerID().equalsIgnoreCase(managerID));
     }
 
+    public static List<Project> getFilteredProjectsByManager(String managerID,Predicate<Project> Filter ) {
+        List<Project> projects = getProjectsCreatedByManager(managerID);
+        if(Filter == null){
+            return getProjectsCreatedByManager(managerID);
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
+    }
 
-    public static List<Project> getProjectsForApplicant(Applicant applicant) {
+
+    public static  <T extends IUserProfile> List<Project> getProjectsForApplicant(T applicant) {
         ProjectRepository repo = getProjectRepository();
         List<Project> list;
         if (applicant.getMaritalStatus() == MaritalStatus.SINGLE && applicant.getAge() >= 35) {
-
             list = repo.getByFilter(project ->
                     ((project.getType1().equalsIgnoreCase("2-Room") && project.getNoOfUnitsType1()>0)||
                             (project.getType2().equalsIgnoreCase("2-Room") && project.getNoOfUnitsType2()>0))
@@ -172,55 +170,28 @@ public class ProjectController {
             return Collections.emptyList();
         }
         List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationByApplicantID(applicant.getID());
-        if(applications.isEmpty()){
+                ProjectApplicationController.getApplicationsByApplicantID(applicant.getNric());
+        List<ProjectRegistration> registrations =
+                ProjectRegistrationController.getProjectRegistrationByOfficerId(applicant.getNric());
+        if(applications.isEmpty() && registrations.isEmpty()) {
             return list;
         }
-
-        // 2) collect all the project‑IDs this applicant has already applied to
+        // 2) collect all the project‑IDs this applicant has already applied/registered to
         Set<String> appliedIds = new HashSet<>();
         for (ProjectApplication app : applications) {
             appliedIds.add(app.getProjectID());
         }
-        // remove all projects whose ID is in appliedIds
-        return list.stream()
-                .filter(p -> !appliedIds.contains(p.getID()))
-                .collect(Collectors.toList());
-
-    }
-    public static List<Project> getProjectsForApplicant(Officer officer) {
-        ProjectRepository repo = getProjectRepository();
-        List<Project> list;
-        if (officer.getMaritalStatus() == MaritalStatus.SINGLE && officer.getAge() >= 35) {
-            list = repo.getByFilter(project ->
-                    (project.getType1().equalsIgnoreCase("2-Room") ||
-                            project.getType2().equalsIgnoreCase("2-Room"))
-                            && project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0
-            );
-        } else if (officer.getMaritalStatus() == MaritalStatus.MARRIED && officer.getAge() >= 21) {
-            list = repo.getByFilter(project -> project.isVisibility()&& project.getNoOfUnitsType2()> 0 && project.getNoOfUnitsType1()> 0);
-        } else {
-            return Collections.emptyList();
-        }
-        List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationByApplicantID(officer.getID());
-        if(applications.isEmpty()){
-            return list;
-        }
-
-        // 2) collect all the project‑IDs this applicant has already applied to
-        Set<String> appliedIds = new HashSet<>();
-        for (ProjectApplication app : applications) {
-            appliedIds.add(app.getProjectID());
+        for (ProjectRegistration reg : registrations) {
+            appliedIds.add(reg.getProjectID());
         }
         // remove all projects whose ID is in appliedIds
         return list.stream()
                 .filter(p -> !appliedIds.contains(p.getID()))
-                .collect(Collectors.toList());
-
+                .toList();
     }
 
-    public static List<String> getProjectIDsForApplicant(Applicant applicant) {
+
+    public static  <T extends IUserProfile> List<String> getProjectIDsForApplicant(T applicant) {
         List<Project> projects = getProjectsForApplicant(applicant);
         assert projects != null;
         return projects.stream()
@@ -228,15 +199,51 @@ public class ProjectController {
                 .distinct()
                 .toList();
     }
-    public static List<String> getProjectIDsForApplicant(Officer officer) {
-        List<Project> projects = getProjectsForApplicant(officer);
-        assert projects != null;
-        return projects.stream()
-                .map(Project::getID)
-                .distinct()
-                .toList();
+
+    public static <T extends IUserProfile> List<Project> getFilteredProjectsForApplicant(T Applicant,Predicate<Project> Filter) {
+        List<Project> projects = getProjectsForApplicant(Applicant);
+        if(Filter == null){
+            return getProjectsForApplicant(Applicant);
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
     }
 
+    public static List<Project> getFilteredProjectsForRegistration(Officer officer,Predicate<Project> Filter) {
+        List<Project> projects = ProjectController.getFilteredProjects(project -> project.isVisibility());
+
+        List<ProjectApplication> applications =
+                ProjectApplicationController.getApplicationsByApplicantID(officer.getNric());
+        Set<String> appliedIds = new HashSet<>();
+        for (ProjectApplication app : applications) {
+            appliedIds.add(app.getProjectID());
+        }
+        List<Project> list = projects.stream()
+                .filter(p -> !appliedIds.contains(p.getID()))
+                .toList();
+        if(Filter == null){
+            return list;
+        }
+        else{
+            return projects.stream().filter(Filter).toList();
+        }
+    }
+
+    public static List<Project> getFilteredProjects(Predicate<Project> Filter) {
+        ProjectRepository repo = getProjectRepository();
+        List<Project> filteredProjects;
+        if(Filter == null){
+            filteredProjects = repo.getAll();
+
+        }
+        else{
+            filteredProjects = repo.getByFilter(Filter);
+        }
+        filteredProjects = new ArrayList<>(filteredProjects);
+        filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
+        return filteredProjects;
+    }
 
     public static List<String> getProjectIDsManagedBy(String managerID) {
         return getProjectRepository().getAll().stream()
@@ -256,7 +263,7 @@ public class ProjectController {
         ProjectRepository repo = getProjectRepository();
         List<Project> list;
         list = repo.getByFilter(project -> project.getID().equalsIgnoreCase(projectID)
-        && Arrays.asList(project.getOfficer()).contains(id));
+        && Arrays.asList(project.getOfficer()).contains(id) && LocalDate.now().isBefore(project.getAppDateClose()));
         return !list.isEmpty();
     }
 
@@ -268,109 +275,20 @@ public class ProjectController {
     }
     public static List<Project> getProjectsHandledByOfficer(String id) {
         return getProjectRepository().getAll().stream()
-                .filter(p -> Arrays.asList(p.getOfficer()).contains(id))
+                .filter(p -> p.getOfficer().contains(id))
                 .toList();
     }
+
     public static void updateOfficer(String registerID) {
         ProjectRegistration registration = ProjectRegistrationController.getProjectRegistrationByID(registerID);
         String officerID = registration.getOfficerId();
         Project project = getProjectRepository().getByID(registration.getProjectID());
-        List<String> officerList = new ArrayList<>(Arrays.asList(project.getOfficer()));
-        officerList.add(officerID);
-        project.setOfficer(officerList.toArray(new String[0]));
+        project.getOfficer().add(officerID);
+        int officerSlots = project.getNoOfficersSlots();
+        officerSlots-=1;
+        project.setProjectNumOfOfficers(officerSlots);
         getProjectRepository().update(project);
     }
-
-// ================== Filter Logic for Each User ==================
-
-    private static final Map<String, FilterState> userFilterStates = new HashMap<>();
-
-    public static class FilterState {
-        public Predicate<Project> neighbourhoodFilter;
-        public Predicate<Project> flatTypeFilter;
-        public Predicate<Project> availabilityFilter;
-
-        public void reset() {
-            neighbourhoodFilter = null;
-            flatTypeFilter = null;
-            availabilityFilter = null;
-        }
-
-        public Predicate<Project> getCombinedFilter() {
-            return PredicateUtils.combineFilters(
-                    neighbourhoodFilter, flatTypeFilter, availabilityFilter
-            );
-        }
-    }
-
-    public static FilterState getFilterStateForUser(String userId) {
-        return userFilterStates.computeIfAbsent(userId, id -> new FilterState());
-    }
-
-    public static void clearFilterState(String userId) {
-        userFilterStates.remove(userId);
-    }
-
-    public static List<Project> getFilteredProjectsForUser(String userId) {
-        return getFilteredProjects(getFilterStateForUser(userId).getCombinedFilter());
-    }
-
-    public static List<Project> getFilteredProjects(Predicate<Project> filter) {
-        ProjectRepository repo = getProjectRepository();
-        List<Project> filteredProjects = (filter == null)
-                ? repo.getAll()
-                : repo.getByFilter(filter);
-        filteredProjects = new ArrayList<>(filteredProjects);
-        filteredProjects.sort(Comparator.comparing(Project::getID, String.CASE_INSENSITIVE_ORDER));
-        return filteredProjects;
-    }
-
-    public static void showFilterMenu(String userId, Scanner sc) {
-        FilterState state = getFilterStateForUser(userId);
-        int choice;
-        do {
-            System.out.println(" === Project Filter Menu ===");
-            System.out.println("1. Filter by Neighbourhood");
-            System.out.println("2. Filter by Flat Type");
-            System.out.println("3. Filter by Availability");
-            System.out.println("4. View Filtered Projects");
-            System.out.println("5. Reset Filters");
-            System.out.println("0. Exit");
-
-            choice = Utils.SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 5);
-
-            switch (choice) {
-                case 1 -> {
-                    System.out.print("Enter neighbourhood: ");
-                    String n = sc.nextLine();
-                    state.neighbourhoodFilter = p -> p.getNeighbourhood().equalsIgnoreCase(n);
-                }
-                case 2 -> {
-                    String flatType = Utils.SafeScanner.getValidatedStringInput(sc,
-                            "Enter flat type (2-room or 3-room): ", List.of("2-room", "3-room"));
-                    state.flatTypeFilter = p -> flatType.equalsIgnoreCase(p.getType1()) || flatType.equalsIgnoreCase(p.getType2());
-                }
-                case 3 -> {
-                    state.availabilityFilter = p -> p.getNoOfUnitsType1() > 0 || p.getNoOfUnitsType2() > 0;
-                }
-                case 4 -> {
-                    List<Project> result = getFilteredProjectsForUser(userId);
-                    if (result.isEmpty()) {
-                        System.out.println("No matching projects found.");
-                    } else {
-                        result.forEach(Utils.PrettyPrint::prettyPrintProject);
-                    }
-                }
-                case 5 -> {
-                    state.reset();
-                    System.out.println("Filters reset.");
-                }
-                case 0 -> System.out.println("Exiting filter menu...");
-                default -> System.out.println("Invalid option. Try again.");
-            }
-        } while (choice != 0);
-    }
-
 }
 
 

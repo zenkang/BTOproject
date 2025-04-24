@@ -4,25 +4,28 @@ package Officer;
 
 import Applicant.Applicant;
 import Applicant.ApplicantController;
+import Applicant.ApplicantBoundary;
 import Enquiry.Enquiry;
 import Enquiry.EnquiryController;
 import Enumerations.ApplicationStatus;
-import Enumerations.MaritalStatus;
 import Manager.ManagerController;
 import Project.Project;
 import ProjectApplication.ProjectApplication;
 import ProjectRegistration.ProjectRegistration;
 import ProjectRegistration.ProjectRegistrationController;
+import Receipt.ReceiptController;
 import Reply.Reply;
 import Reply.ReplyController;
 import User.UserBoundary;
 import Utils.SafeScanner;
+import Utils.ProjectFilterContext;
 import Project.ProjectController;
 import ProjectApplication.ProjectApplicationController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -30,6 +33,9 @@ import static Utils.RepositoryGetter.getProjectApplicationsRepository;
 
 public class OfficerBoundary {
     private static Officer officer;
+    private static final ProjectFilterContext filterContext = new ProjectFilterContext();
+
+
     public OfficerBoundary(Officer officer) {
         this.officer = officer;
     }
@@ -39,43 +45,97 @@ public class OfficerBoundary {
         do {
             System.out.println("\n=== HDB Officer Menu ===");
             System.out.println("1. View/update my profile");
-            System.out.println("2. View Projects");
-            System.out.println("3. View projects I'm handling");
-            System.out.println("4. Apply Project ");
-            System.out.println("5. View my Application");
-            System.out.println("6. Register to handle a project");
-            System.out.println("7. View registration status");
-            System.out.println("8. View Application Menu for handled Project");
-            System.out.println("9. Generate flat booking receipt");
-            System.out.println("10. View Enquiry Menu");
-            System.out.println("11. Change Password");
+            System.out.println("2. Applicant functions (view/apply for a BTO flat)");
+            System.out.println("3. Register to handle a project");
+            System.out.println("4. View projects I'm handling");
+            System.out.println("5. View registration status");
+            System.out.println("6. View Applications for my Project");
+            System.out.println("7. Generate flat booking receipt");
+            System.out.println("8. View Enquiry Menu");
+            System.out.println("9. Set Project Filters (applies to both viewing & registering)");
+            System.out.println("10. Change Password");
+
             System.out.println("0. Exit");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 11);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 10);
             switch (choice) {
                 case 1 -> viewOfficerProfile();
-                case 2 -> {
-                    officerProjectFilterMenu(); // optional, for fine-grained control
-                    displayProjectsForOfficer(officer); // always uses the scoped filter
-                }
-                case 3 -> viewHandledProjects(officer);
-                case 4 -> applyForProject(officer);
-                case 5 -> viewApplication(officer);
-                case 6 -> registerToHandleProject(officer,sc);
-                case 7 -> viewRegistrationStatus(officer,sc);
-                case 8 -> viewApplicantApplications(officer);
-                case 9 -> generateBookingReceipt(officer,sc);
-                case 10 -> officerEnquiryMenu(officer);
-                case 11 -> changePassword();
+                case 2 -> applicantMenu();
+                case 3 -> registerToHandleProject(officer,sc);
+                case 4 -> viewHandledProjects(officer);
+                case 5 -> viewRegistrationStatus(officer,sc);
+                case 6 -> viewApplicantApplications(officer);
+                case 7 -> generateBookingReceipt(officer,sc);
+                case 8 -> officerEnquiryMenu(officer);
+                case 9 -> displayProjectFilterMenu();
+                case 10 -> UserBoundary.changePassword(officer.getUserProfile());
                 case 0 -> System.out.println("Exiting the Officer Menu.");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
         }
-        while (choice != 0 && choice !=11) ;
+        while (choice != 0 && choice !=10) ;
         if (choice == 0){
             sc.close();
         }
     }
+
+    private void applicantMenu(){
+        ApplicantBoundary view = new ApplicantBoundary(officer, filterContext);
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("\n===== You are viewing as an APPLICANT =====");
+            System.out.println("1. View BTO projects");
+            System.out.println("2. Apply for a BTO flat");
+            System.out.println("3. View my BTO applications");
+            System.out.println("0. Exit");
+            choice  = SafeScanner.getValidatedIntInput(sc, "Enter option: ", 0, 3);
+
+            switch (choice) {
+                case 1 -> view.displayProjectMenu();
+                case 2 -> view.applyForProject();
+                case 3 -> view.viewApplication();
+                case 0 -> System.out.println("Exiting...");
+                default -> System.out.println("Invalid option.");
+            }
+        } while(choice != 0);
+    }
+
+
+    private void displayProjectFilterMenu() {
+        Scanner sc = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("\n=== Project Filter Menu ===");
+            System.out.println("1. Neighbourhood: " + filterContext.neighbourhood);
+            System.out.println("2. Flat Type: " + filterContext.flatType);
+            System.out.println("3. Reset Filters");
+            System.out.println("0. Exit");
+
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 3);
+            switch (choice) {
+                case 1 -> {
+                    filterContext.neighbourhood = SafeScanner.getValidatedStringInput(sc, "Enter the neighbourhood: ", 100);
+                    filterContext.neighbourhoodFilter = p -> p.getNeighbourhood().equalsIgnoreCase(filterContext.neighbourhood);
+                }
+                case 2 -> {
+                    List<String> validRoomOptions = List.of("2-room", "3-room");
+                    filterContext.flatType = SafeScanner.getValidatedStringInput(sc, "Enter flat type (2-Room/3-Room):", validRoomOptions);
+                    filterContext.flatTypeFilter = p ->
+                            (p.getType1().equalsIgnoreCase(filterContext.flatType) && p.getNoOfUnitsType1() > 0)
+                                    || (p.getType2().equalsIgnoreCase(filterContext.flatType) && p.getNoOfUnitsType2() > 0);
+                }
+                case 3 -> {
+                    filterContext.reset();
+                    System.out.println("Filters reset.");
+                }
+                case 0 -> System.out.println("Filter preferences saved.");
+                default -> System.out.println("Invalid choice.");
+            }
+            filterContext.updateFilter();
+        } while (choice != 0 && choice !=3);
+    }
+
 
     private void viewRegistrationStatus(Officer officer, Scanner sc) {
         List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getProjectRegistrationByOfficerId(officer.getID());
@@ -85,7 +145,7 @@ public class OfficerBoundary {
                 System.out.println("Registration ID: " + projectRegistration.getRegistrationID());
                 System.out.println("Project Name: " + projectRegistration.getProjectName());
                 System.out.println("Officer ID: " + projectRegistration.getOfficerId());
-                System.out.println("Status: " + projectRegistration.getStatus());
+                System.out.println("Status: " + projectRegistration.getStatus()+"\n");
             }
         }
         else {
@@ -95,29 +155,45 @@ public class OfficerBoundary {
 
     private void registerToHandleProject(Officer officer,Scanner sc) {
 
-        List<Project> projects = ProjectController.getFilteredProjects(project -> project.isVisibility());
+        List<Project> projects = new ArrayList<>(
+                ProjectController.getFilteredProjectsForRegistration(officer,filterContext.combinedFilter)
+        );
         if(!projects.isEmpty()){
+            System.out.println("\nFilters applied: " + filterContext.neighbourhood + " | " + filterContext.flatType);
+            System.out.println("\nEnter 'o' to sort by Opening Date,\n      'c' to sort by Closing Date\nEnter anything else to continue: ");
+            String selection = sc.nextLine().trim().toLowerCase();
+
+            switch (selection) {
+                case "c" -> projects.sort(Comparator.comparing(Project::getAppDateClose));
+                case "o" -> projects.sort(Comparator.comparing(Project::getAppDateOpen));
+            }
             System.out.println("\n=== Projects ===");
             for (Project project : projects) {
-                prettyPrintProject(project);
+                project.prettyPrint4Officer();
+                System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
+                System.out.println("------------------------");
             }
         }
         else{
             System.out.println("No projects can be registered.");
+            return;
         }
-        List<String> validprojIDs = projects.stream().map(Project::getID).distinct().toList();
-        String projectID = SafeScanner.getValidatedStringInput(sc,"Enter Project ID you want to apply for: ",validprojIDs);
-        boolean canRegister = ProjectRegistrationController.canRegisterForProject(officer.getID(),projectID);
-        if(canRegister){
-            if(!ProjectRegistrationController.createProjectRegistration(projectID.toUpperCase(),officer.getID())){
-                System.out.println("Registration could not be created.");
+        System.out.println("\nEnter R to register,\nEnter anything else to go back: ");
+        String selection = sc.nextLine().trim();
+        if (selection.equalsIgnoreCase("R")) {
+            List<String> validprojIDs = projects.stream().map(Project::getID).distinct().toList();
+            String projectID = SafeScanner.getValidatedStringInput(sc, "Enter Project ID you want to apply for: ", validprojIDs);
+            boolean canRegister = ProjectRegistrationController.canRegisterForProject(officer.getID(), projectID);
+            boolean hasRegistered = ProjectRegistrationController.hasRegisteredForProject(officer.getID(), projectID);
+            if (canRegister && !hasRegistered) {
+                if (!ProjectRegistrationController.createProjectRegistration(projectID.toUpperCase(), officer.getID())) {
+                    System.out.println("Registration could not be created.");
+                } else {
+                    System.out.println("Registration successful.");
+                }
+            } else {
+                System.out.println("You are not allowed to register a project.");
             }
-            else{
-                System.out.println("Registration successful.");
-            }
-        }
-        else{
-            System.out.println("You are not allowed to register a project.");
         }
     }
 
@@ -135,9 +211,6 @@ public class OfficerBoundary {
             }
         }while(!selection.equals("n"));
 
-    }
-    private void changePassword() {
-        UserBoundary.changePassword(officer.getUserProfile());
     }
     public void updateOfficerProfile() {
         int choice;
@@ -168,7 +241,6 @@ public class OfficerBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
-
     private void updateName(){
         Scanner sc = new Scanner(System.in);
         String newName = SafeScanner.getValidatedStringInput(sc,"Enter your new Name: ",50);
@@ -179,7 +251,6 @@ public class OfficerBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
-
     private void updateMaritalStatus(){
         Scanner sc = new Scanner(System.in);
         List<String> validOptions = Arrays.asList("m", "s");
@@ -193,46 +264,6 @@ public class OfficerBoundary {
     }
 
 
-    //Applicant Functionalities
-
-    //Project
-    private void officerProjectFilterMenu() {
-        Scanner sc = new Scanner(System.in);
-        ProjectController.showFilterMenu(officer.getID(), sc);
-    }
-
-    private static void displayProjectsForOfficer(Officer officer) {
-        List<ProjectApplication> applications =
-                ProjectApplicationController.getApplicationByApplicantID(officer.getID());
-
-        // 1. Print previously applied projects
-        Set<String> appliedIds = new HashSet<>();
-        if (!applications.isEmpty()) {
-            System.out.println("\nYou have applied to the following project"
-                    + (applications.size() > 1 ? "s:" : ":"));
-            for (ProjectApplication app : applications) {
-                appliedIds.add(app.getProjectID());
-                Project p = ProjectController.getProjectByID(app.getProjectID());
-                OfficerBoundary.prettyPrintOfficerProject(officer, p, false);
-            }
-        }
-
-        // 2. Fetch and show filtered projects using the per-user filter state
-        List<Project> filteredProjects = ProjectController.getFilteredProjectsForUser(officer.getID())
-                .stream()
-                .filter(p -> !appliedIds.contains(p.getID()))
-                .toList();
-
-        if (filteredProjects.isEmpty()) {
-            System.out.println("No new projects matched your filter or you're already applied.");
-        } else {
-            System.out.println("========= Filtered Projects =========");
-            for (Project proj : filteredProjects) {
-                OfficerBoundary.prettyPrintOfficerProject(officer, proj, false);
-            }
-        }
-    }
-
     private void viewHandledProjects(Officer officer) {
         List<Project> filteredProjects = ProjectController.getProjectsHandledByOfficer(officer.getID());
         if (filteredProjects.isEmpty()) {
@@ -241,74 +272,8 @@ public class OfficerBoundary {
         else{
             System.out.println("========= Projects =========");
             for (Project proj : filteredProjects) {
-                prettyPrintOfficerProject(officer, proj,true);
+                proj.prettyPrint4Officer();
             }
-        }
-    }
-
-    public static void applyForProject(Officer officer) {
-        Scanner sc = new Scanner(System.in);
-        String roomType;
-        if (!ProjectApplicationController.checkPreviousApplication(officer.getNric())) {
-            System.out.println("You have already submitted an Application Before.");
-            return;
-        }
-        if(officer.getAge() < 21){
-            System.out.println("You must be older than 21 to apply.");
-            return;
-        }
-        if(officer.getMaritalStatus() == MaritalStatus.SINGLE && officer.getAge()<35){
-            System.out.println("Single applicants have to be 35 years old and above to apply.");
-            return;
-        }
-        if(ProjectController.getProjectsForApplicant(officer).isEmpty()) {
-            System.out.println("No Projects available for applications at the moment.");
-        }
-
-        else {
-            System.out.println("\n=== Project Application ===");
-            System.out.println("Valid Projects:");
-            List<String> ValidprojIDs = ProjectController.getProjectIDsForApplicant(officer);
-            ValidprojIDs.forEach(item -> System.out.println("ID: " + item));
-            // TO BE UPDATED
-            // BEST TO GET FILTERED VALID PROJECT ID BASED ON APPLICANT'S ATTRIBUTE
-            //TO BE ADDED: CHECKS TO ENSURE NUM OF UNITS AVAILABLE FOR THE PROJ >1
-            String projectID = SafeScanner.getValidatedStringInput(sc,"Enter Project ID you want to apply for: ",ValidprojIDs);
-            boolean isProjectHandled = ProjectController.isHandlingProject(officer.getID(),projectID);
-            if(isProjectHandled){
-                System.out.println("You cannot apply for this project as you are handling this project.");
-            }
-            else{
-                if(officer.getMaritalStatus() == MaritalStatus.SINGLE){
-                    roomType = "2-room";
-                }
-                else {
-                    List<String> validRoomTypes = Arrays.asList("2-room", "3-room");
-                    roomType = SafeScanner.getValidatedStringInput(sc, "Enter a room type (2-Room or 3-Room): ", validRoomTypes);
-                }
-
-                if (!ProjectApplicationController.createProjectApplication(projectID.toUpperCase(),roomType, officer.getID())){
-                    System.out.println("Project application could not be created.");
-                }
-                else{
-                    System.out.println("Application created successfully!");
-                }
-            }
-
-
-        }
-    }
-
-    //Project Application
-    public static void viewApplication(Officer officer) {
-        List<ProjectApplication> application = ProjectApplicationController.getApplicationByApplicantID(officer.getID());
-        if (application.isEmpty()){
-            System.out.println("Application could not be found.");
-        }
-        else {
-            application.forEach(
-                    OfficerBoundary::prettyPrintProjectApplications
-            );
         }
     }
 
@@ -410,7 +375,7 @@ public class OfficerBoundary {
         } else {
             System.out.println("\n--- Replies for Enquiry ID: " + finalEnquiryId + " ---");
             for (Reply reply : replies) {
-                printPrettyReply(reply);
+                reply.printPrettyReply();
             }
         }
     }
@@ -533,11 +498,9 @@ public class OfficerBoundary {
             System.out.println("\n=== Applications ===");
             System.out.println("1. View all Applications");
             System.out.println("2. View Successful Applications " + ((numSus == 0) ? "" : "(" + numSus + ")"));
-            System.out.println("3. View Filtered applications");
-            System.out.println("4. Update Filters");
             System.out.println("0. Back");
 
-            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 4);
+            choice = SafeScanner.getValidatedIntInput(sc, "Enter your choice: ", 0, 2);
 
             switch (choice) {
                 case 1 -> ProjectApplicationController.displayAllHandledProjectApplications(officer.getID());
@@ -549,8 +512,6 @@ public class OfficerBoundary {
                         list.forEach(System.out::println);
                     }
                 }
-                case 3 -> System.out.println("TBC");
-                case 4 -> System.out.println("TBC");
                 case 0 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice. Please select a valid option.");
             }
@@ -567,6 +528,7 @@ public class OfficerBoundary {
         while (choice != 0);
     }
     private static void updateApplicationStatus(String applicationID) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Scanner sc = new Scanner(System.in);
         ProjectApplication application = getProjectApplicationsRepository().getByID(applicationID);
         Applicant applicant = ApplicantController.getApplicantById(application.getApplicantID());
@@ -586,6 +548,7 @@ public class OfficerBoundary {
             case "exit" -> System.out.println("exiting...");
             default -> System.out.println("Invalid choice. Please select a valid option.");
         }
+        application.setBook_date(LocalDate.parse(LocalDate.now().format(dtf),dtf));
         if (ProjectApplicationController.updateApplicationStatus(application, status)) {
                 Project project = ProjectController.getProjectByID(application.getProjectID());
                 int numOfUnits;
@@ -600,6 +563,10 @@ public class OfficerBoundary {
                     ProjectController.updateProjectNumOfRoomType2(project.getID(),numOfUnits);
                 }
                 System.out.println("Application Booked!\n");
+
+
+                System.out.println("\n Generating Receipt.....\n");
+                ReceiptController.generateReceipt(officer.getName(),application);
         } else {
             System.out.println("Update failed, try again later\n");
         }
@@ -639,85 +606,8 @@ public class OfficerBoundary {
         }
 
         ProjectApplication application = list.get(choice - 1);
-        ProjectApplicationController.generateReceipt(officer.getName(),application);
+        ReceiptController.generateReceipt(officer.getName(),application);
     }
-    //pretty print
-    public static void prettyPrintProjectApplications(ProjectApplication application) {
-        if (application == null) {
-            System.out.println("No Application available.");
-            return;
-        }
-        Project project = ProjectController.getProjectByID(application.getProjectID());
-        System.out.println("\n======== Project Application ========\n");
-        if (project == null) {
-            System.out.println("Project details are not available.");
-        }
-        System.out.println("Application ID: " + application.getID());
-        assert project != null;
-        System.out.println("Project Name: " + project.getProjectName());
-        System.out.println("Project ID: " + application.getProjectID());
-        System.out.println("Room Type Applied: "+application.getRoomType());
-        System.out.println("Status: " + application.getStatus());
-    }
-    public static void prettyPrintOfficerProject(Officer officer, Project project, boolean displayAll) {
-        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
-        if (officer.getMaritalStatus() == MaritalStatus.SINGLE && officer.getAge() >= 35 && !displayAll) {
-            System.out.println("\nProject ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            if(project.getType1().equalsIgnoreCase("2-Room")){
-                System.out.println("Room Type 1: "+project.getType1());
-                System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-                System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            }
-            else {
-                System.out.println("Room Type 2: "+project.getType2());
-                System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-                System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            }
-            System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-            System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-            System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
-
-            System.out.println("------------------------");
-        }
-        else{
-            System.out.println("\nProject ID: "+project.getID());
-            System.out.println("Project name: " + project.getProjectName());
-            System.out.println("Neighbourhood: " + project.getNeighbourhood());
-            System.out.println("Room Type 1: "+project.getType1());
-            System.out.println("Number of units for Room Type 1: "+project.getNoOfUnitsType1());
-            System.out.println("Selling price of Room Type 1: "+project.getSellPriceType1());
-            System.out.println("Room Type 2: "+project.getType2());
-            System.out.println("Number of units for Room Type 2: "+project.getNoOfUnitsType2());
-            System.out.println("Selling price of Room Type 2: "+project.getSellPriceType2());
-            System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-            System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-            System.out.println("Manager-in-charge: "+ManagerController.getNameById(project.getManagerID()));
-
-            System.out.println("------------------------");
-        }
-    }
-    public static void printPrettyReply(Reply reply) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        System.out.println("Reply ID: " + reply.getReplyId());
-        System.out.println("Enquiry ID: " + reply.getEnquiryId());
-        System.out.println("Date: " + reply.getDate().format(dateFormatter));
-        System.out.println("Officer / Manager ID: "+reply.getOfficerOrManagerId());
-        System.out.println("Reply: "+reply.getReplyContent());
-        System.out.println("----------------------\n");
-    }
-    public static void prettyPrintProject(Project project) {
-        DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd MMM yyyy");
-        System.out.println("\nProject ID: "+project.getID());
-        System.out.println("Project name: " + project.getProjectName());
-        System.out.println("Neighbourhood: " + project.getNeighbourhood());
-        System.out.println("Application Open Date: "+project.getAppDateOpen().format(fmt1));
-        System.out.println("Application Close Date: "+project.getAppDateClose().format(fmt1));
-        System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
-        System.out.println("------------------------");
-    }
-
 
 
 }

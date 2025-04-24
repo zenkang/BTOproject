@@ -1,4 +1,2 @@
-Application ID,Project ID,Room Type,Applicant ID,Status
-APP001,PR001,2-room,T7654321B,PENDING
-APP002,PR001,3-room,S9876543C,BOOKED
-APP003,PR002,2-room,S1234567A,PENDING
+Application ID,Project ID,Room Type,Applicant ID,Status,Previous Status,Book Date
+APP001,PR002,2-room,S1234567A,BOOKED,BOOKED,23/04/2025

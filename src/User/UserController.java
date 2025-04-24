@@ -4,15 +4,14 @@ import Manager.ManagerBoundary;
 import Manager.ManagerController;
 
 import Applicant.Applicant;
-import Applicant.ApplicantBoundary;
 import Applicant.ApplicantController;
+import Applicant.ApplicantBoundary;
 import Officer.Officer;
 import Utils.SessionManager;
 
 import Officer.OfficerBoundary;
 import Officer.OfficerController;
 import static Utils.RepositoryGetter.*;
-import Utils.SessionManager;
 
 public class UserController {
 
