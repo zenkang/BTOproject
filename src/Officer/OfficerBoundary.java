@@ -17,6 +17,7 @@ import Receipt.ReceiptController;
 import Reply.Reply;
 import Reply.ReplyController;
 import User.UserBoundary;
+import Utils.AvailabilityChart;
 import Utils.SafeScanner;
 import Utils.ProjectFilterContext;
 import Project.ProjectController;
@@ -170,6 +171,7 @@ public class OfficerBoundary {
             System.out.println("\n=== Projects ===");
             for (Project project : projects) {
                 project.prettyPrint4Officer();
+                AvailabilityChart.print(project);
                 System.out.println("Manager-in-charge: "+ ManagerController.getNameById(project.getManagerID()));
                 System.out.println("------------------------");
             }

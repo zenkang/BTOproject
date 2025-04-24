@@ -14,8 +14,21 @@ import Officer.OfficerController;
 import static Utils.RepositoryGetter.*;
 import static Utils.PasswordHasher.hashPassword;
 
+/**
+ * The UserController class handles logic related to routing users to role-specific
+ * menu interfaces and updating user credentials such as passwords.
+ */
 public class UserController {
 
+    /**
+     * This method applies the Factory design pattern to create the appropriate
+     * domain object
+     * Routes the authenticated user to their corresponding role-specific boundary interface.
+     * Depending on the role (APPLICANT, OFFICER, MANAGER), it initializes the corresponding
+     * boundary class to display the user's menu.
+     *
+     * @param user the authenticated User object
+     */
     public static void route(User user) {
         switch(user.getRole()){
             case APPLICANT ->{
@@ -61,6 +74,15 @@ public class UserController {
 
         }
     }
+    /**
+     * Updates the password of the given user
+     * The new password is hashed before being stored. If the update operation
+     * fails in the underlying repository, the method returns false
+     *
+     * @param user        the User whose password is to be updated
+     * @param newPassword the new password in plain text
+     * @return true if the password was successfully changed; false otherwise
+     */
     public static boolean changePassword(User user, String newPassword){
         UsersRepository usersRepository = getUsersRepository();
         String hashedPassword = hashPassword(newPassword);

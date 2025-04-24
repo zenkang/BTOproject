@@ -58,6 +58,17 @@ public class SafeScanner {
 
         return input;
     }
+
+    /**
+     * Validated integer input that also accepts blank entries.
+     *
+     * @param sc Scanner instance.
+     * @param prompt Prompt to display.
+     * @param min Minimum allowed value.
+     * @param max Maximum allowed value.
+     * @param allowBlank true if blank entries are allowed
+     * @return the input number or null if blank
+     */
     public static Integer getValidatedIntInput(Scanner sc, String prompt,
                                                int min, int max, boolean allowBlank) {
         while(true) {
@@ -77,6 +88,16 @@ public class SafeScanner {
             }
         }
     }
+
+    /**
+     * Prompts the user for a double input in a specified range.
+     *
+     * @param scanner the scanner to use
+     * @param prompt prompt to show to user
+     * @param min minimum valid value
+     * @param max maximum valid value
+     * @return the validated double value
+     */
     public static double getValidatedDoubleInput(Scanner scanner, String prompt, double min, double max) {
         double input = -1;
         boolean valid = false;
@@ -280,7 +301,12 @@ public class SafeScanner {
         return password.toString().trim();
     }
 
-
+    /**
+     * Prompts the user for a valid project name until a match is found in the system.
+     *
+     * @param scanner the Scanner instance
+     * @return valid project name string
+     */
     public static String getValidProjectName(Scanner scanner) {
         String projectName;
         Project project;
@@ -297,6 +323,7 @@ public class SafeScanner {
             }
         }
     }
+
     /**
      * Prompts the user for a date input in the specified format and validates it.
      *
@@ -321,6 +348,14 @@ public class SafeScanner {
         return date;
     }
 
+    /**
+     * Prompts for a valid date input that must be after the specified start date.
+     *
+     * @param scanner Scanner instance
+     * @param startDate the earliest valid date
+     * @param prompt prompt message
+     * @return validated LocalDate
+     */
     public static LocalDate getValidDateAfterDate(Scanner scanner,LocalDate startDate, String prompt) {
         System.out.print(prompt);
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
