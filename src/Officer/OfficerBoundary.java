@@ -31,14 +31,27 @@ import java.util.stream.Collectors;
 
 import static Utils.RepositoryGetter.getProjectApplicationsRepository;
 
+/**
+ * OfficerBoundary provides the UI interaction logic for an HDB Officer within the BTO system.
+ * It includes functionality for both Officer and Applicant roles such as project registration,
+ * viewing applications, handling enquiries, and updating personal profile information.
+ */
 public class OfficerBoundary {
     private static Officer officer;
     private static final ProjectFilterContext filterContext = new ProjectFilterContext();
 
-
+    /**
+     * Constructs a boundary instance tied to the current Officer.
+     *
+     * @param officer the Officer user instance
+     */
     public OfficerBoundary(Officer officer) {
         this.officer = officer;
     }
+
+    /**
+     * Displays the main menu for officer operations including switching to applicant view.
+     */
     public void displayMenu() {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -79,6 +92,9 @@ public class OfficerBoundary {
         }
     }
 
+    /**
+     * Launches the Applicant UI for the Officer acting as an applicant.
+     */
     private void applicantMenu(){
         ApplicantBoundary view = new ApplicantBoundary(officer, filterContext);
         Scanner sc = new Scanner(System.in);
@@ -102,6 +118,9 @@ public class OfficerBoundary {
     }
 
 
+    /**
+     * Displays the filter setting interface for projects (applies to viewing and registration).
+     */
     private void displayProjectFilterMenu() {
         Scanner sc = new Scanner(System.in);
         int choice;
@@ -137,6 +156,12 @@ public class OfficerBoundary {
     }
 
 
+    /**
+     * Displays the officer's registration status for BTO projects.
+     *
+     * @param officer the current officer
+     * @param sc      the scanner instance for input
+     */
     private void viewRegistrationStatus(Officer officer, Scanner sc) {
         List<ProjectRegistration> projectRegistrations = ProjectRegistrationController.getProjectRegistrationByOfficerId(officer.getID());
         System.out.println("\n=== Registration Status ===");
@@ -153,6 +178,13 @@ public class OfficerBoundary {
         }
     }
 
+
+    /**
+     * Allows the officer to register interest in handling a project.
+     *
+     * @param officer the officer attempting to register
+     * @param sc      the scanner instance for input
+     */
     private void registerToHandleProject(Officer officer,Scanner sc) {
 
         List<Project> projects = new ArrayList<>(
@@ -198,6 +230,9 @@ public class OfficerBoundary {
     }
 
 
+    /**
+     * Displays the officer's profile and provides option to update it.
+     */
     public void viewOfficerProfile() {
         Scanner sc = new Scanner(System.in);
         String selection;
@@ -212,6 +247,10 @@ public class OfficerBoundary {
         }while(!selection.equals("n"));
 
     }
+
+    /**
+     * Displays and processes update options for the officer's profile.
+     */
     public void updateOfficerProfile() {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -230,6 +269,8 @@ public class OfficerBoundary {
         } while (choice != 0);
 
     }
+
+    /** Prompts and updates the officer's age. */
     private void updateAge(){
         Scanner sc = new Scanner(System.in);
         int age;
@@ -241,6 +282,8 @@ public class OfficerBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
+
+    /** Prompts and updates the officer's name. */
     private void updateName(){
         Scanner sc = new Scanner(System.in);
         String newName = SafeScanner.getValidatedStringInput(sc,"Enter your new Name: ",50);
@@ -251,6 +294,8 @@ public class OfficerBoundary {
             System.out.println("Update failed, try again later\n");
         }
     }
+
+    /** Prompts and updates the officer's marital status. */
     private void updateMaritalStatus(){
         Scanner sc = new Scanner(System.in);
         List<String> validOptions = Arrays.asList("m", "s");
@@ -263,7 +308,11 @@ public class OfficerBoundary {
         }
     }
 
-
+    /**
+     * Displays a list of projects the officer is currently handling.
+     *
+     * @param officer the officer whose projects to display
+     */
     private void viewHandledProjects(Officer officer) {
         List<Project> filteredProjects = ProjectController.getProjectsHandledByOfficer(officer.getID());
         if (filteredProjects.isEmpty()) {
@@ -277,7 +326,12 @@ public class OfficerBoundary {
         }
     }
 
-    //Enquiry
+    /**
+     * Displays the enquiry handling menu for officers.
+     * Allows them to create, view, edit, delete, or reply to enquiries related to the projects they handle.
+     *
+     * @param officer the logged-in officer performing the actions
+     */
     public static void officerEnquiryMenu(Officer officer) {
         Scanner sc = new Scanner(System.in);
         int choice;
@@ -308,6 +362,11 @@ public class OfficerBoundary {
         }while(choice !=0);
     }
 
+    /**
+     * Displays all enquiries submitted to the officer's handled projects.
+     *
+     * @param id the ID of the officer
+     */
     private static void displayHandledProjectEnquiries(String id) {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesForHandledProject(id);
         if (enquiries.isEmpty()) {
@@ -319,6 +378,11 @@ public class OfficerBoundary {
         }
     }
 
+    /**
+     * Allows the officer to submit a new enquiry.
+     *
+     * @param nric the NRIC of the officer submitting the enquiry
+     */
     public static void submitEnquiry(String nric) {
         Scanner sc = new Scanner(System.in);
         String projectName = SafeScanner.getValidProjectName(sc);
@@ -330,6 +394,12 @@ public class OfficerBoundary {
         System.out.println("Enquiry submitted!");
     }
 
+    /**
+     * Views replies to enquiries for projects handled by the officer.
+     *
+     * @param officerId the ID of the officer
+     * @param sc        the Scanner for user input
+     */
     private static void viewRepliedEnquiry(String officerId, Scanner sc) {
         System.out.println("\n--- View Replied Enquiry ---");
 
@@ -381,7 +451,11 @@ public class OfficerBoundary {
     }
 
 
-
+    /**
+     * Displays all enquiries submitted by the officer.
+     *
+     * @param nric the NRIC of the officer
+     */
     public static void viewEnquiries(String nric) {
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
         if (enquiries.isEmpty()) {
@@ -393,6 +467,11 @@ public class OfficerBoundary {
         }
     }
 
+    /**
+     * Allows the officer to edit an existing enquiry that has not been replied to.
+     *
+     * @param nric the NRIC of the officer
+     */
     public static void editEnquiry(String nric) {
         Scanner sc = new Scanner(System.in);
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
@@ -421,6 +500,11 @@ public class OfficerBoundary {
         System.out.println("Enquiry updated successfully!");
     }
 
+    /**
+     * Allows the officer to delete an existing enquiry that has not been replied to.
+     *
+     * @param nric the NRIC of the officer
+     */
     public static void deleteEnquiry(String nric) {
         Scanner sc = new Scanner(System.in);
         List<Enquiry> enquiries = EnquiryController.getEnquiriesByApplicant(nric);
@@ -445,6 +529,13 @@ public class OfficerBoundary {
 
         System.out.println("Enquiry deleted successfully!");
     }
+
+    /**
+     * Allows the officer to reply to unreplied enquiries related to the projects they handle.
+     *
+     * @param officer the officer replying to the enquiry
+     * @param sc      the Scanner for user input
+     */
     private static void replyToHandledProjectEnquiries(Officer officer,Scanner sc) {
 
         List<Enquiry> replyable = EnquiryController.getEnquiriesForHandledProject(officer.getID());
@@ -489,7 +580,13 @@ public class OfficerBoundary {
     }
 
 
-    //Applicant Application Status Functionality
+
+    /**
+     * Displays and manages applications for the officer's handled projects.
+     * Allows filtering of successful applications and supports booking workflow.
+     *
+     * @param officer the officer reviewing applications
+     */
     private static void viewApplicantApplications(Officer officer) {
         int choice;
         Scanner sc = new Scanner(System.in);
@@ -527,6 +624,13 @@ public class OfficerBoundary {
         }
         while (choice != 0);
     }
+
+    /**
+     * Updates the status of a successful application to BOOKED and deducts unit count from the project.
+     * Also triggers receipt generation.
+     *
+     * @param applicationID the ID of the application to book
+     */
     private static void updateApplicationStatus(String applicationID) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Scanner sc = new Scanner(System.in);
@@ -573,7 +677,13 @@ public class OfficerBoundary {
     }
 
 
-    //Receipt Generation
+
+    /**
+     * Allows the officer to generate and view a flat booking receipt for a selected booked application.
+     *
+     * @param officer the officer generating the receipt
+     * @param sc      the Scanner for user input
+     */
     private void generateBookingReceipt(Officer officer,Scanner sc) {
         List<ProjectApplication> list = ProjectApplicationController.getHandledApplicationsByStatus(officer.getID(), ApplicationStatus.BOOKED);
         System.out.println("\n=== Receipt Generation ===\n");

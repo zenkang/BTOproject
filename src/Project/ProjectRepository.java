@@ -10,12 +10,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * ProjectRepository handles the persistence and retrieval of Project entities
+ * from a CSV file. It implements the Singleton pattern to ensure a single instance
+ * interacts with the project data storage.
+ */
 public class ProjectRepository extends Repository<Project>{
     private static ProjectRepository instance;
+
+    /**
+     * Private constructor to enforce singleton usage.
+     *
+     * @param filePath the file path to the project CSV file
+     */
     private ProjectRepository(String filePath) {
             super(filePath);
     }
-
+    /**
+     * Retrieves the singleton instance of ProjectRepository.
+     * Initializes and stores the repository data on first access to ensure it's up-to-date.
+     *
+     * @param filePath the file path to the project CSV file
+     * @return the singleton instance of {@code ProjectRepository}
+     */
     public static ProjectRepository getInstance(String filePath) {
         if (instance == null) {
             instance = new ProjectRepository(filePath);
@@ -24,7 +41,13 @@ public class ProjectRepository extends Repository<Project>{
         return instance;
     }
 
-
+    /**
+     * Converts a CSV row into a {@code Project} object.
+     * Parses unit counts, prices, officer list, and visibility from the string row.
+     *
+     * @param row a single line from the CSV representing a Project
+     * @return the constructed {@code Project} object
+     */
         @Override
         public Project fromCSVRow(String row) {
             String[] values = row.split(",");
@@ -46,6 +69,11 @@ public class ProjectRepository extends Repository<Project>{
                     officers,visible);
         }
 
+    /**
+     * Provides the header row for the CSV file, representing all Project fields.
+     *
+     * @return a comma-separated header string
+     */
         @Override
         public String CSVHeader() {
             return "ID,Project Name,Neighbourhood,Type 1," +
@@ -55,7 +83,9 @@ public class ProjectRepository extends Repository<Project>{
                     "Visible";
         }
 
-
+    /**
+     * Displays all project entries currently loaded in memory.
+     */
         public void display(){
             for (Project p : entities){
                 System.out.println(p);
