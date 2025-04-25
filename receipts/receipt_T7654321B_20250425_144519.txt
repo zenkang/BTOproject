@@ -1,0 +1,19 @@
+=== HDB FLAT BOOKING RECEIPT ===
+Date: 25/04/2025
+
+Applicant Details:
+Name: Sarah Tan
+NRIC: T7654321B
+Age: 46
+Marital Status: MARRIED
+
+Project Details:
+Project ID: PR003
+Name: Sunrise Place
+Neighborhood: Sengkang
+Flat Type: 2-room
+
+Officer Details:
+Name: John
+Generated on: 25/04/2025 14:45
+================================
